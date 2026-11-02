@@ -1,0 +1,49 @@
+---
+import Base from '../layouts/Base.astro';
+
+// Philosophy copy is from the current withchariot.com. Roles still to be added.
+const team = ['Aakash Rodrigues', 'Shreesh Kuliyal', 'Siddharth Thorat', 'Samridhi Aggarwal', 'Tanujaa Hemakumar', 'Joshua Rodrigues'];
+---
+<Base title="Studio · Chariot" description="How Chariot thinks about design, and the Charioteers who do it.">
+  <section class="studio">
+    <p class="label">Studio</p>
+    <h1>Thoroughly conceptualised, thoughtfully crafted.</h1>
+    <div class="cols">
+      <p>We believe great design stems from deep insights, radical vision, clarity of the jobs to be done, a will to delight and a ton of attention to detail.</p>
+      <p>That's why we ask the "why" to every "what". We explore every direction. We dig beyond "that's how they're doing it". We consider the psychology, not just the features. We zoom out before we zoom in. We distill. We test and iterate.</p>
+      <p>Distinguished, effective, delightful, tailored. That's what we aim for.</p>
+    </div>
+  </section>
+
+  <section class="team" aria-labelledby="team-h">
+    <h2 id="team-h" class="label">The Charioteers</h2>
+    <ul>
+      {team.map((name, i) => (
+        <li data-reveal style={`transition-delay:${i * 60}ms`}>
+          <div class="bust" aria-hidden="true"></div>
+          <span class="n">{name}</span>
+          <span class="label">Role to come</span>
+        </li>
+      ))}
+    </ul>
+  </section>
+</Base>
+
+<style>
+  .studio { padding: 22vh var(--gutter) 12vh; max-width: 1180px; margin: 0 auto; display: grid; gap: 28px; }
+  .studio .label { margin: 0; }
+  h1 { margin: 0; font: 400 clamp(40px, 6vw, 88px)/1 var(--serif); letter-spacing: -.025em; max-width: 14ch; text-wrap: balance; }
+  .cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; padding-top: 24px; border-top: 1px dashed var(--line); }
+  .cols p { margin: 0; font: 400 19px/1.5 var(--serif); }
+  .team { padding: 4vh var(--gutter) 22vh; max-width: 1180px; margin: 0 auto; }
+  .team h2 { margin: 0 0 20px; }
+  .team ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px 20px; }
+  .team li { display: grid; gap: 6px; }
+  /* placeholder for the halftone bust */
+  .bust { aspect-ratio: 4 / 5; border-radius: 12px; background: radial-gradient(circle, var(--ink) 30%, transparent 34%) 0 0 / 7px 7px, var(--surface); mask: radial-gradient(ellipse 38% 46% at 50% 44%, #000 60%, transparent 100%); -webkit-mask: radial-gradient(ellipse 38% 46% at 50% 44%, #000 60%, transparent 100%); opacity: .55; }
+  .n { font: 400 22px/1.2 var(--serif); }
+  @media (max-width: 820px) {
+    .cols, .team ul { grid-template-columns: minmax(0, 1fr); }
+    .team ul { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+</style>

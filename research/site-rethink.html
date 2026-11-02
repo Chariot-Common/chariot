@@ -1,0 +1,848 @@
+<title>Chariot Site Rethink</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&family=Hanken+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column with a narrow left rail for section labels; demos break out to full column width */
+:root {
+  --bg: #F6F6F1;
+  --surface: #ECEBE3;
+  --fg: #11110A;
+  --muted: #66655A;
+  --line: #DAD9CE;
+  --accent: #D9762B;
+  --display: "Newsreader", "Iowan Old Style", Georgia, serif;
+  --body: "Hanken Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11110A; --surface: #1B1B14; --fg: #EDECE4; --muted: #9C9B8D; --line: #2C2C23; --accent: #E8914A; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11110A; --surface: #1B1B14; --fg: #EDECE4; --muted: #9C9B8D; --line: #2C2C23; --accent: #E8914A; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg);
+  font: 400 16px/1.6 var(--body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 1040px; margin: 0 auto; padding-block: 56px 96px; }
+
+header.top { display: grid; gap: 28px; padding-bottom: 40px; border-bottom: 1px solid var(--line); }
+.meta { display: flex; flex-wrap: wrap; gap: 8px 24px; font: 400 12px/1.4 var(--mono); color: var(--muted); letter-spacing: .02em; }
+h1 { font: 400 clamp(40px, 6vw, 68px)/1.02 var(--display); letter-spacing: -.02em; margin: 0; max-width: 14ch; text-wrap: balance; }
+h1 em { font-style: italic; color: var(--accent); }
+.lede { font-size: 19px; line-height: 1.55; max-width: 60ch; margin: 0; }
+
+section { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 32px; padding-block: 52px; border-bottom: 1px solid var(--line); }
+section > .label { font: 500 12px/1.4 var(--mono); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); padding-top: 8px; }
+section > .body { min-width: 0; display: grid; gap: 20px; }
+h2 { font: 400 32px/1.15 var(--display); margin: 0; letter-spacing: -.01em; text-wrap: balance; max-width: 26ch; }
+h3 { font: 600 16px/1.35 var(--body); margin: 0; }
+p { margin: 0; max-width: 65ch; }
+.muted { color: var(--muted); }
+a { color: inherit; text-decoration-color: var(--accent); text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+code { font: 400 .88em var(--mono); background: var(--surface); padding: 1px 5px; border-radius: 3px; }
+
+ul.plain { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; max-width: 68ch; }
+ul.plain li { padding-left: 20px; position: relative; }
+ul.plain li::before { content: ""; position: absolute; left: 2px; top: .68em; width: 7px; height: 7px; border-radius: 50%; border: 1.5px solid var(--accent); }
+
+.facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.fact { background: var(--bg); padding: 20px; display: grid; gap: 6px; align-content: start; }
+.fact b { font: 400 40px/1 var(--display); font-variant-numeric: tabular-nums; }
+.fact span { font-size: 14px; color: var(--muted); line-height: 1.45; }
+
+.table-wrap { overflow-x: auto; border-top: 1px solid var(--fg); }
+table { border-collapse: collapse; width: 100%; min-width: 620px; font-size: 15px; }
+th, td { text-align: left; vertical-align: top; padding: 14px 16px 14px 0; border-bottom: 1px solid var(--line); }
+th { font: 500 11px/1.4 var(--mono); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+td:first-child { font-weight: 600; width: 22%; }
+
+.principles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 40px; }
+.principle { display: grid; gap: 6px; padding-top: 14px; border-top: 1px solid var(--line); }
+.principle p { font-size: 15px; color: var(--muted); }
+
+.sitemap { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+.page { border: 1px solid var(--line); padding: 16px; display: grid; gap: 8px; align-content: start; }
+.page .path { font: 400 12px var(--mono); color: var(--accent); }
+.page p { font-size: 14px; color: var(--muted); }
+.page.new { border-color: var(--fg); }
+
+.concepts { display: grid; gap: 0; }
+.concept { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 24px; padding-block: 18px; border-top: 1px solid var(--line); }
+.concept p { font-size: 15px; }
+.concept .tag { font: 400 11px var(--mono); color: var(--muted); display: block; margin-top: 4px; letter-spacing: .04em; }
+
+/* --- demo --- */
+.demo { border: 1px solid var(--line); background: var(--surface); position: relative; overflow: hidden; }
+.demo-bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--line); font: 400 12px var(--mono); color: var(--muted); }
+.sound { font: inherit; color: var(--fg); background: none; border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; cursor: pointer; }
+.sound[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+.stage { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; padding: 48px 24px 56px; cursor: none; }
+.proj { position: relative; aspect-ratio: 4 / 3; max-width: 100%; display: grid; place-items: center; text-decoration: none; outline: none; }
+.proj .kind { position: absolute; bottom: -22px; left: 0; right: 0; text-align: center; font: 400 11px var(--mono); color: var(--muted); letter-spacing: .04em; }
+/* The Ken: phone, feed scrolls on hover */
+.phone { position: relative; width: 34%; aspect-ratio: 9 / 18.5; border-radius: 14px; background: #1A1714; padding: 4px; box-shadow: 0 10px 28px -14px rgb(0 0 0 / .45); transition: transform .6s cubic-bezier(.2,.7,.1,1); }
+.phone .screen { display: block; width: 100%; height: 100%; border-radius: 10px; overflow: hidden; background: #F3EBDD; }
+.phone .feed { display: grid; gap: 6px; padding: 10px 8px; transition: transform 2.6s cubic-bezier(.45,0,.2,1); }
+.feed b { display: block; height: 7px; background: #3A3430; border-radius: 1px; }
+.feed b.s { width: 60%; height: 4px; background: #9C8E7E; }
+.feed i { display: block; aspect-ratio: 4 / 3; background: #B8472E; border-radius: 2px; }
+.feed i.alt { background: #D9C6AE; }
+.proj:hover .phone, .proj:focus-visible .phone { transform: translateY(-4px) rotate(-1.5deg); }
+.proj:hover .feed, .proj:focus-visible .feed { transform: translateY(-58%); }
+/* Skyway: browser window, site scrolls on hover */
+.browser { position: relative; width: 76%; aspect-ratio: 4 / 3; border-radius: 6px; background: #fff; overflow: hidden; box-shadow: 0 1px 2px rgb(0 0 0 / .08), 0 10px 26px -14px rgb(0 0 0 / .35); transition: transform .6s cubic-bezier(.2,.7,.1,1); }
+.browser .chrome { display: block; height: 9%; background: #EDEDE8; border-bottom: 1px solid #DDDDD5; }
+.browser .viewport { display: block; height: 91%; overflow: hidden; }
+.browser .site { display: grid; transition: transform 2.8s cubic-bezier(.45,0,.2,1); }
+.site .hero { display: block; aspect-ratio: 16 / 10; background: #3E8A62; }
+.site .band { display: block; aspect-ratio: 16 / 6; background: #F7E3B0; }
+.site .row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; padding: 6px; background: #fff; }
+.site .row span { aspect-ratio: 1; background: #F2C14E; border-radius: 3px; }
+.site .row span:nth-child(2) { background: #2F6E4F; }
+.proj:hover .browser, .proj:focus-visible .browser { transform: scale(1.03); }
+.proj:hover .site, .proj:focus-visible .site { transform: translateY(-62%); }
+/* Alai: slides fan out */
+.proj .card { position: absolute; width: 64%; aspect-ratio: 4 / 3; border-radius: 4px; transition: transform .55s cubic-bezier(.2,.7,.1,1), opacity .4s; box-shadow: 0 1px 2px rgb(0 0 0 / .08), 0 8px 24px -12px rgb(0 0 0 / .25); overflow: hidden; }
+.proj .card::before { content: ""; position: absolute; inset: 0 0 auto; height: 10%; background: rgb(255 255 255 / .35); }
+.proj .card::after { content: ""; position: absolute; left: 12%; right: 30%; top: 30%; height: 10%; background: rgb(255 255 255 / .55); border-radius: 2px; box-shadow: 0 22px 0 -4px rgb(255 255 255 / .3), 0 40px 0 -4px rgb(255 255 255 / .3); }
+.proj .c1, .proj .c2, .proj .c3 { opacity: 0; }
+.proj:hover .c1, .proj:focus-visible .c1 { opacity: 1; transform: translate(-34%, -16%) rotate(-5deg) scale(.86); }
+.proj:hover .c2, .proj:focus-visible .c2 { opacity: 1; transform: translate(36%, -20%) rotate(4deg) scale(.82); }
+.proj:hover .c3, .proj:focus-visible .c3 { opacity: 1; transform: translate(4%, 30%) rotate(-1.5deg) scale(.8); }
+.proj:hover .c0, .proj:focus-visible .c0 { transform: scale(1.03); }
+.proj .c0 { z-index: 3; }
+.cursor { position: absolute; left: 0; top: 0; pointer-events: none; z-index: 10; font: 500 13px var(--body); background: var(--bg); color: var(--fg); border: 1px solid var(--line); padding: 4px 10px; border-radius: 999px; white-space: nowrap; opacity: 0; transition: opacity .2s; }
+.cursor i { font-style: normal; color: var(--muted); font-weight: 400; margin-left: 6px; }
+.demo-note { padding: 12px 14px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+
+.wheel-demo { display: flex; gap: 24px; align-items: center; padding: 20px; border: 1px solid var(--line); background: var(--surface); }
+.wheel { width: 84px; height: 84px; flex: none; }
+.wheel text { font: 600 11px var(--mono); letter-spacing: .2em; fill: var(--fg); }
+.wheel-demo p { font-size: 14px; color: var(--muted); }
+
+pre.file { margin: 0; overflow-x: auto; background: var(--surface); border: 1px solid var(--line); padding: 18px 20px; font: 400 13px/1.65 var(--mono); }
+pre.file .k { color: var(--accent); }
+pre.file .c { color: var(--muted); }
+
+.options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.opt { border: 1px solid var(--line); padding: 18px; display: grid; gap: 8px; align-content: start; }
+.opt.pick { border-color: var(--accent); }
+.opt .pill { justify-self: start; font: 500 11px var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--accent); }
+.opt p { font-size: 14px; color: var(--muted); }
+
+ol.steps { margin: 0; padding: 0; list-style: none; counter-reset: s; display: grid; gap: 14px; max-width: 68ch; }
+ol.steps li { counter-increment: s; display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 8px; }
+ol.steps li::before { content: counter(s); font: 400 22px/1.2 var(--display); color: var(--accent); }
+
+.questions { display: grid; gap: 10px; max-width: 68ch; }
+.questions p { padding: 12px 16px; background: var(--surface); border-left: 2px solid var(--accent); font-size: 15px; }
+
+.reveal-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; padding: 28px 24px; }
+.reveal-row span { aspect-ratio: 4 / 3; border-radius: 10px; }
+.reveal-row.play span { animation: focusin .7s cubic-bezier(.2,.7,.1,1) both; }
+.reveal-row.play span:nth-child(2) { animation-delay: .12s; }
+.reveal-row.play span:nth-child(3) { animation-delay: .24s; }
+@keyframes focusin { from { filter: blur(7px); transform: scale(1.012); opacity: 0; } to { filter: blur(0); transform: none; opacity: 1; } }
+
+/* soft top edge: three stacked backdrop blurs with offset masks, strongest at the edge */
+.edge { position: fixed; inset: 0 0 auto; height: calc(80px + env(safe-area-inset-top, 0px)); pointer-events: none; z-index: 20; }
+.edge span { position: absolute; inset: 0; }
+.edge span:nth-child(1) { backdrop-filter: blur(1.5px); -webkit-backdrop-filter: blur(1.5px); mask: linear-gradient(to top, transparent 0%, #000 25%, #000 50%, transparent 75%); -webkit-mask: linear-gradient(to top, transparent 0%, #000 25%, #000 50%, transparent 75%); }
+.edge span:nth-child(2) { backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); mask: linear-gradient(to top, transparent 25%, #000 50%, #000 75%, transparent 100%); -webkit-mask: linear-gradient(to top, transparent 25%, #000 50%, #000 75%, transparent 100%); }
+.edge span:nth-child(3) { backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); mask: linear-gradient(to top, transparent 50%, #000 75%, #000 100%); -webkit-mask: linear-gradient(to top, transparent 50%, #000 75%, #000 100%); }
+
+.refs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; }
+.ref { display: grid; gap: 12px; align-content: start; padding-top: 16px; border-top: 1px solid var(--fg); }
+.ref p { font-size: 15px; }
+.ref ul.plain { font-size: 15px; gap: 8px; }
+.pill { justify-self: start; font: 500 11px var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--accent); }
+.navmock { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px; padding: 22px 24px; background: var(--bg); }
+.navmock div { display: grid; grid-template-columns: 22px minmax(0, 1fr); column-gap: 8px; align-items: start; }
+.navmock svg { width: 22px; height: 22px; fill: none; stroke: var(--fg); stroke-width: 1; grid-row: span 2; }
+.navmock b { font: 400 17px/1.1 var(--body); }
+.navmock small { font: 400 10px/1.35 var(--body); color: var(--muted); }
+.voice { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); max-width: 68ch; }
+.voice p { background: var(--bg); padding: 12px 16px; font-size: 15px; display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 12px; max-width: none; }
+.voice span { font: 400 11px/1.9 var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+
+.stylespec { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.stylespec div { background: var(--bg); padding: 12px 16px; font-size: 15px; display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 12px; }
+.stylespec span { font: 400 11px/1.9 var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.scenes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.scene { border: 1px solid var(--line); padding: 16px; display: grid; gap: 8px; align-content: start; }
+.scene .where { font: 400 11px var(--mono); color: var(--muted); letter-spacing: .04em; }
+.scene .cap { font: italic 400 17px/1.35 var(--display); }
+.scene .prompt { font-size: 13px; color: var(--muted); line-height: 1.5; }
+.scene .sound { justify-self: start; }
+.prefix { border: 1px solid var(--fg); padding: 16px; display: grid; gap: 10px; }
+.prefix-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.prefix p { font-size: 14px; max-width: none; }
+
+.wheelht { display: block; width: 100%; height: 340px; background: var(--bg); cursor: crosshair; touch-action: pan-y; }
+.ideas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.ideas article { border: 1px solid var(--line); padding: 16px; display: grid; gap: 8px; grid-template-rows: auto auto 1fr auto; }
+.ideas p { font-size: 14px; color: var(--muted); }
+.ideas .where { font: 400 11px var(--mono); color: var(--muted); letter-spacing: .04em; }
+.ideas .effort { justify-self: start; font: 500 11px var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--accent); }
+
+/* project sheet: 3x3 grid, dashed hairlines, dots at the inner crossings */
+.sheet { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); background: var(--bg); overflow: hidden; }
+.sheet .cell { aspect-ratio: 4 / 3; max-width: 100%; border-right: 1px dashed var(--line); border-bottom: 1px dashed var(--line); position: relative; overflow: hidden; display: grid; padding: 12px; transition: transform .55s cubic-bezier(.65,0,.2,1), opacity .4s; }
+.sheet .cell:nth-child(3n) { border-right: 0; }
+.sheet .cell:nth-child(n+7) { border-bottom: 0; }
+.sheet.out .cell { transform: translateX(-40%); opacity: 0; }
+.sheet.pre .cell { transform: translateX(40%); opacity: 0; transition: none; }
+.sheet .cross { position: absolute; width: 7px; height: 7px; margin: -3px 0 0 -3px; border-radius: 50%; background: var(--sheet); z-index: 2; transition: background .4s; }
+.sheet .lab { align-self: end; font: 400 10px/1.5 var(--mono); color: var(--muted); letter-spacing: .06em; text-transform: uppercase; }
+.sheet .lab.top { align-self: start; }
+.sheet .name { background: var(--sheet); color: #fff; align-content: end; }
+.sheet .name b { font: 500 clamp(22px, 3.4vw, 38px)/.95 var(--display); letter-spacing: -.01em; }
+.sheet .name span { font: 400 10px var(--mono); letter-spacing: .06em; text-transform: uppercase; opacity: .8; margin-top: 6px; }
+.sheet .dots { background: radial-gradient(circle, var(--sheet) 36%, transparent 40%) 0 0 / 6px 6px; mask: linear-gradient(var(--dir, 135deg), #000, transparent 85%); -webkit-mask: linear-gradient(var(--dir, 135deg), #000, transparent 85%); transition: filter .4s; }
+.sheet .obj { place-items: center; perspective: 600px; }
+.sheet .obj i { width: 62%; aspect-ratio: 4 / 3; border-radius: 4px; background: var(--sheet); box-shadow: 0 14px 30px -16px rgb(0 0 0 / .5); display: block; position: relative; animation: turn 1.1s cubic-bezier(.2,.7,.1,1) both; }
+.sheet .obj i::after { content: ""; position: absolute; left: 12%; right: 34%; top: 26%; height: 12%; background: rgb(255 255 255 / .7); border-radius: 2px; box-shadow: 0 26px 0 -3px rgb(255 255 255 / .35), 0 48px 0 -3px rgb(255 255 255 / .35); }
+.sheet .obj.phone-o i { width: 30%; aspect-ratio: 9 / 18; border-radius: 10px; }
+.sheet .obj.web-o i { width: 70%; aspect-ratio: 16 / 10; border-top: 8px solid rgb(255 255 255 / .5); }
+@keyframes turn { from { transform: rotateY(-55deg) scale(.92); } to { transform: none; } }
+
+footer { padding-top: 32px; font: 400 12px var(--mono); color: var(--muted); }
+
+@media (max-width: 760px) {
+  section { grid-template-columns: minmax(0, 1fr); gap: 12px; padding-block: 40px; }
+  .facts, .options { grid-template-columns: minmax(0, 1fr); }
+  .principles { grid-template-columns: minmax(0, 1fr); }
+  .concept { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+  .stage { grid-template-columns: minmax(0, 1fr); padding: 28px 20px 44px; gap: 40px; cursor: auto; }
+  .reveal-row { padding: 20px 16px; gap: 8px; }
+  .refs { grid-template-columns: minmax(0, 1fr); }
+  .navmock { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 18px 16px; }
+  .voice p, .stylespec div { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  .scenes, .ideas { grid-template-columns: minmax(0, 1fr); }
+  .sheet .cell { padding: 6px; }
+  .sheet .lab { font-size: 8px; }
+  .wheelht { height: 280px; }
+  .proj { aspect-ratio: 16 / 9; }
+  .cursor { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .proj .card { transition: opacity .2s; }
+  .proj:hover .card, .proj:focus-visible .card { transform: none !important; }
+  .feed, .site, .phone, .browser { transition: none !important; transform: none !important; }
+  .sheet .cell { transition: opacity .2s; transform: none !important; }
+  .sheet .obj i { animation: none; }
+  .reveal-row.play span { animation: none; }
+  .proj:hover .c1, .proj:hover .c2, .proj:hover .c3 { opacity: 0; }
+}
+</style>
+
+<div class="edge" aria-hidden="true"><span></span><span></span><span></span></div>
+<div class="wrap">
+  <header class="top">
+    <div class="meta"><span>Research brief</span><span>Chariot website rethink</span><span>30 Oct 2026</span><span>Prepared by Samridhi</span></div>
+    <h1>Let the work do the <em>talking</em>, quietly.</h1>
+    <p class="lede">What the current withchariot.com says about us, what dmcg.co actually does under the hood, and a proposal for a fully coded site where adding a project takes an afternoon, not a week.</p>
+  </header>
+
+  <section>
+    <div class="label">01 · Today</div>
+    <div class="body">
+      <h2>The current site undersells the work, and the numbers show it</h2>
+      <div class="facts">
+        <div class="fact"><b>3 of 11</b><span>projects on the homepage have a case study on our own site. Six link out to Instagram posts, two to the client's live site.</span></div>
+        <div class="fact"><b>~6,100px</b><span>of homepage, almost all of it one long vertical list of large project cards on dark ground.</span></div>
+        <div class="fact"><b>1 paragraph</b><span>of philosophy ("we ask the why to every what"). The team is six LinkedIn icons. No faces, no roles.</span></div>
+      </div>
+      <ul class="plain">
+        <li>The Instagram links are the clearest sign that full case studies are too heavy to make. The format has to get lighter, or the gap will keep growing.</li>
+        <li>The philosophy copy is genuinely good. It just sits between the project list and the footer where nobody is reading anymore.</li>
+        <li>Footer still reads "© Urchin Design". Small, but it is the kind of detail clients notice.</li>
+        <li>Built on Framer with Apercu and Alverata. Keep the type family conversation open, but the move to code removes the Framer ceiling on interaction.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <div class="label">02 · Teardown</div>
+    <div class="body">
+      <h2>What dmcg.co is actually doing</h2>
+      <p>It reads as "minimal" on a first pass. Clicking around, most of the craft is in behaviour, and most of that behaviour exists to show more work with less writing.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Part</th><th>What happens</th><th>Why it works</th></tr></thead>
+          <tbody>
+            <tr><td>Frame</td><td>Four fixed corners: About · Contact, the studio name centered, Projects · Catalog, a sound toggle. "Brand &amp; software design" and "Made in New York" pinned bottom.</td><td>The chrome never moves, so the work is the only thing that changes on screen.</td></tr>
+            <tr><td>Home</td><td>One project at a time, centered on white, in a vertical scroll tray. No headline, no intro paragraph.</td><td>The first thing you see is the work itself.</td></tr>
+            <tr><td>Hover</td><td>Every project has its own hover. Each card is a still poster plus a short square video (1080×1080 WebM) that loads and plays once on hover. Infinite Machine's scooter breaks apart into an exploded stack (2.6s). Archiv plays a phone screen recording. Tolan scrolls its website in a browser window. A pill follows the cursor with the name.</td><td>The uniqueness is made in the video, not in code. One hover component serves every project, and each clip is cut to fit the work: an object, an app or a site.</td></tr>
+            <tr><td>Catalog</td><td>106 individual works split into Logo (24), Digital (60), Physical (22). Each links back to its project.</td><td>Decouples showing work from writing about it. A single good screen can go live without a case study.</td></tr>
+            <tr><td>Project page</td><td>Four to six short paragraphs between large rounded media panels. The write-up never sits beside an image, only between them.</td><td>The write-up is short enough to actually get written, and short enough to actually get read.</td></tr>
+            <tr><td>Project dock</td><td>A frosted pill at the top (25px backdrop blur) holding a tiny cut-out icon for every project: the scooter, a phone, the Tolan logo, a ring. A close button sits beside it. Content scrolls underneath it.</td><td>Navigation made of the work itself. Each icon is a small asset, and together they read as a shelf of objects.</td></tr>
+            <tr><td>Scroll reveal</td><td>Each media panel starts at 7px blur, 101.2% scale and zero opacity, and settles to sharp as it enters the screen. It happens once, not scrubbed to the scroll.</td><td>Almost invisible on its own. It makes the page feel like it is focusing on each image.</td></tr>
+            <tr><td>Soft edges</td><td>The top and bottom 80px of the screen blur whatever scrolls under them. Three stacked layers at 1.5px, 5px and 14px blur, each masked by an offset gradient, so the blur gets stronger towards the edge.</td><td>Content dissolves into the edge instead of being cut off by a header bar. This page uses the same technique at the top.</td></tr>
+            <tr><td>About</td><td>Opens as a blurred overlay on top of the work. Covers approach, how they use AI and their own tools, engagement types with starting prices, and the founder's story.</td><td>The studio's thinking is one click from the work, never a separate destination.</td></tr>
+            <tr><td>Stack</td><td>Next.js, Sanity as headless CMS, media on Vercel Blob, video as WebM.</td><td>A coded front end with a content layer behind it. Same split we need.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="label">03 · Principles</div>
+    <div class="body">
+      <h2>What we take from it, without copying it</h2>
+      <div class="principles">
+        <div class="principle"><h3>The work is the hero</h3><p>No tagline above the fold competing with the projects. The studio's voice shows up in how things move and in the Studio page.</p></div>
+        <div class="principle"><h3>Reward attention, don't demand it</h3><p>Every interaction should be missable on a first scroll. If someone notices it in a meeting and points it out, it's working.</p></div>
+        <div class="principle"><h3>Every project moves its own way</h3><p>Each project gets a hover made for it: a deck assembling, an app scrolling, a logo drawing itself. The code stays one component and the clip does the talking.</p></div>
+        <div class="principle"><h3>Pieces before case studies</h3><p>Any project can go live as a few strong pieces. A write-up is added when we have one, not required to publish.</p></div>
+        <div class="principle"><h3>Thinking sits next to the work</h3><p>Philosophy, team and process move out of Careers into a Studio page that is reachable from anywhere.</p></div>
+        <div class="principle"><h3>Everything moves a little</h3><p>Images focus in, edges soften, the dock floats, the mark rolls. Each motion is small and shares one set of timings, so together they feel like a single system.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="label">04 · Structure</div>
+    <div class="body">
+      <h2>Proposed pages</h2>
+      <div class="sitemap">
+        <div class="page"><span class="path">/</span><h3>Projects</h3><p>One project in focus at a time, cycling on scroll. Hover reveals pieces.</p></div>
+        <div class="page new"><span class="path">/index</span><h3>Index</h3><p>Every piece we've made, filterable by Product, Web, Brand, Visual. New.</p></div>
+        <div class="page"><span class="path">/work/[slug]</span><h3>Project</h3><p>Short write-up in a fixed three-part shape, plus media. Dock to jump between projects.</p></div>
+        <div class="page new"><span class="path">/studio</span><h3>Studio</h3><p>Philosophy, how we work, the team with faces and roles. Opens as an overlay. New.</p></div>
+        <div class="page"><span class="path">/careers</span><h3>Careers</h3><p>Open roles only. Culture content moves to Studio and gets linked from here.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="label">05 · Interaction</div>
+    <div class="body">
+      <h2>Concepts to prototype</h2>
+      <div class="demo" id="demo">
+        <div class="demo-bar"><span>Sketch: one hover per project + cursor label</span><button class="sound" id="sound" type="button" aria-pressed="false">Sound off</button></div>
+        <div class="stage" id="stage">
+          <a class="proj" href="#demo" data-name="Alai" data-sub="Product" style="--h:262">
+            <span class="card c1" style="background:#8E7AE6"></span><span class="card c2" style="background:#C9BFF5"></span><span class="card c3" style="background:#5B48B8"></span><span class="card c0" style="background:#7360D8"></span>
+            <span class="kind">slides deal out</span>
+          </a>
+          <a class="proj" href="#demo" data-name="The Ken" data-sub="Product, Visual">
+            <span class="phone"><span class="screen"><span class="feed"><b></b><b class="s"></b><i></i><b></b><b class="s"></b><b class="s"></b><i class="alt"></i><b></b><b class="s"></b><i></i><b></b><b class="s"></b><i class="alt"></i><b></b><b class="s"></b></span></span></span>
+            <span class="kind">app scrolls</span>
+          </a>
+          <a class="proj" href="#demo" data-name="Skyway" data-sub="Web">
+            <span class="browser"><span class="chrome"></span><span class="viewport"><span class="site"><span class="hero"></span><span class="row"><span></span><span></span><span></span></span><span class="band"></span><span class="row"><span></span><span></span><span></span></span><span class="hero"></span></span></span></span>
+            <span class="kind">site scrolls</span>
+          </a>
+          <span class="cursor" id="cursor" aria-hidden="true"></span>
+        </div>
+        <p class="demo-note">Hover or tab to each project. Each one moves differently. On the real site these would be short video clips of the actual work, and the blocks here stand in for them. Turn sound on to hear the hover tick.</p>
+      </div>
+
+      <div class="concepts">
+        <div class="concept"><div><h3>A hover per project</h3><span class="tag">Home · hover</span></div><div style="display:grid;gap:12px"><p>Shown above. Each project's hover is a 2–4 second clip made for that project, playing once over a still poster. The component is the same for every project; only the clip changes. On touch, the clip plays as the project scrolls into the centre.</p>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Kind of work</th><th>Hover recipe</th><th>Chariot examples</th></tr></thead>
+            <tbody>
+              <tr><td>Product / app</td><td>Phone or laptop frame, a real screen recording of the key flow.</td><td>Alai (deck assembling itself), Tortoise, Value Research</td></tr>
+              <tr><td>Publication</td><td>Article pages flicking past, or the paywall moment.</td><td>The Ken, Paper Planes</td></tr>
+              <tr><td>Website</td><td>Browser window, a slow scroll through the homepage.</td><td>Skyway, HealthFlex, Draconic, Doxel, Neon Fund</td></tr>
+              <tr><td>Brand</td><td>The mark constructing itself, then the system spreading out into applications.</td><td>Stoa</td></tr>
+            </tbody>
+          </table></div></div></div>
+        <div class="concept"><div><h3>Project cycling</h3><span class="tag">Home · scroll</span></div><p>One project fills the centre. Scroll or arrow keys advance to the next, with the old one shrinking into a strip of thumbnails at the edge so you always know where you are in the list.</p></div>
+        <div class="concept"><div><h3>Rolling mark</h3><span class="tag">Global · signature</span></div><div style="display:grid;gap:12px"><p>Our logo is already a ring of letters. Let it turn a few degrees with scroll speed and ease back to rest when you stop, like a wheel. It is the "let's get rolling" line given form, and only someone watching the logo will see it.</p>
+          <div class="wheel-demo"><svg class="wheel" id="wheel" viewBox="0 0 100 100" aria-hidden="true"><defs><path id="ring" d="M50,50 m-34,0 a34,34 0 1,1 68,0 a34,34 0 1,1 -68,0"/></defs><circle cx="50" cy="50" r="13" fill="var(--accent)"/><text><textPath href="#ring">CHARIOT · CHARIOT · CHARIOT ·</textPath></text></svg><p>Scroll this page. The ring turns with your scroll speed and settles when you stop. Placeholder art, not the real mark.</p></div></div></div>
+        <div class="concept"><div><h3>Project dock</h3><span class="tag">Project page</span></div><p>A frosted pill at the top of every project page with a tiny cut-out icon per project: Alai's slide, The Ken's masthead, Skyway's snack. The current one sits a little larger. It is the menu and a shelf of our work at once.</p></div>
+        <div class="concept"><div><h3>Cursor label</h3><span class="tag">Global · hover</span></div><p>A small pill follows the pointer over any project: name, then disciplines in a muted tone. Replaces the "See details" buttons on every card.</p></div>
+        <div class="concept"><div><h3>Studio overlay</h3><span class="tag">Studio</span></div><p>Studio opens over a blurred view of whatever project you were on, so you read about how we think with the work still in sight. Close returns you to the same project.</p></div>
+        <div class="concept"><div><h3>Team as people</h3><span class="tag">Studio</span></div><p>Portrait, name, role and one line on what each person cares about in design. Hover swaps the portrait for a piece of their own work from the Index.</p></div>
+      </div>
+
+      <h3>Project sheets, from the Smart Studios reel</h3>
+      <p>The reel (by thesmart.studios, crediting kinisi.tv as its inspiration) tells four stories on one 3×3 grid. Dashed hairlines divide the cells and small dots mark the crossings. The centre cell holds a turning 3D object: a chair, a croissant, a bicycle. Around it sit photos tinted in one colour, a solid colour cell with a bold title, and tiny labels like "TEXTURE STUDY / REC. 03". To change story, the grid slides across to the next one. Its last scene is a bicycle titled "Built to roll".</p>
+      <div class="demo">
+        <div class="demo-bar"><span>Sketch: a project sheet, filled from the project file</span><button class="sound" id="sheet-next" type="button">Next project</button></div>
+        <div class="sheet" id="sheet" aria-live="polite"></div>
+        <p class="demo-note">Nothing here is animated by hand. The grid, the slide and the labels are one template. Each project only supplies its colour, its object and the fields it already has.</p>
+      </div>
+      <div class="concepts">
+        <div class="concept"><div><h3>The sheet is a template</h3><span class="tag">Project page · header</span></div><p>Every project page opens on the same 3×3 sheet. The centre is the project's hover clip or 3D object. Neighbouring cells take its pieces, rendered in halftone in the project's colour, and develop into full colour on hover. One cell is solid colour with the name. Empty cells hold the spec in tiny mono labels.</p></div>
+        <div class="concept"><div><h3>Slide, don't cut</h3><span class="tag">Between projects</span></div><p>"Next project" slides the grid sideways, cell by cell with a slight stagger, and the next project's sheet takes its place. It feels like one continuous reel of our work, built from page transitions.</p></div>
+        <div class="concept"><div><h3>The grid stays visible</h3><span class="tag">Global · layout</span></div><p>The dashed hairlines and crossing dots become the site's visible layout grid, faint everywhere and clearer on project sheets. It's the same engineering-drawing feel as teenage engineering, without extra assets.</p></div>
+        <div class="concept"><div><h3>The same file makes the reel</h3><span class="tag">Instagram · launches</span></div><p>Because the sheet is code, we can record it straight to video. Each project launch gets an Instagram reel in this style for free, and the site and the socials look like one studio.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="label">06 · Updating</div>
+    <div class="body">
+      <h2>Adding a project without Framer</h2>
+      <p>The goal is that adding a project means dropping a folder into the repo. Each project is one text file plus its media. The Index is generated from the pieces listed in those files, so it never needs updating by hand.</p>
+<pre class="file"><span class="c"># content/projects/the-ken/index.md</span>
+<span class="k">title:</span> The Ken
+<span class="k">year:</span> 2023
+<span class="k">color:</span> "#B8472E"                <span class="c"># tints the project sheet and its halftone</span>
+<span class="k">disciplines:</span> [product, visual]
+<span class="k">summary:</span> Redesign of India's foremost business publication
+<span class="k">poster:</span> poster.avif             <span class="c"># still shown at rest</span>
+<span class="k">hover:</span> hover.webm              <span class="c"># 2–4s clip, unique to this project</span>
+<span class="k">icon:</span> icon.png                <span class="c"># tiny cut-out for the dock</span>
+<span class="k">pieces:</span>                       <span class="c"># these feed the hover stack and the Index</span>
+  - { file: home.avif,    kind: product }
+  - { file: paywall.avif, kind: product }
+  - { file: wordmark.svg, kind: brand }
+<span class="k">live:</span> https://the-ken.com
+<span class="k">featured:</span> true                <span class="c"># show on the homepage</span>
+---
+<span class="c">## The brief       2–3 sentences</span>
+<span class="c">## What we did     2–3 sentences</span>
+<span class="c">## What changed    2–3 sentences, a number if we have one</span></pre>
+      <p>That fixed three-part write-up is roughly 150–250 words. It's short enough to write in one sitting, and a project can go live with an empty body and just its pieces.</p>
+      <div class="options">
+        <div class="opt pick"><span class="pill">Recommended</span><h3>Files in the repo</h3><p>Astro content collections (or Next with a typed loader). Schema checks every project at build. Vercel preview link for review before merge. No extra service or bill.</p></div>
+        <div class="opt"><span class="pill">Later, if needed</span><h3>Git-backed editor</h3><p>Keystatic or TinaCMS on top of the same files, giving a form-based editor for anyone who doesn't want to touch the repo. Still no database.</p></div>
+        <div class="opt"><span class="pill">Probably overkill</span><h3>Headless CMS</h3><p>Sanity, as dmcg uses. Worth it with many non-technical editors. Adds a vendor, a second place where content lives, and cost.</p></div>
+      </div>
+      <ul class="plain">
+        <li><b>The reusable pattern.</b> An <code>/add-project</code> command for Claude Code: point it at a folder of exports and a few lines of notes. It compresses images to AVIF, converts video to WebM and MP4, drafts the three-part write-up, fills in the file and opens a pull request with a preview link.</li>
+        <li><b>Media.</b> Images can live in the repo and get optimised at build. Videos should go to object storage (Cloudflare R2 or Vercel Blob) so the repo stays small.</li>
+        <li><b>Asset kit per project.</b> A poster still, a 2–4 second square hover clip (1080×1080, follow the recipe for its kind of work), a transparent icon for the dock, 4–8 pieces and notes for the write-up. Designers export this at handoff, while the files are still open.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <div class="label">07 · Motion</div>
+    <div class="body">
+      <h2>Subtle motion everywhere, from one set of timings</h2>
+      <p>The whole site can move, as long as every movement is small and shares the same easing and durations. Values below are what dmcg uses, measured from the live site, as a starting point for ours.</p>
+      <div class="demo">
+        <div class="demo-bar"><span>Sketch: media focusing in as it enters</span><button class="sound" id="replay" type="button">Replay</button></div>
+        <div class="reveal-row" id="reveal"><span style="background:#7360D8"></span><span style="background:#D9C6AE"></span><span style="background:#3E8A62"></span></div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Moment</th><th>Behaviour</th><th>Values</th></tr></thead>
+          <tbody>
+            <tr><td>Media focus-in</td><td>Images and videos settle from soft to sharp as they enter, once.</td><td>blur 7px → 0, scale 1.012 → 1, opacity 0 → 1, 700ms</td></tr>
+            <tr><td>Soft edges</td><td>Content blurs as it reaches the top and bottom of the screen. Scroll this page to see it at the top.</td><td>80px band, 3 layers at 1.5 / 5 / 14px blur</td></tr>
+            <tr><td>Dock</td><td>Frosted pill that floats over content and expands from the current project to all of them.</td><td>25px backdrop blur, 680ms</td></tr>
+            <tr><td>Hover clip</td><td>Poster cross-fades to the project's clip, which plays once and holds on its last frame.</td><td>200ms fade, clip 2–4s</td></tr>
+            <tr><td>Cursor label</td><td>Follows the pointer with a slight lag and fades in over a project.</td><td>200ms fade</td></tr>
+            <tr><td>Opening a project</td><td>The thumbnail you clicked grows into the project's hero, so you never lose your place. Built with the browser's View Transitions.</td><td>600ms</td></tr>
+            <tr><td>Rolling mark</td><td>The logo turns with scroll speed and settles back.</td><td>Follows scroll, eases back to rest</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="muted">One easing curve for everything that settles (fast start, long soft landing) keeps it consistent. All of it switches off when the visitor's device asks for reduced motion.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="label">08 · Art direction</div>
+    <div class="body">
+      <h2>Classical, slightly from the future</h2>
+      <p>The work stays clean and quiet, as on dmcg. Chariot's personality lives around it: in the margins, the navigation and the small print. The look of that personality comes from old painting and bronze, made digital with halftone dots and real 3D objects.</p>
+
+      <div class="ref">
+        <span class="pill">Contra Labs, read closely</span>
+        <ul class="plain">
+          <li>A 19th-century style oil painting (an angel in satin) is cropped huge and bleeds off the edge of the screen. She is typing on a laptop.</li>
+          <li>The laptop isn't painted. It's a flat black halftone dot pattern. The anachronism is played completely straight, which is why it feels confident, not jokey.</li>
+          <li>Halftone fields dissolve the painting into the page, and one section into the next. That dot layer is what makes it feel digital and a little futuristic.</li>
+          <li>Section cards are tight crops of museum objects used as metaphors: gilded helmets for "Arena", brass scales for "Benchmarking".</li>
+          <li>Light editorial serif headlines, small sans for UI, cream and muted teal.</li>
+        </ul>
+        <p class="muted">It's Contra's look now, so we take the method, not the palette. Our subject is the chariot: Greek bronze instead of angels, cream and ink instead of teal, and our orange in the dots.</p>
+      </div>
+
+      <h3>Four materials</h3>
+      <div class="stylespec">
+        <div><span>Paint</span>Classical and late-medieval oil painting for every figure: satin, gilded armour, soft light, serious faces.</div>
+        <div><span>Bronze</span>Real 3D objects: a chariot wheel, the Charioteer of Delphi, a wax seal, a scroll. Turned and lit by the visitor's scroll and cursor.</div>
+        <div><span>Dots</span>Halftone in ink and orange is the digital layer. Modern tools in a painting are drawn as dots, 3D objects render as dots, and images develop from dots into full colour.</div>
+        <div><span>Parchment</span>Cream ground and a light editorial serif. Edges dissolve into dither gradients instead of ending at a line.</div>
+      </div>
+
+      <div class="demo">
+        <div class="demo-bar"><span>Sketch: a bronze wheel in halftone, one spoke per project</span></div>
+        <canvas class="wheelht" id="wheelht" role="img" aria-label="A chariot wheel drawn in halftone dots that turns as the page scrolls"></canvas>
+        <p class="demo-note">Scroll the page to turn the wheel. Move over it to tilt it, and the area under your cursor develops from dots into bronze. On the site this would be a real 3D model with a halftone shader. Eleven spokes for our eleven projects.</p>
+      </div>
+
+      <h3>Ideas to explore</h3>
+      <div class="ideas">
+        <article><span class="where">Home · hero</span><h3>The Charioteer of Delphi</h3><p>The 470 BC bronze charioteer, our namesake, as a 3D model in halftone. He turns slightly with scroll and looks toward the cursor. In his hand, instead of reins, a stylus. Public-domain museum scans of the statue exist.</p><span class="effort">Large</span></article>
+        <article><span class="where">Home · project navigation</span><h3>The wheel as navigator</h3><p>A bronze wheel with one spoke per featured project. Scrolling turns it, and the spoke at the top is the project in focus. It grows out of the rolling-mark idea (sketch above).</p><span class="effort">Medium</span></article>
+        <article><span class="where">Studio · philosophy</span><h3>A scroll that unrolls</h3><p>A 3D parchment scroll unrolls as you scroll the page, revealing how we think. It ends at a wax seal pressed with our mark, which is the "Let's get rolling" button. A faint parchment rustle if sound is on.</p><span class="effort">Medium</span></article>
+        <article><span class="where">Everywhere · media</span><h3>Images develop from dots</h3><p>Project images resolve from halftone into full colour as they enter the screen. Our version of dmcg's blur focus-in, in our own material.</p><span class="effort">Small</span></article>
+        <article><span class="where">Everywhere · sections</span><h3>Dissolve, don't divide</h3><p>Dither gradients between sections instead of rules or colour blocks. The client list fades into dots at the bottom, as Contra's does.</p><span class="effort">Small</span></article>
+        <article><span class="where">Services · disciplines</span><h3>Objects as metaphors</h3><p>Product design is an astrolabe (finding your way through complexity). Websites are movable type in a composing stick. Brand is a signet ring and its seal. Research is an armillary sphere. Careers is a laurel wreath.</p><span class="effort">Medium</span></article>
+        <article><span class="where">Studio · team</span><h3>Charioteers as busts</h3><p>Each team member as a marble bust, made from photos with a phone 3D-scan app. Halftone at rest. On hover the bust turns to face you and develops into the real photo.</p><span class="effort">Large</span></article>
+        <article><span class="where">Margins · 404</span><h3>Painted anachronisms</h3><p>Classical figures using design tools, played straight: a muse sketching with a stylus, an orator presenting a Figma file, Athena with a colour wheel for a shield. The six scenes below, in this style.</p><span class="effort">Medium</span></article>
+        <article><span class="where">Paintings · hover</span><h3>The machine is looking</h3><p>From the EVOLUTION poster: computer-vision boxes with confidence scores over an old painting. Hover a Charioteer scene and thin boxes lock onto the figures: "designer 0.98", "stakeholder 0.73", "scope 1.000".</p><span class="effort">Small</span></article>
+        <article><span class="where">Index · every piece</span><h3>Museum labels</h3><p>Every piece gets a plaque caption: Cat. no. 041 · Alai · 2025 · Product · Figma, shipped. The Index reads like a collection, and it costs nothing to make.</p><span class="effort">Small</span></article>
+      </div>
+
+      <h3>Building the 3D</h3>
+      <ul class="plain">
+        <li><b>One shader for everything.</b> Three.js (react-three-fiber if we use React) with a single halftone shader shared by every object, so the wheel, the statue and the scroll look like one family.</li>
+        <li><b>Where models come from.</b> Public-domain museum scans (Scan the World, Smithsonian Open Access, checking each licence), modelled in Blender, or image-to-3D tools like Meshy or Tripo for quick drafts.</li>
+        <li><b>Budget.</b> One 3D object per screen, glTF with Draco compression under about 2MB, loaded only when it's about to be seen.</li>
+        <li><b>Fallback.</b> Phones and reduced-motion settings get a pre-rendered video or still of the same object, in the same halftone.</li>
+        <li><b>Restraint.</b> Objects only move in response to the visitor. Nothing spins on its own.</li>
+      </ul>
+      <div class="refs">
+        <div class="ref">
+          <span class="pill">Weird Medieval Guys</span>
+          <p>Olivia Swarthout's account and book take real manuscript marginalia (the doodles monks drew around the text) and add deadpan modern captions. Figures are flat, expressionless and drawn without perspective, often hybrid creatures doing absurd things in the page border: a knight fighting a snail, a rabbit with a sword. Colour is ink, vermilion, lapis blue and gold on vellum. The joke depends on the art being real and carefully sourced.</p>
+          <h3>What we take</h3>
+          <ul class="plain">
+            <li>Keep the medieval look exactly (painted, flat, calm faces) and swap the swords, spears and helmets for design tools: pen-tool nibs, rulers, cursors, colour wheels. Scenes are below.</li>
+            <li>Our team is already called the Charioteers, so each person can appear as one of these figures.</li>
+            <li>These drolleries live in the margins: beside the dock, in the footer, at the end of a write-up, on the 404 page. Never on top of client work.</li>
+            <li>Each has a one-line deadpan caption that appears on hover.</li>
+          </ul>
+        </div>
+        <div class="ref">
+          <span class="pill">teenage engineering</span>
+          <p>The product is shot as a lone object on grey or black, and scroll drives it: the OP-1 field physically stretches longer as you move down the page ("the beauty of evolution"). The nav is a strip of hairline drawings, each with a lowercase label and three tiny sublinks under it. The copy argues with the reader ("hold on… this shadow is unrealistically long"). Specs are long lists of tiny uppercase text. Custom type throughout.</p>
+          <h3>What we take</h3>
+          <ul class="plain">
+            <li>One line weight for every icon and diagram. That's what makes their site feel like one instrument. The painted figures are the only exception.</li>
+            <li>Nav items with three tiny sublinks, so the whole site is visible at a glance (sketch below).</li>
+            <li>A small spec sheet on every project: year, team, weeks, platforms, disciplines. It's cheap to write and reads as confidence.</li>
+            <li>Humour in the microcopy only: footer, 404, empty states, sound toggle. The project write-ups stay straight.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="demo">
+        <div class="demo-bar"><span>Sketch: nav in the teenage engineering pattern</span></div>
+        <nav class="navmock" aria-label="Navigation sketch">
+          <div><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/></svg><b>chariot</b></div>
+          <div><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="6" width="16" height="12" rx="1"/><path d="M4 9h16"/></svg><b>work</b><small>product<br>web<br>brand</small></div>
+          <div><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h4v4H4zM10 5h4v4h-4zM16 5h4v4h-4zM4 11h4v4H4zM10 11h4v4h-4zM4 17h4v2H4z"/></svg><b>index</b><small>106 pieces<br>by kind<br>by year</small></div>
+          <div><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="9" r="3"/><circle cx="16" cy="9" r="3"/><path d="M3 20c0-3 2.5-5 5-5s5 2 5 5M11 20c0-3 2.5-5 5-5s5 2 5 5"/></svg><b>studio</b><small>how we think<br>charioteers<br>careers</small></div>
+          <div><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18v11H3z"/><path d="M3 7l9 6 9-6"/></svg><b>contact</b><small>email<br>instagram<br>linkedin</small></div>
+        </nav>
+      </div>
+      <h3>Voice in the small print</h3>
+      <div class="voice">
+        <p><span>404</span>This page fell off the chariot. The rest of the site is still attached.</p>
+        <p><span>Sound toggle</span>sound: off. your colleagues thank you.</p>
+        <p><span>Empty filter</span>Nothing here yet. We're probably still arguing about the kerning.</p>
+        <p><span>Drollery caption</span>A charioteer, mid-critique, explaining why the button is 2px too far left.</p>
+      </div>
+      <p class="muted">Examples to show the register, not final copy.</p>
+      <h3>The Charioteers, in the margins</h3>
+      <p>The medieval scenes keep their comedy: total chaos, everyone perfectly calm. They're now painted in the classical style above, and every design tool in them is drawn in halftone dots, the way Contra draws the laptop.</p>
+      <div class="stylespec">
+        <div><span>Paint</span>Late-medieval and Renaissance oil painting: satin drapery, gilded armour, soft directional light. Rich, not flat.</div>
+        <div><span>Tools</span>Pen-tool nibs, styluses, cursors, rulers and laptops as flat black or orange halftone. Never painted.</div>
+        <div><span>Faces</span>Calm and serious, whatever is happening. The humour comes from the situation, not the expressions.</div>
+        <div><span>Edges</span>Paintings never sit in a box. Their edges dissolve into a halftone dither that fades into the cream page.</div>
+        <div><span>Palette</span>Cream, bronze, ink and deep teal in the paint. Our orange only in the dots.</div>
+      </div>
+      <div class="scenes" id="scenes">
+        <article class="scene" data-prompt="In the centre, a calm young designer with curly blond hair holds a small tablet and stares serenely at the viewer, while five helmeted figures crowd around him: one plunges a giant gold vector pen-tool nib into the top of his head, one raises a long steel ruler like a sword, one jabs him with an oversized mouse-cursor arrow, two others grip enormous styluses. Everyone looks perfectly calm.">
+          <span class="where">Studio page · hero of the team section</span>
+          <h3>The Critique</h3>
+          <p class="cap">"Round seven of feedback. He remains calm."</p>
+        </article>
+        <article class="scene" data-prompt="A brave knight in armour on horseback charges with a lance shaped like a long gold stylus at an enormous snail. The snail's shell is a spiral loading wheel, and a small banner above it reads SCOPE. The knight's face is calm and slightly bored. Classic marginalia layout in the bottom margin of a page.">
+          <span class="where">404 page</span>
+          <h3>Knight versus Scope</h3>
+          <p class="cap">"Brave knight engages scope creep. The snail is winning."</p>
+        </article>
+        <article class="scene" data-prompt="Two monks in green and vermilion robes kneel on either side of two huge blackletter capital letters, an A and a V, nudging them apart with giant gold calipers and tweezers, measuring the gap with intense calm. A third monk watches holding a magnifying glass.">
+          <span class="where">Index page · empty filter state</span>
+          <h3>The Kerning</h3>
+          <p class="cap">"Two scribes, three hours, one pair of letters."</p>
+        </article>
+        <article class="scene" data-prompt="Three peasants in tunics strain with all their weight to push a single giant flat square, like a stone block, a tiny distance to the left. A king in a crown and rose-magenta robe stands beside them pointing calmly with a gold sceptre shaped like a mouse cursor.">
+          <span class="where">Footer</span>
+          <h3>Pixel Pushing</h3>
+          <p class="cap">"Move it 2px. No, the other left."</p>
+        </article>
+        <article class="scene" data-prompt="A robed scribe solemnly hands an enormously long unrolling scroll covered in tiny wireframe diagrams to a developer in chainmail and helmet, who receives it with a deeply suspicious sideways look. Behind them, other figures carry more scrolls.">
+          <span class="where">Project page · end of a write-up</span>
+          <h3>The Hand-off</h3>
+          <p class="cap">"The developer accepts the specification. He has questions."</p>
+        </article>
+        <article class="scene" data-prompt="A charioteer in a red and blue tunic rides a golden two-wheeled chariot pulled by two white horses at full gallop. The chariot's wheels are painted as colour wheels, and the charioteer holds a gold vector pen tool high like a whip, looking calmly at the viewer. A small banner floats above reading CHARIOT.">
+          <span class="where">Contact · next to "Let's get rolling"</span>
+          <h3>The Charioteer</h3>
+          <p class="cap">"Let's get rolling."</p>
+        </article>
+      </div>
+      <div class="prefix">
+        <div class="prefix-head"><h3>Style prompt (added to every scene when you copy it)</h3><button class="sound" type="button" id="copy-prefix">Copy</button></div>
+        <p id="prefix-text">Classical oil painting in the style of late-medieval and Renaissance masters, with satin drapery, gilded armour and soft directional light, calm and serious expressions. Every modern design tool in the scene (stylus, laptop, cursor, ruler, pen-tool nib) is rendered as a flat black halftone dot pattern like a screen print, while everything else stays painted. The painting is cropped and its edges dissolve into a halftone dither gradient fading into a warm cream background. Muted palette of cream, bronze, ink and deep teal, with small burnt-orange accents only in the halftone. Editorial, elegant, played completely straight. No 3D render look, no cartoon, no readable text except where named.</p>
+      </div>
+      <p class="muted">Use these to explore and agree on a direction. The final figures should be redrawn by hand, by us or an illustrator, so they look made rather than generated and stay consistent with each other. Square 1:1, and a version on plain vellum without the background text so it sits cleanly in a margin.</p>
+      <h3>Guardrails, so it never tips into theme-park medieval</h3>
+      <ul class="plain">
+        <li>Final art made from the agreed scenes by us or an illustrator, then halftoned in code so every piece shares the same dots.</li>
+        <li>The painted palette stays inside the figures. The site around them stays in our own colours, with our orange living in the dots.</li>
+        <li>Take Contra's method, not its look: no angels, no teal sections, no laptop-in-a-painting hero.</li>
+        <li>At most one figure per screen, under 160px tall, always in a margin.</li>
+        <li>If someone scrolls past without noticing any of it, the site should still feel finished.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <div class="label">09 · Sound</div>
+    <div class="body">
+      <h2>Rules for sound so it stays subtle</h2>
+      <ul class="plain">
+        <li>Off until the visitor turns it on with the corner toggle. Browsers block audio before an interaction anyway, and surprise sound in an office is the fastest way to get a tab closed.</li>
+        <li>Two sounds at most: a soft tick on hovering a project and a slightly lower one on opening it. Each under 80ms, generated with Web Audio so there's nothing to download.</li>
+        <li>No sound on scroll, and none on touch devices.</li>
+        <li>Remember the visitor's choice. Respect reduced-motion settings by also keeping sound off.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <div class="label">10 · Next</div>
+    <div class="body">
+      <h2>Prototype plan</h2>
+      <ol class="steps">
+        <li><p>Agree on the five pages and on Index as the main answer to heavy case studies.</p></li>
+        <li><p>Collect asset kits for 4 projects to prototype with: Alai, The Ken, Skyway and Stoa. One of each kind, so we test all four hover recipes.</p></li>
+        <li><p>Prototype the homepage in code: project cycling, hover clips, cursor label and rolling mark. Then one project page with the dock, focus-in media and soft edges. Review on a live preview link, not in screenshots.</p></li>
+        <li><p>Set up the project schema and the <code>/add-project</code> command, then add the remaining seven projects through it as a test of the workflow.</p></li>
+        <li><p>Write Studio copy from the existing philosophy paragraph and careers page, and shoot team portraits.</p></li>
+      </ol>
+      <h3 style="margin-top:12px">Open questions for the team</h3>
+      <div class="questions">
+        <p>Do we show engagement types and starting prices on Studio, as dmcg does? It filters leads, but it's a positioning call.</p>
+        <p>Stay dark, like today, or move to a light canvas so client work with its own colours reads truer?</p>
+        <p>Should every project get a page, or can some live only in the Index?</p>
+        <p>How far do the marginalia go: hidden easter eggs only, or the whole Studio team section drawn as Charioteers? And who draws them?</p>
+        <p>How much 3D can we build and keep up: one hero object (the wheel or the Delphi charioteer), or a family of objects across the site?</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>Sources: withchariot.com, dmcg.co and teenage.engineering, reviewed 30 Oct 2026. Weird Medieval Guys via <a href="https://www.smithsonianmag.com/smart-news/medieval-art-can-be-weird-now-theres-a-book-all-about-it-180983269/">Smithsonian</a>, <a href="https://news.artnet.com/news/weird-medieval-guys-olivia-swarthout-2391721">Artnet</a> and <a href="https://apollo-magazine.com/?p=1002736">Apollo</a> (the CNN piece is blocked in our region). Notes from the site rethink meeting.</footer>
+</div>
+
+<script>
+(() => {
+  const stage = document.getElementById('stage');
+  const cursor = document.getElementById('cursor');
+  const btn = document.getElementById('sound');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let soundOn = false, ctx = null;
+  try { soundOn = localStorage.getItem('chariot-sound') === 'on' && !reduce; } catch (e) {}
+  const paint = () => { btn.setAttribute('aria-pressed', soundOn); btn.textContent = soundOn ? 'Sound on' : 'Sound off'; };
+  paint();
+  btn.addEventListener('click', () => {
+    soundOn = !soundOn; paint();
+    try { localStorage.setItem('chariot-sound', soundOn ? 'on' : 'off'); } catch (e) {}
+    if (soundOn) tick(1400);
+  });
+  function tick(freq) {
+    if (!soundOn) return;
+    try {
+      ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
+      const o = ctx.createOscillator(), g = ctx.createGain(), t = ctx.currentTime;
+      o.type = 'sine'; o.frequency.setValueAtTime(freq, t); o.frequency.exponentialRampToValueAtTime(freq * .6, t + .05);
+      g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.05, t + .004); g.gain.exponentialRampToValueAtTime(.0001, t + .07);
+      o.connect(g).connect(ctx.destination); o.start(t); o.stop(t + .08);
+    } catch (e) {}
+  }
+  stage.querySelectorAll('.proj').forEach(p => {
+    p.addEventListener('mouseenter', () => {
+      cursor.innerHTML = p.dataset.name + '<i>' + p.dataset.sub + '</i>';
+      cursor.style.opacity = 1; tick(1500);
+    });
+    p.addEventListener('mouseleave', () => { cursor.style.opacity = 0; });
+    p.addEventListener('focus', () => tick(1500));
+    p.addEventListener('click', e => { e.preventDefault(); tick(900); });
+  });
+  stage.addEventListener('mousemove', e => {
+    const r = stage.getBoundingClientRect();
+    cursor.style.transform = `translate(${e.clientX - r.left + 14}px, ${e.clientY - r.top + 14}px)`;
+  });
+
+  // halftone wheel: 3D wheel drawn offscreen, sampled into dots; a lens under the cursor shows it in bronze
+  const cv = document.getElementById('wheelht');
+  if (cv) {
+    const g = cv.getContext('2d');
+    const off = document.createElement('canvas');
+    const og = off.getContext('2d', { willReadFrequently: true });
+    const SPOKES = 11, CELL = 7, LENS = 70;
+    let W = 0, H = 0, dpr = 1, angle = .3, vel = 0, tiltX = -.55, tiltY = .4, aimX = -.55, aimY = .4;
+    let mx = -999, my = -999, lastY = scrollY, visible = true, dirty = true;
+    const size = () => {
+      const r = cv.getBoundingClientRect();
+      dpr = Math.min(devicePixelRatio || 1, 2); W = r.width; H = r.height;
+      cv.width = W * dpr; cv.height = H * dpr; off.width = Math.ceil(W); off.height = Math.ceil(H); dirty = true;
+    };
+    const proj = (x, y, z) => {
+      let c = Math.cos(angle), s = Math.sin(angle); [x, y] = [x * c - y * s, x * s + y * c];
+      c = Math.cos(tiltX); s = Math.sin(tiltX); [y, z] = [y * c - z * s, y * s + z * c];
+      c = Math.cos(tiltY); s = Math.sin(tiltY); [x, z] = [x * c + z * s, -x * s + z * c];
+      const f = 3.2 / (3.2 + z), R = Math.min(W, H) * .4;
+      return [W / 2 + x * R * f, H / 2 + y * R * f, f];
+    };
+    const drawWheel = (c, p) => {
+      c.lineCap = 'round';
+      const ring = (r, z, w, col) => {
+        c.beginPath();
+        for (let i = 0; i <= 72; i++) { const a = i / 72 * Math.PI * 2, [px, py] = proj(Math.cos(a) * r, Math.sin(a) * r, z); i ? c.lineTo(px, py) : c.moveTo(px, py); }
+        c.lineWidth = w; c.strokeStyle = col; c.stroke();
+      };
+      ring(1, .08, 14, p.back); ring(.93, .08, 4, p.backIn);
+      for (let i = 0; i < SPOKES; i++) {
+        const a = i / SPOKES * Math.PI * 2, [x1, y1] = proj(Math.cos(a) * .16, Math.sin(a) * .16, 0), [x2, y2] = proj(Math.cos(a) * .93, Math.sin(a) * .93, 0);
+        c.lineWidth = 6; c.strokeStyle = p.spoke; c.beginPath(); c.moveTo(x1, y1); c.lineTo(x2, y2); c.stroke();
+      }
+      ring(1, -.08, 14, p.front); ring(.93, -.08, 4, p.frontIn);
+      const [ax1, ay1] = proj(0, 0, -.45), [ax2, ay2] = proj(0, 0, .45);
+      c.strokeStyle = p.hub; c.lineWidth = 10; c.beginPath(); c.moveTo(ax1, ay1); c.lineTo(ax2, ay2); c.stroke();
+      const [hx, hy, hf] = proj(0, 0, -.1);
+      c.fillStyle = p.hub; c.beginPath(); c.arc(hx, hy, Math.min(W, H) * .07 * hf, 0, Math.PI * 2); c.fill();
+    };
+    const render = () => {
+      const css = getComputedStyle(document.documentElement);
+      const ink = css.getPropertyValue('--fg').trim(), acc = css.getPropertyValue('--accent').trim(), bg = css.getPropertyValue('--bg').trim();
+      // offscreen: greyscale for depth, pure red marks the parts that print in our orange
+      og.fillStyle = '#fff'; og.fillRect(0, 0, off.width, off.height);
+      drawWheel(og, { back: '#666', backIn: '#888', spoke: '#3a3a3a', front: '#111', frontIn: '#2a2a2a', hub: '#ff0000' });
+      const px = og.getImageData(0, 0, off.width, off.height).data;
+      g.setTransform(dpr, 0, 0, dpr, 0, 0);
+      g.fillStyle = bg; g.fillRect(0, 0, W, H);
+      for (let y = CELL / 2; y < H; y += CELL) for (let x = CELL / 2; x < W; x += CELL) {
+        if (Math.hypot(x - mx, y - my) < LENS) continue;
+        const i = ((y | 0) * off.width + (x | 0)) * 4, r = px[i], gg = px[i + 1], b = px[i + 2];
+        const isAcc = r > 200 && gg < 90;
+        const dark = isAcc ? .7 : 1 - (r + gg + b) / 765;
+        if (dark < .04) continue;
+        g.fillStyle = isAcc ? acc : ink;
+        g.beginPath(); g.arc(x, y, Math.sqrt(dark) * CELL * .52, 0, Math.PI * 2); g.fill();
+      }
+      if (mx > -900) {
+        g.save(); g.beginPath(); g.arc(mx, my, LENS, 0, Math.PI * 2); g.clip();
+        g.fillStyle = bg; g.fill();
+        drawWheel(g, { back: '#6E4A22', backIn: '#8C6230', spoke: '#7D5528', front: '#A8743A', frontIn: '#C68E4C', hub: acc });
+        g.restore();
+        g.strokeStyle = ink; g.globalAlpha = .25; g.lineWidth = 1; g.beginPath(); g.arc(mx, my, LENS, 0, Math.PI * 2); g.stroke(); g.globalAlpha = 1;
+      }
+    };
+    size(); render();
+    addEventListener('resize', () => { size(); render(); });
+    // canvas colours come from the theme tokens, so redraw when the theme changes
+    matchMedia('(prefers-color-scheme: dark)').addEventListener('change', render);
+    new MutationObserver(render).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    new IntersectionObserver(e => { visible = e[0].isIntersecting; }).observe(cv);
+    addEventListener('scroll', () => { if (visible && !reduce) vel += (scrollY - lastY) * .0022; lastY = scrollY; }, { passive: true });
+    cv.addEventListener('pointermove', e => {
+      const r = cv.getBoundingClientRect(); mx = e.clientX - r.left; my = e.clientY - r.top;
+      if (!reduce) { aimY = .4 + (mx / W - .5) * .7; aimX = -.55 + (my / H - .5) * .5; }
+      dirty = true;
+    });
+    cv.addEventListener('pointerleave', () => { mx = my = -999; aimX = -.55; aimY = .4; dirty = true; });
+    (function tick() {
+      if (visible) {
+        vel *= .92; angle += vel;
+        const dx = aimX - tiltX, dy = aimY - tiltY;
+        tiltX += dx * .08; tiltY += dy * .08;
+        if (dirty || Math.abs(vel) > .0004 || Math.abs(dx) + Math.abs(dy) > .002) { render(); dirty = false; }
+      }
+      requestAnimationFrame(tick);
+    })();
+  }
+
+  // project sheet: one template, filled from each project's fields
+  const sheet = document.getElementById('sheet');
+  if (sheet) {
+    const projects = [
+      { name: 'Alai', color: '#6A57CF', kind: 'deck-o', spec: ['Product design', 'AI presentations', 'Cat. 001'], meta: ['Product Hunt', 'Product of the day', 'Frame 01'], tail: ['Deck study', 'Sample labels'] },
+      { name: 'The Ken', color: '#B8472E', kind: 'phone-o', spec: ['Product, visual', 'Publication', 'Cat. 005'], meta: ['Redesign', 'Business news', 'Frame 02'], tail: ['Reading study', '2023'] },
+      { name: 'Skyway', color: '#2F7A55', kind: 'web-o', spec: ['Website', 'Snacks', 'Cat. 003'], meta: ['Guilt-free', 'cravings', 'Frame 03'], tail: ['Built to roll', 'Sample labels'] }
+    ];
+    let idx = 0;
+    const fill = p => {
+      sheet.style.setProperty('--sheet', p.color);
+      sheet.innerHTML =
+        `<div class="cell"><span class="lab top">${p.spec.join('<br>')}</span></div>` +
+        `<div class="cell dots" style="--dir:200deg"></div>` +
+        `<div class="cell"><span class="lab">${p.meta.join('<br>')}</span></div>` +
+        `<div class="cell name"><b>${p.name}</b><span>${p.spec[0]}</span></div>` +
+        `<div class="cell obj ${p.kind}"><i></i></div>` +
+        `<div class="cell dots" style="--dir:270deg"></div>` +
+        `<div class="cell dots" style="--dir:45deg"></div>` +
+        `<div class="cell"><span class="lab">${p.tail.join('<br>')}</span></div>` +
+        `<div class="cell dots" style="--dir:315deg"></div>` +
+        ['33.33% 33.33%', '66.66% 33.33%', '33.33% 66.66%', '66.66% 66.66%'].map(xy => {
+          const [x, y] = xy.split(' ');
+          return `<span class="cross" style="left:${x};top:${y}"></span>`;
+        }).join('');
+      sheet.setAttribute('aria-label', `${p.name} project sheet`);
+    };
+    const stagger = () => sheet.querySelectorAll('.cell').forEach((c, i) => { c.style.transitionDelay = (i % 3) * 60 + Math.floor(i / 3) * 30 + 'ms'; });
+    fill(projects[0]); stagger();
+    document.getElementById('sheet-next').addEventListener('click', () => {
+      idx = (idx + 1) % projects.length;
+      if (reduce) { fill(projects[idx]); return; }
+      sheet.classList.add('out');
+      setTimeout(() => {
+        sheet.classList.remove('out'); sheet.classList.add('pre');
+        fill(projects[idx]); stagger();
+        void sheet.offsetWidth;
+        sheet.classList.remove('pre');
+      }, 620);
+    });
+  }
+
+  // scene prompts: show each scene's text and copy it with the shared style prompt
+  const prefix = document.getElementById('prefix-text').textContent.trim();
+  const copy = (text, b) => {
+    const done = () => { const t = b.textContent; b.textContent = 'Copied'; setTimeout(() => b.textContent = t, 1400); };
+    try { navigator.clipboard.writeText(text).then(done, () => {}); } catch (e) {}
+  };
+  document.querySelectorAll('.scene').forEach(s => {
+    const p = document.createElement('p'); p.className = 'prompt'; p.textContent = s.dataset.prompt;
+    const b = document.createElement('button'); b.className = 'sound'; b.type = 'button'; b.textContent = 'Copy full prompt';
+    b.addEventListener('click', () => copy(prefix + ' Scene: ' + s.dataset.prompt, b));
+    s.append(p, b);
+  });
+  const cp = document.getElementById('copy-prefix');
+  cp.addEventListener('click', () => copy(prefix, cp));
+
+  const reveal = document.getElementById('reveal');
+  document.getElementById('replay').addEventListener('click', () => {
+    reveal.classList.remove('play'); void reveal.offsetWidth; reveal.classList.add('play');
+  });
+
+  // rolling mark: rotation follows scroll velocity, eases back to rest
+  const wheel = document.getElementById('wheel');
+  if (!reduce && wheel) {
+    let lastY = scrollY, angle = 0, vel = 0;
+    addEventListener('scroll', () => { vel += (scrollY - lastY) * .12; lastY = scrollY; }, { passive: true });
+    (function loop() {
+      vel *= .9; angle += vel; angle *= .96;
+      wheel.style.transform = `rotate(${angle.toFixed(2)}deg)`;
+      requestAnimationFrame(loop);
+    })();
+  }
+})();
+</script>

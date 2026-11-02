@@ -1,0 +1,16 @@
+{
+  "name": "chariot-website",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "astro": "^5.18.2",
+    "lenis": "^1.1.20",
+    "three": "^0.170.0"
+  }
+}

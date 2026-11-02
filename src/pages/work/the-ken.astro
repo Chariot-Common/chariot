@@ -1,0 +1,369 @@
+---
+// The Ken, presented as an edition of The Ken: a masthead, a front page of results,
+// letters to the editor, and the business problems filed as stories.
+// Copy and media come from the current case study on withchariot.com.
+import Base from '../../layouts/Base.astro';
+import Dock from '../../components/Dock.astro';
+import { getCollection } from 'astro:content';
+
+const all = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const i = all.findIndex((p) => p.id === 'the-ken');
+const prev = all[(i - 1 + all.length) % all.length];
+const next = all[(i + 1) % all.length];
+
+const img = (id: string) => `https://framerusercontent.com/images/${id}`;
+const vid = (id: string) => `https://framerusercontent.com/assets/${id}`;
+
+const impact = [
+  { kicker: 'Engagement', head: 'Readers stay for more', body: 'Increased engagement, from better content discovery and richer interactions.' },
+  { kicker: 'Revenue', head: 'Higher average order values', body: 'Stemming from a radically rethought pricing page.' },
+  { kicker: 'Newsletters', head: 'Newsletters, finally found', body: 'More newsletter engagement, from giving that content visibility it never had.' },
+  { kicker: 'Velocity', head: 'Built to keep launching', body: 'A comprehensive design system that lets the team iterate and ship new launches quickly.' },
+];
+const phones = ['1HQ1lerZygd7gmJLGsj2Vg5qfsg.png', '5AVDZM3XBSBMBvU3diqcBAJXM.png', '4tUCyL6HQAnvYlLYvqfDVNtzOQ4.png', 'uL1KOf8FsBT1tiqOTGajkqJUZ4s.png', '2gl1fUfqWZbobUGxIWF5Hwplc.png', 'gXXbQuPUGgtuQ7E5hGICSHlNV0.png', 'wj3kGwvZtnBDcuSE9lZTaqlPkG0.png', 'corgpwUiJqGNhXSLRT4jVlFZKw.png', 'bdniKgIgGOvtJ5ymiOhUkCSmdN8.png', 'hfQ6Q7MMdOEJxs00xMWok2dxSUs.png'];
+const wide = ['Qz7jMCFx5sRAaMYKjk1nAdlRhv0.png', 'MF19HNqga0FPNzdkWrUWhAUo7SU.png', 'hUQAmV2BnIrKwaxB0rtHldl7E.png', 'hiprYf24GrW9eQfyW97KN6jpno.png', 'QpmKgwwLtFGtCiKi0sSIJYXCo.png'];
+const delights = ['XoNM3cOU6YNxjcWeB6FP1Dm2np4.mp4', 'pJNKNyq3AqupinY42Hkqcz6rrw.webm', '0GieY2PaGM4jSAa3GFp9Ira5M.webm', '77Op3NCn054lDWh44Apdv9rw5Lo.webm', '3uGHGydSE47o5m1jol3u4R64l0s.webm', 'hSzfgZCUbo0qE0Tj47WHCmxxIE.mp4'];
+// reader reactions, scattered like clippings: x/y offset and tilt before they settle
+const letters = [
+  { id: 'qSPsKqStdcqVsHj8BD9rWEQzZE.png', x: -18, y: 22, r: -9 },
+  { id: 'WkShKz7xgC92PEkohb5vBSZg3s.png', x: 14, y: 30, r: 7 },
+  { id: '9NyrIEkRVKFRLPTd4hABC20PNA.png', x: -10, y: 40, r: 5 },
+  { id: 'G1qgy4n96DBZ9aTIYPF7e6eyUg.png', x: 20, y: 18, r: -6 },
+  { id: 'GufBk3XhOE5U7nzGZQCfbwgW0.png', x: -22, y: 34, r: 8 },
+  { id: '1GqHq8khraY2moLGdLxL8J4xCI.png', x: 12, y: 44, r: -4 },
+  { id: 'O3iUF6lOCIn8uyIsUqNl7YNS5OE.png', x: -14, y: 26, r: 6 },
+  { id: 'M0e9uHWHxhta1L8dAYUk880IsE.png', x: 18, y: 38, r: -8 },
+];
+const stories = [
+  {
+    kicker: 'Pricing', head: 'Designing beyond comparison',
+    body: "Comparing features between tiers matters for functional products. For a premium product like The Ken, we reasoned that showing the value of subscribing would land better than a comparison table. It did.",
+    result: 'A meaningful uplift in average order value.', media: [img('EQr9DPPc5NnrY9sLKbVK6DO3vZQ.png')],
+  },
+  {
+    kicker: 'Discovery', head: 'We put the homepage at the end of the story',
+    body: "Analytics showed most readers land straight on a story, never seeing the carefully curated homepage. So the homepage now waits at the end of every story, with a system of units that suggests the next relevant read.",
+    result: 'More stories read per session.', media: [img('cZLYOKLnDYPS2WG0B7wqVHhXQ.png')],
+  },
+  {
+    kicker: 'Community', head: 'Readers who annotate',
+    body: "The Ken's subscribers are sharp, and they add their own layer of context to every story. We built commenting, highlighting and sharing that weave those interactions into the stories themselves.",
+    result: 'Deeper subscriber engagement.', media: [img('GNJrvb6YDa7JDLPorqGXNnuxnc.png')],
+  },
+  {
+    kicker: 'Membership', head: 'A membership, not a transaction',
+    body: 'Subscribing to The Ken is about belonging to a curious, discerning set of readers. So instead of a "payment successful" message, new subscribers receive a card that welcomes them as members.',
+    result: 'Subscribers who feel recognised.', media: [img('UjKL4ZGLBP2T2fWm4gVrDFJNt3E.png'), img('Vngrl8LtkWfmCjGXf3ZsHsR0A.png')],
+  },
+];
+const team = [
+  ['Aakash Rodrigues', 'Creative Director & Lead Designer'],
+  ['Harshita Jalan', 'UI/UX & Product Designer'],
+  ['Gauri Girish', 'Jr. UI/UX & Product Designer'],
+  ['Poorti Purohit', 'Jr. UI/UX & Product Designer'],
+];
+---
+<Base title="The Ken · Chariot" description="Product, UI/UX and visual redesign of India's foremost premium business publication." dock theme="ken">
+  <Dock slot="dock" current="the-ken" />
+
+  <!-- 1. Masthead: the headline gives way, the devices arrive from the sides -->
+  <section class="hero" data-progress="pin">
+    <div class="pin">
+      <div class="mast">
+        <span class="label">Case No. 05</span>
+        <span class="label mast-mid">The Ken × Chariot</span>
+        <span class="label">2023 · Bengaluru</span>
+      </div>
+      <h1 class="display h1">Redefining India's foremost premium business publication, from the ground up.</h1>
+      <div class="stage" aria-hidden="true">
+        <img class="desk" src={img('vLcTOl11vbS6m27zCToaMTRL4Bo.webp')} alt="" style="view-transition-name: sheet-poster" />
+        <img class="ph ph1" src={img('zs1W64Ba4HjDe6lcZSB0ByBcowc.webp')} alt="" />
+        <img class="ph ph2" src={img('h6fFKuRrPCX2gUSmP36g1Tlpl0.png')} alt="" />
+        <img class="ph ph3" src={img('qxHvg8K18nd45tynFS5EmOMUG38.png')} alt="" />
+      </div>
+      <p class="hint label">Scroll</p>
+    </div>
+  </section>
+
+  <!-- 2. Standfirst and byline -->
+  <section class="brief">
+    <p class="byline label">Filed by Chariot &amp; the Charioteers</p>
+    <p class="lede display">Since 2016, The Ken has grown into India's foremost premium business publication, and what it offers has grown with it. They asked us to reimagine the entire platform: premium, handcrafted and meticulously thought through.</p>
+    <dl class="facts">
+      <div><dt class="label">Client</dt><dd>The Ken</dd></div>
+      <div><dt class="label">Work</dt><dd>Visual language, experience design, subscription strategy, design system</dd></div>
+      <div><dt class="label">Platforms</dt><dd>Web, iOS, iPadOS, Android, email</dd></div>
+      <div><dt class="label">Duration</dt><dd>A redesign, then a year and a half of sprints</dd></div>
+    </dl>
+  </section>
+
+  <!-- 3. The results, set as a front page -->
+  <section class="front" data-paper>
+    <div class="rule"><span class="label">The results edition</span></div>
+    <div class="cols">
+      {impact.map((a) => (
+        <article data-reveal>
+          <span class="label">{a.kicker}</span>
+          <h2 class="display">{a.head}</h2>
+          <p>{a.body}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <!-- 4. Before and after -->
+  <section class="band">
+    <div class="band-head">
+      <span class="label">Before &amp; after</span>
+      <h2 class="display">Home, story and pricing, rebuilt.</h2>
+    </div>
+    <figure class="frame" data-reveal>
+      <video data-inview muted loop playsinline preload="none" src={vid('VF2sJJPgwAe3wpOWIXH65MrJ1Fo.webm')} aria-label="The Ken's home, story and pricing pages, before and after the redesign"></video>
+    </figure>
+  </section>
+
+  <!-- 5. An elastic homepage: two layouts from one system, swapping as you scroll -->
+  <section class="elastic" data-progress="pin">
+    <div class="pin split">
+      <div class="split-text">
+        <span class="label">A homepage that's always relevant</span>
+        <h2 class="display">An elastic homepage.</h2>
+        <p>The Ken isn't a typical publication, so it shouldn't have a static homepage. We designed a system that adapts every day, showing the most relevant, high-impact stories in layouts that balance predictability with a bit of whimsy. The team updates it through the day, so returning readers always find something new.</p>
+        <span class="label swap-note">Two layouts, one system</span>
+      </div>
+      <div class="split-media">
+        <img class="lay lay-a" src={img('QpmKgwwLtFGtCiKi0sSIJYXCo.png')} alt="The Ken homepage in one layout" />
+        <img class="lay lay-b" src={img('95ZdQMJ4gcSQcz7CenDtHCf0V7g.png')} alt="The Ken homepage in another layout from the same system" />
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Every platform: two rows of screens drift sideways in opposite directions -->
+  <section class="platforms" data-progress="pin">
+    <div class="pin rows">
+      <div class="rows-head">
+        <span class="label">Every touchpoint</span>
+        <h2 class="display">One Ken, across web, iOS, iPadOS, Android and email.</h2>
+      </div>
+      <div class="row row-a">{phones.map((id) => <img src={img(id)} alt="" loading="lazy" />)}</div>
+      <div class="row row-b">{wide.map((id) => <img src={img(id)} alt="" loading="lazy" />)}</div>
+    </div>
+  </section>
+
+  <!-- 7. Designed to delight -->
+  <section class="band delight">
+    <div class="band-head">
+      <span class="label">Designed to delight</span>
+      <h2 class="display">We take pride in sweating the small stuff.</h2>
+      <p>Custom micro-interactions add functional delight across the platform.</p>
+    </div>
+    <div class="vgrid">
+      {delights.map((id) => (
+        <figure data-reveal data-tick>
+          <video data-inview muted loop playsinline preload="none" src={vid(id)}></video>
+        </figure>
+      ))}
+    </div>
+  </section>
+
+  <!-- 8. Letters to the editor: reader reactions settle onto the page -->
+  <section class="letters" data-progress="through">
+    <div class="rule"><span class="label">Letters to the editor</span></div>
+    <p class="letters-dek display">What readers said when the new Ken arrived.</p>
+    <div class="clips">
+      {letters.map((l) => (
+        <img class="clip" src={img(l.id)} alt="A reader's post reacting to the redesign" loading="lazy" style={`--x:${l.x}vw;--y:${l.y}vh;--r:${l.r}deg`} />
+      ))}
+    </div>
+  </section>
+
+  <!-- 9. The business problems, filed as stories -->
+  <section class="stories">
+    <div class="rule"><span class="label">Solving business problems with design</span></div>
+    {stories.map((s, n) => (
+      <article class:list={['story', { flip: n % 2 === 1 }]} data-progress="enter" data-paper>
+        <div class="story-text">
+          <span class="label">Story {n + 1} of {stories.length} · {s.kicker}</span>
+          <h3 class="display">{s.head}</h3>
+          <p>{s.body}</p>
+          <p class="result"><span class="label">Result</span>{s.result}</p>
+        </div>
+        <figure class:list={['story-media', { pair: s.media.length > 1 }]}>
+          {s.media.map((m) => <img src={m} alt={`${s.kicker}: ${s.head}`} loading="lazy" />)}
+        </figure>
+      </article>
+    ))}
+  </section>
+
+  <!-- 10. Credits -->
+  <section class="credits">
+    <div>
+      <span class="label">The Charioteers on this</span>
+      <ul>{team.map(([name, role]) => <li><span class="display">{name}</span><span>{role}</span></li>)}</ul>
+    </div>
+    <div>
+      <span class="label">Read it</span>
+      <a class="read display" href="https://the-ken.com" target="_blank" rel="noopener" data-tick>the-ken.com ↗</a>
+    </div>
+  </section>
+
+  <nav class="pager" aria-label="More projects">
+    <a href={`/work/${prev.id}`} data-prev data-tick><span class="label">Previous</span><span class="display">{prev.data.title}</span></a>
+    <a href={`/work/${next.id}`} data-next data-tick><span class="label">Next</span><span class="display">{next.data.title}</span></a>
+  </nav>
+</Base>
+
+<style is:global>
+  /* The Ken brings its own newsprint palette; Chariot's frame adapts to it */
+  html.theme-ken {
+    --bg: #F4EDE3; --surface: #EADFD1; --ink: #1B1613; --muted: #6E6157;
+    --line: rgb(27 22 19 / .16); --accent: #E3392C; color-scheme: light;
+  }
+</style>
+
+<style>
+  .label { color: var(--muted); }
+  .rule { display: flex; align-items: center; gap: 16px; padding-block: 10px; border-top: 3px double var(--ink); border-bottom: 1px solid var(--ink); }
+  .rule .label { color: var(--ink); }
+
+  /* 1. masthead */
+  .hero { height: 250vh; }
+  .pin { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; }
+  .hero .pin { display: grid; grid-template-rows: auto auto minmax(0, 1fr); padding: 86px var(--gutter) 0; }
+  .mast { display: grid; grid-template-columns: 1fr auto 1fr; padding-block: 10px; border-top: 3px double var(--ink); border-bottom: 1px solid var(--ink); }
+  .mast-mid { color: var(--accent); }
+  .mast > :last-child { justify-self: end; }
+  .h1 {
+    --a: clamp(0, calc(var(--p, 0) * 2.2), 1);
+    margin: 4vh auto 0; max-width: 18ch; text-align: center; font-size: clamp(38px, 5.6vw, 92px); text-wrap: balance;
+    transform: translateY(calc(var(--a) * -10vh)) scale(calc(1 - var(--a) * .08)); opacity: calc(1 - var(--a) * 1.1);
+  }
+  .stage { position: relative; }
+  .desk {
+    --d: clamp(0, calc(var(--p, 0) * 1.7), 1);
+    position: absolute; left: 50%; bottom: 0; width: min(58vw, 940px, 112vh); border-radius: 12px 12px 0 0;
+    box-shadow: 0 -20px 60px -30px rgb(27 22 19 / .35);
+    transform: translate(-50%, calc((1 - var(--d)) * 18vh)) scale(calc(.74 + var(--d) * .26)); transform-origin: 50% 100%;
+  }
+  .ph {
+    --s: clamp(0, calc((var(--p, 0) - .22) * 2.1), 1);
+    position: absolute; width: clamp(110px, 13vw, 210px); border-radius: 18px; box-shadow: 0 30px 60px -28px rgb(27 22 19 / .45);
+  }
+  .ph1 { left: calc(50% - 44vw); bottom: 6vh; transform: translateX(calc((1 - var(--s)) * -50vw)) rotate(calc(-6deg + var(--s) * 4deg)); }
+  .ph2 { right: calc(50% - 44vw); bottom: 10vh; transform: translateX(calc((1 - var(--s)) * 50vw)) rotate(calc(6deg - var(--s) * 4deg)); }
+  .ph3 { right: calc(50% - 31vw); bottom: -2vh; width: clamp(90px, 10vw, 160px); transform: translateX(calc((1 - var(--s)) * 40vw)) translateY(calc((1 - var(--s)) * 10vh)); }
+  .hint { position: absolute; left: var(--gutter); bottom: 54px; opacity: calc(1 - var(--p, 0) * 4); }
+
+  /* 2. brief */
+  .brief { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: 4vw; padding: 16vh var(--gutter) 12vh; max-width: 1400px; margin: 0 auto; }
+  .byline { grid-column: 1 / -1; margin: 0; }
+  .lede { margin: 0; font-size: clamp(26px, 2.6vw, 40px); line-height: 1.2; letter-spacing: -.03em; }
+  .lede::first-letter { float: left; font-size: 3.3em; line-height: .82; padding: .06em .08em 0 0; color: var(--accent); }
+  .facts { margin: 0; display: grid; gap: 18px; align-content: start; border-left: 1px solid var(--line); padding-left: 24px; }
+  .facts dd { margin: 4px 0 0; }
+
+  /* 3. front page */
+  .front { padding: 0 var(--gutter) 16vh; max-width: 1400px; margin: 0 auto; }
+  .cols { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .cols article { padding: 22px 22px 0; border-right: 1px solid var(--line); display: grid; gap: 10px; align-content: start; }
+  .cols article:first-child { padding-left: 0; }
+  .cols article:last-child { border-right: 0; }
+  .cols h2 { margin: 0; font-size: clamp(24px, 2.2vw, 34px); }
+  .cols p { margin: 0; color: var(--muted); }
+  .cols article:nth-child(2) { transition-delay: 80ms; }
+  .cols article:nth-child(3) { transition-delay: 160ms; }
+  .cols article:nth-child(4) { transition-delay: 240ms; }
+
+  /* 4 & 7. dark bands */
+  .band { background: #1B1613; color: #F4EDE3; padding: 16vh var(--gutter); }
+  .band .label { color: #A99A8D; }
+  .band-head { max-width: 900px; margin: 0 auto 7vh; text-align: center; display: grid; gap: 14px; justify-items: center; }
+  .band-head h2 { margin: 0; font-size: clamp(32px, 4vw, 60px); }
+  .band-head p { margin: 0; color: #CDBFB2; }
+  .frame { margin: 0 auto; max-width: 1180px; border-radius: 18px; overflow: hidden; background: #2A231F; }
+  .frame video { width: 100%; aspect-ratio: 1170 / 850; object-fit: cover; }
+
+  /* 5. elastic homepage */
+  .elastic { height: 220vh; }
+  .split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); gap: 5vw; align-items: center; padding: 90px var(--gutter) 60px; max-width: 1500px; margin: 0 auto; }
+  .split-text { display: grid; gap: 16px; }
+  .split-text h2 { margin: 0; font-size: clamp(34px, 4vw, 64px); }
+  .split-text p { margin: 0; max-width: 46ch; }
+  .swap-note { color: var(--accent); }
+  .split-media { position: relative; aspect-ratio: 1170 / 726; border-radius: 14px; overflow: hidden; box-shadow: 0 40px 80px -40px rgb(27 22 19 / .45); }
+  .lay { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+  .lay-b { --w: clamp(0, calc((var(--p, 0) - .35) * 3.5), 1); clip-path: inset(0 0 calc((1 - var(--w)) * 100%) 0); }
+
+  /* 6. sideways rows */
+  .platforms { height: 320vh; }
+  .rows { display: grid; grid-template-rows: auto 1fr 1fr; gap: 3vh; padding: 92px 0 56px; }
+  .rows-head { padding: 0 var(--gutter); display: grid; gap: 10px; max-width: 900px; }
+  .rows-head h2 { margin: 0; font-size: clamp(30px, 3.6vw, 56px); }
+  .row { display: flex; gap: 18px; width: max-content; min-height: 0; }
+  .row img { height: 100%; width: auto; border-radius: 14px; box-shadow: 0 20px 40px -26px rgb(27 22 19 / .45); }
+  .row-a { transform: translateX(calc(4vw - var(--p, 0) * 70%)); }
+  .row-b { transform: translateX(calc(-55% + var(--p, 0) * 55%)); }
+
+  /* 7. delight videos */
+  .vgrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; max-width: 1300px; margin: 0 auto; }
+  .vgrid figure { margin: 0; border-radius: 16px; overflow: hidden; background: #2A231F; aspect-ratio: 4 / 3; }
+  .vgrid video { width: 100%; height: 100%; object-fit: cover; }
+
+  /* 8. letters to the editor */
+  .letters { padding: 18vh var(--gutter) 14vh; max-width: 1400px; margin: 0 auto; }
+  .letters-dek { margin: 32px 0 6vh; font-size: clamp(28px, 3vw, 46px); max-width: 20ch; }
+  .clips { columns: 4 240px; column-gap: 22px; }
+  .clip {
+    --q: clamp(0, calc(var(--p, 0) * 2.6 - .35), 1);
+    width: 100%; margin-bottom: 22px; break-inside: avoid; border-radius: 10px; background: #fff;
+    box-shadow: 0 12px 30px -18px rgb(27 22 19 / .4);
+    transform: translate(calc(var(--x) * (1 - var(--q))), calc(var(--y) * (1 - var(--q)))) rotate(calc(var(--r) * (1 - var(--q) * .75)));
+  }
+
+  /* 9. stories */
+  .stories { padding: 0 var(--gutter) 12vh; max-width: 1400px; margin: 0 auto; }
+  .story { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr); gap: 5vw; align-items: center; padding-block: 12vh; border-bottom: 1px solid var(--line); }
+  .story.flip .story-text { order: 2; }
+  .story-text { display: grid; gap: 14px; }
+  .story-text h3 { margin: 0; font-size: clamp(30px, 3.2vw, 50px); }
+  .story-text p { margin: 0; max-width: 48ch; }
+  .result { display: grid; gap: 4px; padding-top: 14px; border-top: 1px solid var(--line); font-family: var(--serif); font-weight: 600; font-size: 20px; letter-spacing: -.02em; }
+  .result .label { color: var(--accent); font-family: var(--sans); }
+  .story-media {
+    --side: 1; --e: var(--p, 0);
+    margin: 0; display: flex; gap: 16px; justify-content: center;
+    transform: translateX(calc((1 - var(--e)) * 14vw * var(--side))); opacity: calc(.15 + var(--e) * .85);
+  }
+  .story.flip .story-media { --side: -1; }
+  .story-media img { border-radius: 16px; max-height: 70vh; width: auto; max-width: 100%; box-shadow: 0 30px 60px -36px rgb(27 22 19 / .45); }
+  .story-media.pair img { max-width: 46%; }
+
+  /* 10. credits and pager */
+  .credits { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 5vw; padding: 10vh var(--gutter); max-width: 1400px; margin: 0 auto; border-top: 3px double var(--ink); }
+  .credits ul { list-style: none; margin: 18px 0 0; padding: 0; display: grid; gap: 14px; }
+  .credits li { display: grid; gap: 2px; }
+  .credits li .display { font-size: 26px; }
+  .credits li span:last-child { color: var(--muted); }
+  .read { display: inline-block; margin-top: 18px; font-size: clamp(28px, 3vw, 44px); border-bottom: 2px solid var(--accent); }
+  .pager { display: grid; grid-template-columns: 1fr 1fr; padding: 4vh var(--gutter) 14vh; max-width: 1400px; margin: 0 auto; border-top: 1px solid var(--line); }
+  .pager a { display: grid; gap: 4px; padding-top: 18px; }
+  .pager a:last-child { text-align: right; }
+  .pager .display { font-size: clamp(30px, 3.4vw, 52px); }
+
+  @media (max-width: 860px) {
+    .mast { grid-template-columns: 1fr 1fr; } .mast-mid { display: none; }
+    .ph { width: 26vw; } .ph1 { left: 2vw; } .ph2 { right: 2vw; } .ph3 { display: none; }
+    .desk { width: 92vw; }
+    .brief, .split, .story, .credits { grid-template-columns: minmax(0, 1fr); }
+    .facts { border-left: 0; padding-left: 0; }
+    .cols { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 24px; }
+    .cols article { padding-left: 0; border-right: 0; }
+    .story.flip .story-text { order: 0; }
+    .vgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .elastic { height: 180vh; }
+    .split { align-content: center; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    [data-progress] { --p: 1 !important; }
+  }
+</style>

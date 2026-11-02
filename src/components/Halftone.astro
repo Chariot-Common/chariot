@@ -1,0 +1,43 @@
+---
+// Halftone in pure CSS, so it works on any image, cross-origin included:
+// a greyscale, softened image is screened against a dot gradient, then hard
+// contrast turns that into dots, inverted to light dots on black. The tint layer
+// colours the dots, and screen drops the black into the page. Hover develops the full-colour image.
+interface Props {
+  src: string;
+  alt: string;
+  tint?: string;
+  dot?: number;
+  position?: string;
+  eager?: boolean;
+  develop?: boolean;
+}
+const { src, alt, tint = 'var(--ink)', dot = 6, position = 'center', eager = false, develop = true } = Astro.props;
+---
+<figure class:list={['ht', { develop }]} style={`--tint:${tint};--dot:${dot}px;--pos:${position}`}>
+  <div class="ht-print" aria-hidden="true">
+    <div class="ht-screen"><img src={src} alt="" loading={eager ? 'eager' : 'lazy'} decoding="async" /></div>
+    <div class="ht-tint"></div>
+  </div>
+  <img class="ht-full" src={src} alt={alt} loading={eager ? 'eager' : 'lazy'} decoding="async" />
+</figure>
+
+<style>
+  .ht { position: relative; margin: 0; width: 100%; height: 100%; overflow: hidden; }
+  /* dark ground: the print is inverted (light dots on black), tinted, then screened onto the page */
+  .ht-print { position: absolute; inset: 0; mix-blend-mode: screen; }
+  .ht-screen { position: absolute; inset: -4px; background: #fff; filter: contrast(22) invert(1); overflow: hidden; }
+  .ht-screen img { width: 100%; height: 100%; object-fit: cover; object-position: var(--pos); filter: grayscale(1) invert(1) contrast(1.4) brightness(.92) blur(1.4px); }
+  .ht-screen::after {
+    content: ""; position: absolute; inset: 0;
+    background: radial-gradient(circle at center, #000 0%, #fff 72%) 0 0 / var(--dot) var(--dot);
+    mix-blend-mode: screen;
+  }
+  .ht-tint { position: absolute; inset: 0; background: var(--tint); mix-blend-mode: multiply; }
+  .ht-full {
+    position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: var(--pos);
+    opacity: 0; filter: blur(6px); transform: scale(1.015);
+    transition: opacity 520ms var(--ease), filter 620ms var(--ease), transform 620ms var(--ease);
+  }
+  .ht.develop:hover .ht-full, :global(a:focus-visible) .ht.develop .ht-full, :global(.developed) .ht-full { opacity: 1; filter: none; transform: none; }
+</style>

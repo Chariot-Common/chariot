@@ -1,0 +1,75 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import Logo from '../components/Logo.astro';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  dock?: boolean;
+  /** a project page can bring its own palette, e.g. "ken" */
+  theme?: string;
+}
+const { title, description = 'Chariot crafts products, brands and websites with nuance and good taste.', dock = false, theme } = Astro.props;
+const path = Astro.url.pathname;
+
+// Stagger for the project sheet slide: columns lead, rows follow.
+const delay = (i: number) => (i % 3) * 55 + Math.floor(i / 3) * 30;
+const sheetCss = Array.from({ length: 9 }, (_, i) => `
+html[data-vt="sheet"]::view-transition-old(sheet-c${i}) { animation: cell-out 480ms var(--ease-in-out) ${delay(i)}ms both; }
+html[data-vt="sheet"]::view-transition-new(sheet-c${i}) { animation: cell-in 620ms var(--ease) ${delay(i) + 160}ms both; }
+html[data-vt="sheet"][data-astro-transition="back"]::view-transition-old(sheet-c${i}) { animation-name: cell-out-back; }
+html[data-vt="sheet"][data-astro-transition="back"]::view-transition-new(sheet-c${i}) { animation-name: cell-in-back; }`).join('');
+---
+<!doctype html>
+<html lang="en" class:list={[theme && `theme-${theme}`]}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="preconnect" href="https://framerusercontent.com" crossorigin />
+    <style is:global set:html={sheetCss}></style>
+    <ClientRouter />
+    <script is:inline>document.documentElement.classList.add('js');</script>
+  </head>
+  <body>
+    <header class="frame-top">
+      <nav aria-label="Main">
+        <a href="/" aria-current={path === '/' ? 'page' : undefined} data-tick>Work</a>
+        <a href="/studio" aria-current={path.startsWith('/studio') ? 'page' : undefined} data-tick>Studio</a>
+      </nav>
+      {dock ? <slot name="dock" /> : (
+        <a href="/" class="mark" aria-label="Chariot, home" data-tick>
+          <Logo />
+          <span class="sun" aria-hidden="true"></span>
+        </a>
+      )}
+      <div class="frame-right">
+        <a href="mailto:aakash@withchariot.com" data-tick>Email us</a>
+        <button class="sound" type="button" aria-pressed="true" data-sound transition:persist="sound">
+          <i aria-hidden="true"><b></b><b></b><b></b></i><span>Sound on</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="edge top" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div class="edge bottom" aria-hidden="true"><span></span><span></span><span></span></div>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer class="frame-bottom">
+      <span>Chariot &amp; the Charioteers</span>
+      <span></span>
+      <span>Let's get rolling</span>
+    </footer>
+
+    <div class="cursor-label" aria-hidden="true" transition:persist="cursor"></div>
+
+    <script>
+      import '../scripts/frame';
+    </script>
+  </body>
+</html>

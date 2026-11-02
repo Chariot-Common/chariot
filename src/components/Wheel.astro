@@ -1,0 +1,255 @@
+---
+// A bronze chariot wheel, one spoke per project. The scene is rendered offscreen,
+// then a full-screen shader prints it as halftone: ink dots for bronze, orange dots
+// for the spoke of the project in focus. Under the cursor, a lens shows the bronze.
+interface Props { count: number }
+const { count } = Astro.props;
+---
+<div class="wheel-wrap">
+  <canvas class="wheel" data-count={count} role="img" aria-label="A bronze chariot wheel with one spoke for each project. The spoke at the top is the project in focus."></canvas>
+</div>
+
+<style>
+  .wheel-wrap { position: relative; width: 100%; height: 100%; }
+  .wheel { display: block; width: 100%; height: 100%; cursor: crosshair; touch-action: pan-y; }
+</style>
+
+<script>
+  import * as THREE from 'three';
+
+  const VERT = /* glsl */ `
+    varying vec2 vUv;
+    void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }
+  `;
+  const FRAG = /* glsl */ `
+    uniform sampler2D tScene;
+    uniform sampler2D tMask;
+    uniform vec2 uRes;
+    uniform float uCell;
+    uniform vec3 uInk;
+    uniform vec3 uAccent;
+    uniform vec3 uBg;
+    uniform vec2 uMouse;
+    uniform float uLens;
+    void main() {
+      vec2 frag = gl_FragCoord.xy;
+      vec2 cell = floor(frag / uCell) * uCell + uCell * 0.5;
+      vec4 s = texture2D(tScene, cell / uRes);
+      float m = texture2D(tMask, cell / uRes).r;
+      float lum = dot(s.rgb, vec3(0.299, 0.587, 0.114));
+      float dark = s.a * mix(0.12, 1.0, clamp(1.0 - lum * 2.4, 0.0, 1.0));
+      float r = sqrt(dark) * uCell * 0.5;
+      float d = length(frag - cell);
+      float dotA = (1.0 - smoothstep(r - 1.0, r, d)) * step(0.03, dark);
+      vec3 ink = mix(uInk, uAccent, step(0.5, m));
+      vec3 col = mix(uBg, ink, dotA);
+
+      float dm = length(frag - uMouse);
+      float lens = 1.0 - smoothstep(uLens - 1.5, uLens, dm);
+      vec4 full = texture2D(tScene, frag / uRes);
+      vec3 bronze = mix(uBg, full.rgb, full.a);
+      bronze = mix(bronze, uAccent, step(0.5, texture2D(tMask, frag / uRes).r) * 0.85);
+      col = mix(col, bronze, lens);
+      float ring = (1.0 - smoothstep(0.0, 1.5, abs(dm - uLens + 1.0))) * step(0.0, uLens);
+      col = mix(col, uInk, ring * 0.22);
+      gl_FragColor = vec4(col, 1.0);
+      #include <colorspace_fragment>
+    }
+  `;
+
+  type Cleanup = () => void;
+  let cleanup: Cleanup | null = null;
+
+  function init(canvas: HTMLCanvasElement): Cleanup {
+    const count = Number(canvas.dataset.count) || 11;
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: false, powerPreference: 'low-power' });
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    renderer.setPixelRatio(dpr);
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(28, 1, 0.1, 50);
+    camera.position.set(0, 0, 5.4);
+
+    // ---- the wheel ----
+    const wheel = new THREE.Group();
+    const tilt = new THREE.Group();
+    tilt.add(wheel);
+    scene.add(tilt);
+    const bronze = new THREE.MeshStandardMaterial({ color: 0xb07a3c, metalness: 0.78, roughness: 0.36 });
+    const darkBronze = new THREE.MeshStandardMaterial({ color: 0x6e4a22, metalness: 0.7, roughness: 0.5 });
+    const torus = (r: number, t: number, mat: THREE.Material, z = 0) => {
+      const m = new THREE.Mesh(new THREE.TorusGeometry(r, t, 20, 180), mat);
+      m.position.z = z;
+      wheel.add(m);
+      return m;
+    };
+    torus(1.0, 0.07, bronze);
+    torus(1.075, 0.026, darkBronze);
+    torus(0.9, 0.022, bronze, 0.03);
+    torus(0.9, 0.022, bronze, -0.03);
+
+    const spokes: THREE.Mesh[] = [];
+    const spokeGeo = new THREE.CylinderGeometry(0.02, 0.034, 0.74, 14);
+    for (let i = 0; i < count; i++) {
+      const a = Math.PI / 2 + (i / count) * Math.PI * 2;
+      const s = new THREE.Mesh(spokeGeo, bronze);
+      s.position.set(Math.cos(a) * 0.53, Math.sin(a) * 0.53, 0);
+      s.rotation.z = a - Math.PI / 2;
+      wheel.add(s);
+      spokes.push(s);
+    }
+    const hub = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.19, 0.3, 48), bronze);
+    hub.rotation.x = Math.PI / 2;
+    wheel.add(hub);
+    const cap = new THREE.Mesh(new THREE.TorusGeometry(0.15, 0.025, 12, 60), darkBronze);
+    cap.position.z = 0.16;
+    wheel.add(cap);
+    const axle = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 1.3, 20), darkBronze);
+    axle.rotation.x = Math.PI / 2;
+    tilt.add(axle);
+
+    scene.add(new THREE.HemisphereLight(0xfff4e6, 0x3a3020, 1.3));
+    const key = new THREE.DirectionalLight(0xffffff, 2.6);
+    key.position.set(2.5, 3, 4);
+    scene.add(key);
+    const rim = new THREE.DirectionalLight(0xffc89a, 1.1);
+    rim.position.set(-3, -1.5, 2);
+    scene.add(rim);
+
+    // the active spoke is also drawn into a mask pass, which prints it in orange
+    const maskMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    const MASK = 1;
+
+    // ---- halftone pass ----
+    const opts = { type: THREE.HalfFloatType };
+    const rtScene = new THREE.WebGLRenderTarget(1, 1, { ...opts, samples: 4 });
+    const rtMask = new THREE.WebGLRenderTarget(1, 1, opts);
+    const css = getComputedStyle(document.documentElement);
+    const color = (v: string) => new THREE.Color(css.getPropertyValue(v).trim());
+    const uniforms = {
+      tScene: { value: rtScene.texture },
+      tMask: { value: rtMask.texture },
+      uRes: { value: new THREE.Vector2(1, 1) },
+      uCell: { value: 7 * dpr },
+      uInk: { value: color('--ink') },
+      uAccent: { value: color('--accent') },
+      uBg: { value: color('--bg') },
+      uMouse: { value: new THREE.Vector2(-9999, -9999) },
+      uLens: { value: -1 },
+    };
+    const quadScene = new THREE.Scene();
+    const quadCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+    quadScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShaderMaterial({ uniforms, vertexShader: VERT, fragmentShader: FRAG })));
+
+    // ---- state ----
+    let w = 0, h = 0;
+    let target = 0, current = 0, active = -1;
+    let aimX = -0.32, aimY = 0.42, tiltX = aimX, tiltY = aimY;
+    let lens = 0, lensAim = 0;
+    let mouse = { x: -9999, y: -9999 };
+    let dirty = true, raf = 0, visible = true;
+
+    function resize() {
+      const r = canvas.getBoundingClientRect();
+      w = Math.max(1, r.width); h = Math.max(1, r.height);
+      renderer.setSize(w, h, false);
+      rtScene.setSize(w * dpr, h * dpr);
+      rtMask.setSize(w * dpr, h * dpr);
+      uniforms.uRes.value.set(w * dpr, h * dpr);
+      camera.aspect = w / h;
+      // keep the whole wheel in frame on tall, narrow screens
+      camera.position.z = w / h < 1 ? 5.4 / (w / h) * 0.92 : 5.4;
+      camera.updateProjectionMatrix();
+      dirty = true;
+    }
+
+    function setActive(i: number) {
+      if (i === active) return;
+      spokes[active]?.layers.disable(MASK);
+      active = i;
+      spokes[active]?.layers.enable(MASK);
+      dirty = true;
+    }
+
+    function render() {
+      wheel.rotation.z = current;
+      tilt.rotation.x = tiltX;
+      tilt.rotation.y = tiltY;
+      uniforms.uLens.value = lens > 0.01 ? lens * 92 * dpr : -1;
+      uniforms.uMouse.value.set(mouse.x * dpr, (h - mouse.y) * dpr);
+
+      camera.layers.set(0);
+      scene.overrideMaterial = null;
+      renderer.setRenderTarget(rtScene);
+      renderer.setClearColor(0x000000, 0);
+      renderer.clear();
+      renderer.render(scene, camera);
+
+      camera.layers.set(MASK);
+      scene.overrideMaterial = maskMat;
+      renderer.setRenderTarget(rtMask);
+      renderer.clear();
+      renderer.render(scene, camera);
+      scene.overrideMaterial = null;
+      camera.layers.set(0);
+
+      renderer.setRenderTarget(null);
+      renderer.render(quadScene, quadCam);
+    }
+
+    function loop() {
+      raf = requestAnimationFrame(loop);
+      if (!visible) return;
+      const k = reduce ? 1 : 0.1;
+      const before = current + tiltX + tiltY + lens;
+      current += (target - current) * k;
+      tiltX += (aimX - tiltX) * (reduce ? 1 : 0.07);
+      tiltY += (aimY - tiltY) * (reduce ? 1 : 0.07);
+      lens += (lensAim - lens) * 0.16;
+      if (dirty || Math.abs(current + tiltX + tiltY + lens - before) > 1e-5) { render(); dirty = false; }
+    }
+
+    // progress (0..1 through the projects) comes from the page
+    const onProgress = (e: Event) => {
+      const { progress, index } = (e as CustomEvent).detail as { progress: number; index: number };
+      target = -progress * (count - 1) * (Math.PI * 2 / count);
+      setActive(index);
+    };
+    const onMove = (e: PointerEvent) => {
+      const r = canvas.getBoundingClientRect();
+      mouse = { x: e.clientX - r.left, y: e.clientY - r.top };
+      if (!reduce) { aimY = 0.42 + (mouse.x / w - 0.5) * 0.7; aimX = -0.32 + (mouse.y / h - 0.5) * 0.5; }
+      lensAim = e.pointerType === 'mouse' ? 1 : 0;
+      dirty = true;
+    };
+    const onLeave = () => { lensAim = 0; aimX = -0.32; aimY = 0.42; };
+    const io = new IntersectionObserver((en) => { visible = en[0].isIntersecting; dirty = true; });
+
+    resize();
+    setActive(0);
+    addEventListener('resize', resize);
+    addEventListener('wheel:progress', onProgress);
+    canvas.addEventListener('pointermove', onMove);
+    canvas.addEventListener('pointerleave', onLeave);
+    io.observe(canvas);
+    loop();
+
+    return () => {
+      cancelAnimationFrame(raf);
+      removeEventListener('resize', resize);
+      removeEventListener('wheel:progress', onProgress);
+      io.disconnect();
+      rtScene.dispose(); rtMask.dispose();
+      renderer.dispose();
+    };
+  }
+
+  document.addEventListener('astro:page-load', () => {
+    cleanup?.();
+    cleanup = null;
+    const canvas = document.querySelector<HTMLCanvasElement>('canvas.wheel');
+    if (canvas) cleanup = init(canvas);
+  });
+  document.addEventListener('astro:before-swap', () => { cleanup?.(); cleanup = null; });
+</script>
