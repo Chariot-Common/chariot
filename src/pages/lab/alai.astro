@@ -1,0 +1,242 @@
+---
+// Lab: the case file. The painted gauntlet hands you a folder (built in code, laid over the
+// painted one, with the fingers cut out and laid back on top so they grip it). At rest it is
+// a file card saying what the project is. Pointing at it fans the whole trail out of the
+// folder like a hand of cards: the brief, the sketch, the routes we tried, the system, the
+// product itself (largest, in the middle, playing) and the result. Point at any page to read it.
+// Pages 1-4 and 6 are placeholders until we have the real process material.
+// Not linked from the site yet.
+import Base from '../../layouts/Base.astro';
+
+// where each page lands when the folder opens, in folder widths (cqw): centre x, centre y, tilt, width
+const at = (x: number, y: number, r: number, w: number, d: number) => `--x:${x};--y:${y};--r:${r};--w:${w};--d:${d}`;
+---
+<Base title="Alai case file · Lab · Chariot">
+  <section class="lab">
+    <a class="item" href="/work/alai" data-cursor="Alai|Open the case study" data-hover>
+      <div class="stage">
+        <img class="paint" src="/media/alai/gauntlet.webp" alt="" aria-hidden="true" width="1254" height="1254" />
+
+        <div class="folder">
+          <div class="back"><span class="tab label">Product design</span></div>
+
+          <div class="pages">
+            <figure class="pg brief" style={at(-4, -30, -12, 26, 0)} data-cap="What we were asked to solve">
+              <span class="no label">01 · The brief</span>
+              <p>Make the first AI deck look like a designer made it.</p>
+              <span class="label hand-note">for people who aren't designers</span>
+            </figure>
+
+            <figure class="pg sketch" style={at(12, -66, -7, 28, 1)} data-cap="The first flow, on paper">
+              <span class="no label">02 · The sketch</span>
+              <svg viewBox="0 0 200 120" aria-hidden="true">
+                <g fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M10 18h46M10 30h38M10 42h42M10 54h30" />
+                  <path d="M6 10l-1 52h56l1-52z" />
+                  <path d="M66 36c10-2 18-2 26 0m-6-5 6 5-6 5" />
+                  <path d="M100 12l92 1-1 46-91-1z" />
+                  <path d="M108 22h40M108 32h24" />
+                  <path d="M108 42l20 1 0 10-20-1zM134 42h22v11h-22zM162 42h22l-1 11h-21z" />
+                  <path d="M100 70l44 1-1 34-43-1zM150 70h42v35h-42z" />
+                </g>
+                <text x="12" y="80" font-size="9" fill="currentColor">outline first?</text>
+              </svg>
+            </figure>
+
+            <figure class="pg routes" style={at(88, -66, 7, 28, 2)} data-cap="Three routes. One won.">
+              <span class="no label">03 · Three routes</span>
+              <div class="three">
+                <div class="r out"><i></i><span>Chat</span></div>
+                <div class="r won"><i></i><span>Outline</span></div>
+                <div class="r out"><i></i><span>Template</span></div>
+              </div>
+            </figure>
+
+            <figure class="pg system" style={at(104, -30, 12, 26, 3)} data-cap="The system underneath every slide">
+              <span class="no label">04 · The system</span>
+              <div class="type"><b>Aa</b><span>Title 32<br />Body 16<br />Note 12</span></div>
+              <div class="chips"><i style="--c:#5B4BC4"></i><i style="--c:#1E7BFF"></i><i style="--c:#1D1D1F"></i><i style="--c:#F2F2F5"></i></div>
+              <div class="ui"><span class="btn">Generate</span><span class="tog"></span></div>
+            </figure>
+
+            <figure class="pg product" style={at(50, -38, 0, 74, 4)} data-cap="The product: a blank page to a finished slide">
+              <span class="no label">05 · The product</span>
+              <div class="screen">
+                <img src="/media/alai/work-poster.jpg" alt="Alai building a slide from a blank page: a title, three points, a chart, then a new theme" />
+                <video muted playsinline preload="metadata" aria-hidden="true">
+                  <source src="/media/alai/work.webm" type="video/webm" />
+                  <source src="/media/alai/work.mp4" type="video/mp4" />
+                </video>
+              </div>
+              <!-- what you type into Alai, typed out as the page comes out of the folder -->
+              <p class="prompt" aria-hidden="true"><span class="spark">✦</span><span class="typed"></span><span class="caret"></span></p>
+            </figure>
+
+            <figure class="pg result" style={at(96, 4, 10, 20, 5)} data-cap="What changed">
+              <span class="no label">06 · The result</span>
+              <img class="seal" src="/media/alai/seal.png" alt="" />
+              <p>Shipped<br /><span class="label">YC W24 · v1</span></p>
+            </figure>
+          </div>
+
+          <div class="front">
+            <span class="fol label">fol. 01 · 2024</span>
+            <h2>Alai</h2>
+            <p class="what">An AI presentation builder whose first deck already looks finished.</p>
+            <p class="tags label">Product design · AI UX · Design system</p>
+          </div>
+        </div>
+
+        <img class="hand" src="/media/alai/gauntlet.webp" alt="A painted steel gauntlet holding a folder" width="1254" height="1254" />
+      </div>
+    </a>
+    <p class="note label">Lab · Alai · point at the folder, then at any page</p>
+  </section>
+</Base>
+
+<style>
+  .lab { min-height: 100svh; display: grid; place-items: center; align-content: center; gap: 20px; padding: 36vh var(--gutter) 48px; background: #000; color: #f3efe6; }
+  .item { display: block; width: min(52vh, 80vw); }
+  .stage { --snap: cubic-bezier(.2, 1.2, .35, 1); position: relative; aspect-ratio: 1; }
+
+  /* the painting, faded at its cut edges so it never reads as a square photo */
+  .paint, .hand {
+    position: absolute; inset: 0; width: 100%; height: 100%; display: block;
+    -webkit-mask-image: linear-gradient(to right, #000 78%, transparent 99%), linear-gradient(to bottom, #000 80%, transparent 99%);
+    -webkit-mask-composite: source-in; mask-composite: intersect;
+  }
+  /* only the gauntlet and sleeve come back on top, so the fingers grip the coded folder */
+  .hand { clip-path: polygon(25% 70.5%, 27.5% 67.5%, 31% 64.5%, 35.5% 62.5%, 41% 63.5%, 47% 64%, 50% 60.5%, 54% 59.5%, 59% 61.5%, 63% 65.5%, 70% 69%, 80% 70%, 100% 55%, 100% 100%, 24% 100%); pointer-events: none; z-index: 3; }
+
+  /* the folder sits exactly over the painted one: front panel from (97,228) to (990,168), tilted -3.8° */
+  .folder { position: absolute; left: 7%; top: 12.6%; width: 81%; height: 61.5%; transform: rotate(-3.8deg); transform-origin: 0 0; z-index: 2; container-type: inline-size; }
+  .back { position: absolute; inset: 0; background: #cdb98f; border-radius: 3px 3px 4px 4px; box-shadow: 0 30px 50px -20px rgb(0 0 0 / .8); }
+  .tab { position: absolute; right: 9%; top: -7.5%; height: 8%; padding: 0 16px; display: grid; place-items: center; background: #cdb98f; border-radius: 6px 6px 0 0; color: #5b4a2c; }
+  .front {
+    position: absolute; left: 0; right: 0; top: 9%; bottom: 0; z-index: 2; padding: 6% 7%;
+    display: grid; align-content: start; gap: 10px; color: #2a2116; pointer-events: none;
+    background: linear-gradient(180deg, #e9dcbc, #dccb9f); border-radius: 2px 2px 4px 4px;
+    box-shadow: 0 -1px 0 rgb(255 255 255 / .5) inset, 0 -8px 18px -10px rgb(0 0 0 / .45);
+  }
+  .front h2 { margin: 2px 0 0; font: 400 clamp(32px, 6.6vh, 68px)/.95 var(--serif); letter-spacing: -.02em; }
+  .front .what { margin: 0; max-width: 26ch; font: 400 clamp(14px, 1.9vh, 19px)/1.3 var(--serif); }
+  .front .fol, .front .tags { color: #6d5a3a; }
+
+  /* ---- the pages ----
+     At rest they wait inside the folder with their top edges just showing, so you can tell
+     there is more in there. Open, each flies to its own spot (set inline) in order, 60ms apart. */
+  .pages { position: absolute; inset: 0; z-index: 1; }
+  .pg {
+    position: absolute; left: 0; top: 0; margin: 0; width: calc(var(--w) * 1cqw);
+    background: #fffdf7; color: #1f1a14; border-radius: 4px; padding: 2.4cqw;
+    box-shadow: 0 14px 30px -12px rgb(0 0 0 / .65);
+    transform: translate(calc(50cqw - 50% + (var(--d) - 2.5) * 3cqw), calc(4cqw - var(--d) * .4cqw)) rotate(calc((var(--d) - 2.5) * 1.5deg));
+    transition: transform .32s cubic-bezier(.5, 0, .75, 0), box-shadow .2s;
+  }
+  .item.open .pg {
+    transform: translate(calc(var(--x) * 1cqw - 50%), calc(var(--y) * 1cqw - 50%)) rotate(calc((var(--r) + 3.8) * 1deg));
+    transition: transform .6s var(--snap) calc(var(--d) * 60ms), box-shadow .2s;
+  }
+  /* point at a page to read it: it straightens, lifts and says what it is */
+  .item.open .pg:hover {
+    z-index: 5; box-shadow: 0 24px 50px -14px rgb(0 0 0 / .8);
+    transform: translate(calc(var(--x) * 1cqw - 50%), calc(var(--y) * 1cqw - 50% - 2cqw)) rotate(3.8deg) scale(1.12);
+    transition: transform .3s var(--snap), box-shadow .2s;
+  }
+  .pg::after {
+    content: attr(data-cap); position: absolute; left: 50%; top: calc(100% + 1.2cqw); transform: translateX(-50%);
+    white-space: nowrap; font: 500 max(10px, 1.6cqw)/1 var(--sans); color: #f3efe6; opacity: 0; transition: opacity .2s;
+  }
+  .item.open .pg:hover::after { opacity: 1; }
+  .no { display: block; margin-bottom: 1.6cqw; font-size: 1.3cqw; color: #8a7a60; }
+
+  .brief p { margin: 0; font: 400 2.6cqw/1.2 var(--serif); }
+  .hand-note { display: block; margin-top: 1.6cqw; color: #E0661B; font-size: 1.3cqw; }
+  .sketch svg { display: block; width: 100%; color: #4a4a4a; }
+  .three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4cqw; }
+  .r { position: relative; display: grid; gap: .8cqw; }
+  .r i { display: block; aspect-ratio: 4 / 3; border: 1px solid #c9c2b4; border-radius: 2px; background: repeating-linear-gradient(0deg, #f1ece2 0 3px, transparent 3px 7px); }
+  .r span { font: 500 1.3cqw/1 var(--sans); text-align: center; }
+  /* rejected routes are struck through, the chosen one is ringed, in rubric orange */
+  .r.out i { background: linear-gradient(to top right, transparent 47%, #E0661B 48% 52%, transparent 53%), linear-gradient(to top left, transparent 47%, #E0661B 48% 52%, transparent 53%), #f6f2ea; opacity: .75; }
+  .r.won i { outline: 2px solid #E0661B; outline-offset: 3px; border-radius: 50% / 40%; }
+  .system .type { display: flex; align-items: center; gap: 2cqw; }
+  .system b { font: 400 5cqw/1 var(--serif); }
+  .system .type span { font: 400 1.3cqw/1.4 var(--sans); color: #6b6357; }
+  .chips { display: flex; gap: 1cqw; margin: 1.6cqw 0; }
+  .chips i { width: 3.6cqw; aspect-ratio: 1; border-radius: 50%; background: var(--c); box-shadow: 0 0 0 1px rgb(0 0 0 / .08); }
+  .ui { display: flex; align-items: center; gap: 1.6cqw; }
+  .btn { padding: .8cqw 1.8cqw; border-radius: 999px; background: #5B4BC4; color: #fff; font: 500 1.3cqw/1 var(--sans); }
+  .tog { width: 5cqw; height: 2.8cqw; border-radius: 999px; background: #1E7BFF; position: relative; }
+  .tog::after { content: ''; position: absolute; right: .4cqw; top: .4cqw; width: 2cqw; height: 2cqw; border-radius: 50%; background: #fff; }
+
+  /* the product: the biggest page, in the middle, the only thing moving */
+  .product { z-index: 2; padding: 1.4cqw; background: #fff; }
+  .product .no { margin: 0 0 1cqw .6cqw; }
+  .screen { position: relative; aspect-ratio: 1170 / 700; border-radius: 3px; overflow: hidden; background: #f4f4f6; }
+  .screen img, .screen video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .screen video { opacity: 0; transition: opacity .2s; }
+  .item.open .screen video.on { opacity: 1; }
+  /* Alai's own input bar sits on the page and types the ask */
+  .prompt {
+    position: absolute; left: 50%; bottom: -2.6cqw; margin: 0; display: flex; align-items: center; gap: 8px;
+    padding: 1.3cqw 2.2cqw; border-radius: 999px; background: #fff; color: #1d1d1f; white-space: nowrap;
+    font: 500 max(10px, 1.9cqw)/1 var(--sans); box-shadow: 0 10px 26px -8px rgb(0 0 0 / .45), 0 0 0 1px rgb(0 0 0 / .06);
+    opacity: 0; transform: translate(-50%, 0) scale(.92); transition: opacity .2s, transform .3s;
+  }
+  .item.open .prompt { opacity: 1; transform: translate(-50%, 0); transition: opacity .2s .5s, transform .4s .5s var(--snap); }
+  .spark { background: linear-gradient(135deg, #c36bd9, #ef8a5b); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .caret { width: 1px; height: 1.1em; background: currentColor; animation: blink .9s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .result { text-align: center; }
+  .result .seal { display: block; width: 62%; margin: 0 auto; transform: rotate(-8deg) scale(1.6); opacity: 0; filter: drop-shadow(2px 4px 4px rgb(30 10 0 / .4)); }
+  .item.open .result .seal { animation: stamp .3s 1.05s var(--snap) both; }
+  @keyframes stamp { 0% { transform: rotate(-20deg) scale(1.8); opacity: 0; } 60% { transform: rotate(-8deg) scale(.92, .88); opacity: 1; } 100% { transform: rotate(-8deg) scale(1); opacity: 1; } }
+  .result p { margin: 1cqw 0 0; font: 400 2.4cqw/1.15 var(--serif); }
+  .result p .label { font-size: 1.2cqw; color: #8a7a60; }
+
+  .note { opacity: .5; }
+  @media (prefers-reduced-motion: reduce) { .pg { transition: none !important; } .result .seal { animation: none; opacity: 1; transform: rotate(-8deg); } }
+</style>
+
+<script>
+  // Pointing at the folder fans the case file out and plays the product; leaving puts it back.
+  // Touch screens have no hover, so it opens when the folder reaches the middle of the screen.
+  const canHover = matchMedia('(hover: hover)').matches;
+
+  function wire(item: HTMLElement) {
+    const video = item.querySelector('video')!;
+    const typed = item.querySelector<HTMLElement>('.typed')!;
+    const ask = 'A deck on the counterfeit economy';
+    let t = 0, k = 0;
+    // the prompt types itself as the product page lands, about 30 characters a second
+    const type = (i: number) => {
+      typed.textContent = ask.slice(0, i);
+      if (i < ask.length) k = window.setTimeout(() => type(i + 1), 32);
+    };
+    const open = () => {
+      item.classList.add('open');
+      clearTimeout(t); clearTimeout(k);
+      k = window.setTimeout(() => type(0), 550);
+      // the slide starts building once the ask is typed
+      t = window.setTimeout(() => {
+        video.preload = 'auto';
+        video.currentTime = 0;
+        video.play().then(() => video.classList.add('on')).catch(() => {});
+      }, 1500);
+    };
+    const close = () => { clearTimeout(t); clearTimeout(k); typed.textContent = ''; item.classList.remove('open'); video.classList.remove('on'); video.pause(); };
+
+    if (canHover) {
+      item.addEventListener('pointerenter', open);
+      item.addEventListener('pointerleave', close);
+      item.addEventListener('focus', open);
+      item.addEventListener('blur', close);
+    } else {
+      new IntersectionObserver(([en]) => { if (en.isIntersecting) open(); else close(); }, { rootMargin: '-35% 0px -35% 0px' }).observe(item);
+    }
+  }
+
+  document.addEventListener('astro:page-load', () => document.querySelectorAll<HTMLElement>('[data-hover]').forEach(wire));
+</script>

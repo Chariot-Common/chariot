@@ -1,0 +1,285 @@
+---
+// Lab: the wheel in the words, after Vero's coin. A big set paragraph about how we work
+// scrolls up the page; a woodcut cart wheel stays put in the middle of the screen, turning
+// as you scroll. Each line is split at its centre, and as a line passes the wheel its two
+// halves slide apart to let it through, then close again behind it.
+// Not linked from the site yet.
+import Base from '../../layouts/Base.astro';
+
+// one line per row, "|" marks where the line parts for the wheel; [brackets] are the process
+const lines = [
+  'WE START WITH | THE [QUESTION,]',
+  'NOT THE | PIXEL. EVERY',
+  'PROJECT GETS | [THREE]',
+  '[DIRECTIONS,] | [ONE HONEST]',
+  '[CALL,] AND | HANDS ON',
+  'THE REINS FROM | SKETCH',
+  'TO THE LAST | SHIPPED SCREEN.',
+];
+const html = (s: string) => s.trim().replace(/\[([^\]]+)\]/g, '<em>$1</em>');
+const plain = lines.map((l) => l.replace(/[|[\]]/g, '').replace(/\s+/g, ' ').trim()).join(' ');
+---
+<Base title="The wheel · Lab · Chariot">
+  <section class="lab">
+    <div class="track">
+    <canvas class="disc" aria-hidden="true"></canvas>
+    <div class="para" aria-label={plain}>
+      {lines.map((l) => {
+        const [a, b] = l.split('|');
+        return <div class="ln" aria-hidden="true"><span class="a" set:html={html(a)} /><span class="b" set:html={html(b)} /></div>;
+      })}
+      <p class="by label">How Chariot works</p>
+    </div>
+    <!-- where the wheel comes to rest: it rolls through how we work and arrives at the ask -->
+    <div class="outro">
+      <span class="slot" aria-hidden="true"></span>
+      <h2>Every project starts with a question.</h2>
+      <p>Bring us yours.</p>
+      <a class="cta" href="mailto:hello@withchariot.com" data-tick>Start a project</a>
+    </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* paper and ink, like the reference: the type is the picture. The page scrolls normally;
+     the wheel hangs back near the middle of the screen, so the text rises past it and it
+     rolls down through the lines, then lands above the ask at the end. */
+  .lab { background: #F5EFE6; color: #1E1710; overflow: hidden; padding: 45vh 0 20vh; }
+  .track { position: relative; }
+  .para { font: 400 clamp(24px, 4.1vw, 74px)/1 var(--serif); letter-spacing: -.015em; }
+  .disc { position: absolute; left: 50%; top: 0; z-index: 1; pointer-events: none; }
+  .outro { display: grid; justify-items: center; gap: 14px; margin-top: 34vh; text-align: center; }
+  .slot { display: block; }
+  .outro h2 { margin: 0; font: 400 clamp(24px, 2.4vw, 36px)/1.15 var(--serif); }
+  .outro p { margin: 0; opacity: .7; }
+  .cta { margin-top: 10px; padding: 12px 20px; border: 1px solid currentColor; border-radius: 999px; font: 500 14px/1 var(--sans); }
+  /* every line parts at the exact centre of the page, where the wheel runs; the halves
+     sit either side of it and are allowed to run off the edges */
+  .ln { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: .28em; white-space: nowrap; }
+  .ln .a, .ln .b { display: block; will-change: transform; }
+  .ln .a { justify-self: end; }
+  .ln .b { justify-self: start; }
+  .ln :global(em) { font-style: normal; transition: color .5s var(--ease); }
+  .ln.past :global(em) { color: #E0661B; }
+  .by { text-align: center; margin: 3vh 0 0; opacity: .7; }
+</style>
+
+<script>
+  import * as THREE from 'three';
+  const VERT = /* glsl */ `
+    varying vec2 vUv;
+    void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }
+  `;
+  // printed like a woodcut: parallel engraved lines that swell where the wheel is in shadow,
+  // a cross-hatch in the deepest shadow, and a solid cut line around every edge.
+  // Ink on a transparent sheet, so it sits on the page like the type does.
+  const FRAG = /* glsl */ `
+    uniform sampler2D tScene;
+    uniform vec2 uRes;
+    uniform float uCell;
+    uniform vec3 uInk;
+    float hatch(vec2 p, float ang, float w) {
+      float c = cos(ang), s = sin(ang);
+      float v = (p.x * c + p.y * s) / uCell;
+      float d = abs(fract(v) - 0.5) * uCell;
+      return 1.0 - smoothstep(w - 0.6, w + 0.6, d);
+    }
+    void main() {
+      vec2 frag = gl_FragCoord.xy;
+      vec4 s = texture2D(tScene, frag / uRes);
+      float lum = dot(s.rgb, vec3(0.299, 0.587, 0.114));
+      // ink goes where the wood is in shadow, like a woodcut printed on paper
+      float lit = s.a * clamp(0.9 - lum * 1.35, 0.0, 1.0);
+      float a = hatch(frag, 0.78, lit * uCell * 0.42) * step(0.04, lit);
+      a = max(a, hatch(frag, -0.78, (lit - 0.55) * uCell * 0.5) * step(0.55, lit));
+      // the outline: where coverage changes sharply, the block was cut
+      vec2 px = 1.5 / uRes;
+      float e = abs(texture2D(tScene, frag / uRes + vec2(px.x, 0.0)).a - texture2D(tScene, frag / uRes - vec2(px.x, 0.0)).a)
+              + abs(texture2D(tScene, frag / uRes + vec2(0.0, px.y)).a - texture2D(tScene, frag / uRes - vec2(0.0, px.y)).a);
+      a = max(a, clamp(e * 1.4, 0.0, 1.0));
+      gl_FragColor = vec4(uInk * a, a);
+      #include <colorspace_fragment>
+    }
+  `;
+
+  type Cleanup = () => void;
+  let cleanup: Cleanup | null = null;
+
+  function init(section: HTMLElement): Cleanup {
+    const disc = section.querySelector<HTMLCanvasElement>('.disc')!;
+    const slot = section.querySelector<HTMLElement>('.slot')!;
+    const rows = [...section.querySelectorAll<HTMLElement>('.ln')].map((el) => ({
+      el, a: el.querySelector<HTMLElement>('.a')!, b: el.querySelector<HTMLElement>('.b')!, open: 0,
+    }));
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // ---- the wheel ----
+    const renderer = new THREE.WebGLRenderer({ canvas: disc, antialias: false, alpha: true, premultipliedAlpha: true });
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    renderer.setPixelRatio(dpr);
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(28, 1, 0.1, 50);
+    camera.position.set(0, 0, 5.4);
+    const wheel = new THREE.Group();
+    const tilt = new THREE.Group();
+    tilt.rotation.x = -0.12;
+    tilt.add(wheel);
+    scene.add(tilt);
+    // built to the drawings in public/media/wheel: six turned spokes with collars at both ends,
+    // a thick wooden rim with a thin tyre, a bronze plate clamped over the rim at every spoke,
+    // a stepped turned hub with a linchpin and ring in front and the axle stub behind.
+    // Flat-shaded so the engraving picks out every facet.
+    const wood = new THREE.MeshStandardMaterial({ color: 0xb59772, metalness: 0, roughness: 0.85, flatShading: true });
+    const brass = new THREE.MeshStandardMaterial({ color: 0xd9c49a, metalness: 0.35, roughness: 0.45, flatShading: true });
+    const annulus = (outer: number, inner: number, depth: number, m: THREE.Material) => {
+      const shape = new THREE.Shape().absarc(0, 0, outer, 0, Math.PI * 2, false);
+      shape.holes.push(new THREE.Path().absarc(0, 0, inner, 0, Math.PI * 2, true));
+      const g = new THREE.ExtrudeGeometry(shape, { depth, bevelEnabled: true, bevelSize: 0.008, bevelThickness: 0.008, bevelSegments: 1, curveSegments: 96 });
+      g.translate(0, 0, -depth / 2);
+      wheel.add(new THREE.Mesh(g, m));
+    };
+    annulus(1.0, 0.82, 0.16, wood);   // the rim, six felloes
+    annulus(1.05, 0.995, 0.12, brass); // the tyre
+    // rivets round the tyre, as in the edge-on drawing
+    const rivet = new THREE.SphereGeometry(0.018, 6, 4);
+    for (let i = 0; i < 18; i++) {
+      const a = (i / 18) * Math.PI * 2;
+      const n = new THREE.Mesh(rivet, brass);
+      n.position.set(Math.cos(a) * 1.052, Math.sin(a) * 1.052, 0);
+      wheel.add(n);
+    }
+    // a spoke turned on a lathe: collar, swell, slim waist, swell, collar
+    const spokeGeo = new THREE.LatheGeometry([
+      [0.0, 0.2], [0.075, 0.2], [0.075, 0.25], [0.06, 0.27], [0.065, 0.3], [0.05, 0.33],
+      [0.034, 0.48], [0.04, 0.62], [0.055, 0.7], [0.065, 0.72], [0.075, 0.74], [0.075, 0.8], [0.0, 0.83],
+    ].map(([r, h]) => new THREE.Vector2(r, h)), 10);
+    const plateGeo = new THREE.BoxGeometry(0.17, 0.22, 0.2);
+    for (let i = 0; i < 6; i++) {
+      const a = Math.PI / 2 + (i / 6) * Math.PI * 2;
+      const s = new THREE.Mesh(spokeGeo, wood);
+      s.rotation.z = a - Math.PI / 2;
+      wheel.add(s);
+      // the bronze plate where the spoke meets the rim, two rivets on its face
+      const plate = new THREE.Mesh(plateGeo, brass);
+      plate.position.set(Math.cos(a) * 0.91, Math.sin(a) * 0.91, 0);
+      plate.rotation.z = a - Math.PI / 2;
+      wheel.add(plate);
+      for (const o of [-0.05, 0.05]) {
+        const n = new THREE.Mesh(rivet, brass);
+        n.position.set(Math.cos(a) * (0.91 + o), Math.sin(a) * (0.91 + o), 0.105);
+        wheel.add(n);
+      }
+    }
+    // the hub: a stepped turned bulb, deeper behind than in front
+    const hub = new THREE.Mesh(new THREE.LatheGeometry([
+      [0.06, -0.34], [0.12, -0.32], [0.17, -0.27], [0.2, -0.2], [0.225, -0.1], [0.23, 0],
+      [0.22, 0.07], [0.2, 0.1], [0.2, 0.12], [0.17, 0.15], [0.17, 0.17], [0.13, 0.2], [0.13, 0.22], [0.08, 0.25], [0.0, 0.26],
+    ].map(([r, h]) => new THREE.Vector2(r, h)), 24), wood);
+    hub.rotation.x = Math.PI / 2;
+    wheel.add(hub);
+    const knob = new THREE.Mesh(new THREE.SphereGeometry(0.055, 16, 10), brass);
+    knob.position.z = 0.28;
+    wheel.add(knob);
+    const ringPin = new THREE.Mesh(new THREE.TorusGeometry(0.035, 0.009, 6, 20), brass);
+    ringPin.scale.y = 1.9;
+    ringPin.position.set(0, -0.08, 0.3);
+    wheel.add(ringPin);
+    const axle = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.22, 16), wood);
+    axle.rotation.x = Math.PI / 2;
+    axle.position.z = -0.42;
+    wheel.add(axle);
+    scene.add(new THREE.HemisphereLight(0xfff4e6, 0x1a140c, 0.9));
+    const key = new THREE.DirectionalLight(0xffffff, 3.2); key.position.set(-2.5, 3, 3); scene.add(key);
+    const rim = new THREE.DirectionalLight(0xffe2c0, 0.5); rim.position.set(3, -1.5, 2); scene.add(rim);
+
+    const rt = new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: 4 });
+    const uniforms = {
+      tScene: { value: rt.texture },
+      uRes: { value: new THREE.Vector2(1, 1) },
+      uCell: { value: 3.2 * dpr },
+      uInk: { value: new THREE.Color(getComputedStyle(section).color) },
+    };
+    const quad = new THREE.Scene();
+    const quadCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+    quad.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShaderMaterial({ uniforms, vertexShader: VERT, fragmentShader: FRAG, transparent: true })));
+
+    // ---- sizing ----
+    // the wheel is about a line and a half tall
+    let R = 0, S = 0;
+    function measure() {
+      R = rows[0].el.getBoundingClientRect().height * 0.9;
+      // the tyre (radius 1.05) fills ~78% of the frame at this camera distance
+      S = Math.ceil((2 * R) / 0.78);
+      disc.style.width = disc.style.height = `${S}px`;
+      renderer.setSize(S, S, false);
+      rt.setSize(S * dpr, S * dpr);
+      uniforms.uRes.value.set(S * dpr, S * dpr);
+      slot.style.height = `${S}px`;
+    }
+
+    // ---- motion ----
+    // The wheel aims for the middle of the screen but trails it a little, so as the text
+    // scrolls up it rolls down through it; it can't start above the first line or go past its slot.
+    // A line opens as the wheel nears it: fully when they overlap, easing shut over about a
+    // line. Everything is measured against the wheel itself, so the gap is always under it.
+    // It opens a fixed width, the wheel's face plus air, so it stays calm while the wheel turns.
+    let theta = 0.5, y = -1, raf = 0;
+    const track = section.querySelector<HTMLElement>('.track')!;
+    function frame() {
+      raf = requestAnimationFrame(frame);
+      const tr = track.getBoundingClientRect(), sr = slot.getBoundingClientRect();
+      const from = rows[0].el.offsetTop - R * 1.1;
+      const land = sr.top + sr.height / 2 - tr.top;
+      const want = innerHeight * 0.5 - tr.top;
+      const aimY = Math.min(land, Math.max(from, want));
+      y = y < 0 || reduce ? aimY : y + (aimY - y) * 0.1;
+      const landed = aimY >= land - 1;
+      disc.style.transform = `translate(-50%, ${y - S / 2}px)`;
+      const reach = R * 2.1;
+      for (const r of rows) {
+        const d = Math.abs(r.el.offsetTop + r.el.offsetHeight / 2 - y);
+        const t = Math.max(0, 1 - d / reach);
+        const aim = t * t * (3 - 2 * t);
+        r.open = aim; // the wheel's position is already eased; easing again would make the gap trail it
+        const x = r.open * R * 1.25;
+        r.a.style.transform = `translateX(${-x}px)`;
+        r.b.style.transform = `translateX(${x}px)`;
+        r.el.classList.toggle('past', r.el.offsetTop + r.el.offsetHeight / 2 < y);
+      }
+      // it rolls as it travels, and settles face-on when it lands
+      const roll = (y - from) / (R * 1.6);
+      const aimTheta = reduce ? 0.5 : landed ? Math.round(roll / Math.PI) * Math.PI : roll;
+      theta += (aimTheta - theta) * 0.16;
+      tilt.rotation.y = theta;
+      wheel.rotation.z = theta * 0.35;
+      renderer.setRenderTarget(rt);
+      renderer.setClearColor(0x000000, 0);
+      renderer.clear();
+      renderer.render(scene, camera);
+      renderer.setRenderTarget(null);
+      renderer.clear();
+      renderer.render(quad, quadCam);
+    }
+
+    document.fonts.ready.then(measure);
+    measure();
+    addEventListener('resize', measure);
+    frame();
+
+    return () => {
+      cancelAnimationFrame(raf);
+      removeEventListener('resize', measure);
+      rt.dispose();
+      renderer.dispose();
+    };
+  }
+
+  document.addEventListener('astro:page-load', () => {
+    cleanup?.();
+    cleanup = null;
+    const s = document.querySelector<HTMLElement>('section.lab');
+    if (s && s.querySelector('.disc')) cleanup = init(s);
+  });
+  document.addEventListener('astro:before-swap', () => { cleanup?.(); cleanup = null; });
+</script>

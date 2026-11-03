@@ -1,0 +1,114 @@
+---
+// The thinking trail: a pinned section that walks through how a project was decided.
+// Scroll drives four beats from one --p: the question, three directions fanning out,
+// the call (the chosen route moves to the centre, the others step back), the result.
+interface Props {
+  title: string;
+  color: string;
+  thinking: {
+    question: string;
+    directions: { label: string; note: string; src?: string; chosen: boolean }[];
+    call: string;
+    result: string;
+  };
+}
+const { title, color, thinking: t } = Astro.props;
+
+// the chosen route always sits in the middle column, so the call is a stillness, not a move
+const chosen = t.directions.find((d) => d.chosen) ?? t.directions[0];
+const others = t.directions.filter((d) => d !== chosen);
+const cards = [others[0], chosen, others[1]];
+const steps = ['The question', 'Directions', 'The call', 'The result'];
+---
+<section class="thinking" data-progress="pin" style={`--c:${color}`} aria-label={`How we thought about ${title}`}>
+  <div class="stage">
+    <ol class="steps label" aria-hidden="true">
+      {steps.map((s, i) => <li style={`--i:${i}`}>{String(i + 1).padStart(2, '0')} {s}</li>)}
+    </ol>
+
+    <div class="copy">
+      <p class="beat q"><span class="label">The question</span>{t.question}</p>
+      <p class="beat call"><span class="label">The call</span>{t.call}</p>
+      <p class="beat result"><span class="label">The result</span>{t.result}</p>
+    </div>
+
+    <div class="cards">
+      {cards.map((d) => (
+        <figure class:list={['card', { chosen: d === chosen }]}>
+          {d.src
+            ? <img src={d.src} alt={`${title}, direction: ${d.label}`} loading="lazy" decoding="async" />
+            : <div class="sketch" aria-hidden="true">{d.label}</div>}
+          <figcaption><span class="t">{d.label}</span><span class="n">{d.note}</span></figcaption>
+        </figure>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .thinking { position: relative; height: 420vh; }
+  .stage {
+    position: sticky; top: 0; height: 100svh; display: grid;
+    grid-template-rows: auto auto minmax(0, 1fr); gap: 3vh; padding: 96px var(--gutter) 6vh;
+    /* each beat gets its own 0..1 from the one scroll value */
+    --a: clamp(0, calc((var(--p, 0) - .14) * 5), 1);   /* directions fan out */
+    --k: clamp(0, calc((var(--p, 0) - .44) * 5), 1);   /* the call */
+    --r: clamp(0, calc((var(--p, 0) - .70) * 5), 1);   /* the result */
+  }
+
+  /* the process, always visible, lighting up as you pass each step */
+  .steps { display: flex; gap: 28px; margin: 0; padding: 0; list-style: none; border-top: 1px dashed var(--line); padding-top: 12px; }
+  .steps li { transition: color var(--settle) var(--ease); }
+  .steps li:nth-child(1) { color: var(--ink); }
+  .steps li:nth-child(2) { color: color-mix(in srgb, var(--ink) calc(var(--a) * 100%), var(--muted)); }
+  .steps li:nth-child(3) { color: color-mix(in srgb, var(--ink) calc(var(--k) * 100%), var(--muted)); }
+  .steps li:nth-child(4) { color: color-mix(in srgb, var(--ink) calc(var(--r) * 100%), var(--muted)); }
+
+  /* one sentence at a time, cross-fading in place */
+  .copy { display: grid; min-height: 7.5em; max-width: 30ch; font: 600 clamp(26px, 3.1vw, 46px)/1.1 var(--serif); letter-spacing: -.03em; }
+  .beat { grid-area: 1 / 1; margin: 0; display: grid; align-content: start; gap: 14px; text-wrap: balance; }
+  .beat .label { color: var(--c); filter: brightness(1.6); }
+  /* the outgoing line is gone before the next one arrives, so two never overlap */
+  .q { opacity: clamp(0, calc(1 - var(--k) * 2), 1); transform: translateY(calc(var(--k) * -12px)); }
+  .call { opacity: calc(clamp(0, calc(var(--k) * 2 - 1), 1) - clamp(0, calc(var(--r) * 2), 1)); transform: translateY(calc((1 - var(--k)) * 12px - var(--r) * 12px)); }
+  .result { opacity: clamp(0, calc(var(--r) * 2 - 1), 1); transform: translateY(calc((1 - var(--r)) * 12px)); }
+
+  .cards { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2vw; align-items: end; min-height: 0; }
+  /* cards leave headroom so the chosen one can grow into it for the result */
+  .card { margin: 0; display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 10px; height: 78%; min-height: 0; transform-origin: 50% 100%; }
+  /* contain, not cover: explorations are often cut-outs or odd sizes, and the whole frame should read */
+  .card img { width: 100%; height: 100%; object-fit: contain; padding: 4%; border-radius: 12px; background: var(--surface); }
+  /* a direction with no image yet reads as a sketch frame, not a broken picture */
+  .sketch { display: grid; place-items: center; height: 100%; border: 1px dashed var(--line); border-radius: 12px; font: 600 clamp(20px, 2vw, 30px)/1 var(--serif); color: var(--muted); }
+  .card figcaption { display: grid; gap: 2px; }
+  .card .t { font: 500 13px/1.3 var(--sans); letter-spacing: .02em; }
+  .card .n { font-size: 14px; color: var(--muted); }
+
+  /* directions deal out from the centre */
+  .card:nth-child(1) { --x: 1; }
+  .card:nth-child(3) { --x: -1; }
+  .card:not(.chosen) {
+    opacity: calc(var(--a) - var(--k) * .7 - var(--r) * .3);
+    transform: translateX(calc((1 - var(--a)) * var(--x) * 105%)) scale(calc(1 - var(--k) * .1));
+    filter: grayscale(var(--k));
+  }
+  .card.chosen { opacity: calc(.35 + var(--a) * .65); transform: scale(calc(1 + var(--r) * .28)); z-index: 1; }
+  .card.chosen img { object-fit: cover; padding: 0; }
+  .card.chosen img { outline: 1px solid color-mix(in srgb, var(--c) calc(var(--k) * 100%), transparent); outline-offset: 6px; }
+  .card.chosen figcaption { opacity: calc(1 - var(--r)); }
+
+  @media (max-width: 820px) {
+    .steps { gap: 14px; flex-wrap: wrap; }
+    .cards { gap: 10px; }
+    .card .n { display: none; }
+  }
+
+  /* no scroll choreography: the whole trail laid out in order */
+  @media (prefers-reduced-motion: reduce) {
+    .thinking { height: auto; }
+    .stage { position: static; height: auto; --a: 1; --k: 0; --r: 0; }
+    .copy { min-height: 0; display: grid; gap: 24px; }
+    .beat { grid-area: auto; opacity: 1 !important; transform: none !important; }
+    .cards { height: 50vh; }
+  }
+</style>

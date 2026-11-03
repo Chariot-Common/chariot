@@ -9,8 +9,10 @@ interface Props {
   dock?: boolean;
   /** a project page can bring its own palette, e.g. "ken" */
   theme?: string;
+  /** the page brings its own header and footer (lab pages trying a new nav) */
+  bare?: boolean;
 }
-const { title, description = 'Chariot crafts products, brands and websites with nuance and good taste.', dock = false, theme } = Astro.props;
+const { title, description = 'Chariot crafts products, brands and websites with nuance and good taste.', dock = false, theme, bare = false } = Astro.props;
 const path = Astro.url.pathname;
 
 // Stagger for the project sheet slide: columns lead, rows follow.
@@ -34,7 +36,7 @@ html[data-vt="sheet"][data-astro-transition="back"]::view-transition-new(sheet-c
     <script is:inline>document.documentElement.classList.add('js');</script>
   </head>
   <body>
-    <header class="frame-top">
+    {!bare && <header class="frame-top">
       <nav aria-label="Main">
         <a href="/" aria-current={path === '/' ? 'page' : undefined} data-tick>Work</a>
         <a href="/studio" aria-current={path.startsWith('/studio') ? 'page' : undefined} data-tick>Studio</a>
@@ -51,20 +53,20 @@ html[data-vt="sheet"][data-astro-transition="back"]::view-transition-new(sheet-c
           <i aria-hidden="true"><b></b><b></b><b></b></i><span>Sound on</span>
         </button>
       </div>
-    </header>
+    </header>}
 
-    <div class="edge top" aria-hidden="true"><span></span><span></span><span></span></div>
-    <div class="edge bottom" aria-hidden="true"><span></span><span></span><span></span></div>
+    {!bare && <div class="edge top" aria-hidden="true"><span></span><span></span><span></span></div>}
+    {!bare && <div class="edge bottom" aria-hidden="true"><span></span><span></span><span></span></div>}
 
     <main>
       <slot />
     </main>
 
-    <footer class="frame-bottom">
+    {!bare && <footer class="frame-bottom">
       <span>Chariot &amp; the Charioteers</span>
       <span></span>
       <span>Let's get rolling</span>
-    </footer>
+    </footer>}
 
     <div class="cursor-label" aria-hidden="true" transition:persist="cursor"></div>
 

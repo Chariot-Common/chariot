@@ -1,0 +1,78 @@
+---
+// Lab: the homepage after the team review. No fluff: the logo, one line, then the work itself
+// as real interfaces on real devices, in the order from the Figma sketch.
+//   In view: the device wakes up; its screens cycle, long pages scroll, keywords set in.
+//   Hover: one small detail from the project's own language (Skyway's clouds, HealthFlex's
+//   leaves, Stoa's rays), never a made-up format.
+// Two layouts to compare: organic (big and small, as in the sketch) and even (all one size).
+// Light by default; dark to compare. Not linked from the site yet.
+import Base from '../../layouts/Base.astro';
+import Nav from '../../components/Nav.astro';
+import Logo from '../../components/Logo.astro';
+import WorkList from '../../components/WorkList.astro';
+
+---
+<Base title="Studio · Lab · Chariot" bare>
+  <div class="studio" data-layout="organic" data-theme="light">
+    <Nav />
+
+    <header class="top">
+      <Logo class="big-mark" />
+      <p class="line">Chariot is a product and brand design studio. We help teams find what to make, then make it well.</p>
+    </header>
+
+    <WorkList />
+
+    <div class="dock" role="group" aria-label="Compare">
+      <button type="button" data-set="layout" data-val="organic" aria-pressed="true">Organic</button>
+      <button type="button" data-set="layout" data-val="even" aria-pressed="false">Even</button>
+      <span class="sep"></span>
+      <button type="button" data-set="theme" data-val="light" aria-pressed="true">Light</button>
+      <button type="button" data-set="theme" data-val="dark" aria-pressed="false">Dark</button>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .studio {
+    --paper: #FBFAF7; --ink: #1E1710; --soft: #8A8378; --frame: #E9E5DD; --bezel: #1E1710;
+    min-height: 100svh; background: var(--paper); color: var(--ink); padding-bottom: 22vh;
+    transition: background .35s, color .35s;
+  }
+  .studio[data-theme="dark"] { --paper: #12110D; --ink: #F2EEE6; --soft: #8F897D; --frame: #26241F; --bezel: #000; }
+  .studio :global(.nav) { --nav-ink: var(--ink); }
+  /* a soft band of paper under the top bar so captions don't run through it */
+  .studio::before { content: ""; position: fixed; inset: 0 0 auto 0; height: 84px; z-index: 40; pointer-events: none;
+    background: linear-gradient(var(--paper) 55%, color-mix(in srgb, var(--paper) 0%, transparent)); }
+
+  /* ---------- top: the mark, rolling with the scroll, and one line ---------- */
+  .top { display: grid; justify-items: center; gap: 28px; padding: 26vh var(--gutter) 18vh; text-align: center; }
+  .top :global(.big-mark) { width: 112px; height: auto; color: var(--accent); }
+  .line { max-width: 30ch; margin: 0; font: 400 15px/1.45 var(--sans); color: var(--soft); }
+
+  /* ---------- the dock that sticks at the bottom ---------- */
+  .dock { position: fixed; left: 50%; bottom: 20px; translate: -50% 0; z-index: 60; display: flex; align-items: center; gap: 2px; padding: 4px;
+    border-radius: 12px; background: color-mix(in srgb, var(--paper) 70%, transparent); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border: 1px solid color-mix(in srgb, var(--ink) 12%, transparent); font: 400 13px/1 var(--sans); }
+  .dock button { padding: 9px 12px; border: 0; border-radius: 8px; background: none; color: var(--soft); cursor: pointer; font: inherit; }
+  .dock button[aria-pressed="true"] { background: color-mix(in srgb, var(--ink) 9%, transparent); color: var(--ink); }
+  .sep { width: 1px; height: 18px; margin: 0 4px; background: color-mix(in srgb, var(--ink) 14%, transparent); }
+
+  @media (max-width: 760px) { .top { padding-top: 20vh; } }
+</style>
+
+<script>
+  // the dock at the bottom compares layouts and themes
+  function dock(root: HTMLElement) {
+    root.querySelectorAll<HTMLButtonElement>('.dock button').forEach((b) => b.addEventListener('click', () => {
+      const key = b.dataset.set!;
+      root.dataset[key] = b.dataset.val!;
+      root.querySelectorAll<HTMLButtonElement>(`.dock [data-set="${key}"]`).forEach((o) => o.setAttribute('aria-pressed', String(o === b)));
+    }));
+  }
+
+  document.addEventListener('astro:page-load', () => {
+    const root = document.querySelector<HTMLElement>('.studio');
+    if (root) dock(root);
+  });
+</script>

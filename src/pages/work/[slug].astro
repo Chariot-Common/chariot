@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import Halftone from '../../components/Halftone.astro';
 import Dock from '../../components/Dock.astro';
+import Thinking from '../../components/Thinking.astro';
 import { getCollection, render } from 'astro:content';
 
 export async function getStaticPaths() {
@@ -66,6 +67,8 @@ const vt = (i: number) => `view-transition-name: sheet-c${i}`;
     </div>
     {[[1, 1], [2, 1], [1, 2], [2, 2]].map(([x, y]) => <span class="cross" style={`left:${x * 33.333}%;top:${y * 33.333}%`} aria-hidden="true"></span>)}
   </section>
+
+  {d.thinking && <Thinking title={d.title} color={d.color} thinking={d.thinking} />}
 
   <article class="writeup">
     <aside class="label">{hasWriteup ? 'The work' : 'Write-up'}</aside>
