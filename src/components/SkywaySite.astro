@@ -36,9 +36,6 @@ const puffs = [{ x: -74, y: 46, z: 50, w: .6 }, { x: -58, y: 14, z: 150, w: .45 
       <svg class="puff" viewBox="0 0 120 60" aria-hidden="true" style={`--px:${c.x}%;--py:${c.y}%;--z:${c.z};--pw:${c.w};--i:${i}`}><path fill="#fff" d={cloud} /></svg>
     ))}
   </div>
-  <ol class="callouts" aria-hidden="true">
-    {layers.map((l, i) => <li style={`--cy:${l.cy};--i:${3 - i}`}><b>{String(l.n).padStart(2, '0')} {l.tag}</b>{l.sub}</li>)}
-  </ol>
 </div>
 
 <style>

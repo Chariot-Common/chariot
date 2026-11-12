@@ -73,10 +73,6 @@ const centre = [
         {centre.map((c) => <img class:list={['ln', c.c]} src={src(c.n)} alt="" loading="lazy" decoding="async" style={C(c.b, c.s)} />)}
       </div>
     </div>
-    <span class="kick k1" aria-hidden="true"><b>01</b> The tiles</span>
-    <span class="kick k2" aria-hidden="true"><b>02</b> The rings turn</span>
-    <span class="kick k3" aria-hidden="true"><b>03</b> The line</span>
-    <span class="kick k4" aria-hidden="true"><b>04</b> 3D lifts off</span>
   </div>
 </div>
 
@@ -88,7 +84,7 @@ const centre = [
   .hf3d { --x: 0; position: relative; width: var(--w); height: var(--w); perspective: calc(var(--w) * 3.4); }
   .rig { position: absolute; inset: 0; transform-style: preserve-3d;
     /* --px/--py: the pointer over the page (-1..1), eased in JS */
-    transform: translateY(calc(var(--x) * var(--w) * -.03)) rotateY(calc(var(--px, 0) * var(--x) * 16deg)) rotateX(calc(58deg - var(--x) * 50deg - var(--py, 0) * var(--x) * 12deg)) rotateZ(calc(-24deg + var(--x) * 22deg)) scale(calc(1 - var(--x) * .12)); }
+    transform: translateY(calc(var(--x) * var(--w) * -.03)) rotateY(calc(var(--px, 0) * var(--x) * 7deg)) rotateX(calc(58deg - var(--x) * 50deg - var(--py, 0) * var(--x) * 5deg)) rotateZ(calc(-24deg + var(--x) * 22deg)) scale(calc(1 - var(--x) * .12)); }
 
   /* the hero: deep green, a soft glow behind the line, fine grain */
   .panel { position: absolute; inset: 0; border-radius: calc(var(--w) * .05); transform-style: preserve-3d;
@@ -114,16 +110,16 @@ const centre = [
     --e: calc(1 - (1 - var(--dp)) * (1 - var(--dp)));
     translate: calc((var(--ox) * (var(--e) - 1) + var(--jx) * (1 - var(--e))) * var(--rs)) calc((var(--oy) * (var(--e) - 1) + var(--jy) * (1 - var(--e))) * var(--rs));
     rotate: calc(var(--r) * (1 - var(--e)));
-    scale: calc((.92 + var(--e) * .08) * (1 + var(--near) * .07));
+    scale: calc((.92 + var(--e) * .08) * (1 + var(--near) * .04));
     /* the pile has thickness; --lift is the 3D illustrations' own rise (04); --near is the pointer (JS) */
     --lift: 0; --sh: var(--near);
-    transform: translateZ(calc(var(--w) * (var(--k) * .0025 * (1 - var(--e)) + var(--lift) + .06 * var(--near))));
+    transform: translateZ(calc(var(--w) * (var(--k) * .0025 * (1 - var(--e)) + var(--lift) + .035 * var(--near))));
     filter: drop-shadow(calc(var(--w) * .008 * var(--sh)) calc(var(--w) * .018 * var(--sh)) calc(var(--w) * .014 * var(--sh)) rgb(0 20 12 / .45));
     transition: opacity .5s; }
   /* 04: the 3D illustrations lift off the page and float */
   .tile.ill { --lp: clamp(0, calc((var(--x) - .7 - var(--k) * .006) / .2), 1);
-    --lift: calc(.085 * var(--lp) + .012 * var(--bob) * var(--lp)); --sh: calc(var(--lp) + var(--near));
-    animation: bob 3.2s ease-in-out var(--j) infinite alternate paused; }
+    --lift: calc(.07 * var(--lp) + .005 * var(--bob) * var(--lp)); --sh: calc(var(--lp) + var(--near));
+    animation: bob 5.5s ease-in-out var(--j) infinite alternate paused; }
 
   /* 03: the line sets in the middle; the logo is there from the start */
   .centre { position: absolute; left: 50%; top: 50%; width: 40%; aspect-ratio: 1040 / 720; translate: -50% -50%; transform: translateZ(1px); }
@@ -133,12 +129,6 @@ const centre = [
   .ln.head, .ln.sub { clip-path: inset(-4% calc((1 - var(--p)) * 100%) -4% 0); }
   .ln.cta { opacity: var(--p); scale: calc(.6 + var(--p) * .4); }
 
-  /* labels */
-  .kick { position: absolute; right: calc(100% + 28px); white-space: nowrap; padding: 4px 7px; background: #fff; border-radius: 3px;
-    box-shadow: 0 0 0 1px rgb(30 23 16 / .1), 0 4px 10px -6px rgb(30 23 16 / .3); font: 500 9px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: #001C16;
-    opacity: clamp(0, calc((var(--x) - var(--k0)) * 6), 1); transform: translateZ(2px); }
-  .kick b { color: #4E9A1E; margin-right: 3px; }
-  .k1 { --k0: .04; top: 8%; } .k2 { --k0: .22; top: 26%; } .k3 { --k0: .44; top: 44%; } .k4 { --k0: .7; top: 62%; }
 
   /* alive (hovered, focused, or in view on a phone): the rings turn, the illustrations float */
   :global(a:is(:hover, :focus-visible, .peek)) .hf3d :is(.spin, .tile.ill) { animation-play-state: running; }
@@ -150,9 +140,7 @@ const centre = [
   :global(.fly) .hf3d .tile { translate: calc(var(--ox) * var(--rs) * 1.6) calc(var(--oy) * var(--rs) * 1.6); opacity: 0;
     transition: translate .8s cubic-bezier(.5, 0, .8, .3) calc(var(--k) * 12ms), opacity .5s .35s; }
   :global(.fly) .hf3d .centre { opacity: 0; scale: 1.3; transition: opacity .5s .2s, scale .7s; }
-  :global(.fly) .hf3d .kick { opacity: 0; transition: opacity .15s; }
 
-  @media (max-width: 760px) { .kick { display: none; } }
   @media (prefers-reduced-motion: reduce) { .spin, .tile.ill { animation: none; } }
 </style>
 

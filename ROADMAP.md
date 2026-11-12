@@ -43,6 +43,8 @@ same object carries into the case page.
 **1.10 Neon Fund, Doxel, Tortoise.** Same rule, each in its own motion. *Need from team:* a line on what we made, 3 to 5 screens, the logo (SVG).
 **1.11 Coming soon** (Cruise, Rang De, AtLabs, Freight Tiger, Draconic). They show empty "screens coming" frames that don't open. *Need from team:* hide them until ready, or keep? Plus assets when ready.
 
+**Round 3 feedback (12 Nov, Aakash).** Done on the homepage: the technique labels (01 The grid, 02 Type sets...) and the name chips are gone, the caption gives each project's own one-line summary instead of tags, the list is wider (1240px) with objects about a third bigger and larger type, and the objects no longer all rise from the same tilted angle: Paper Planes faces you and builds in place, Alai is a screen that turns to face you, Stoa's medallion turns on its rim, The Ken and HealthFlex keep theirs. Motion is calmer: no rattling lid or bobbing pieces, slower steam and sway, half the pointer lean. *Still open:* whether the engraved wheel in the hero counts as the "old-school chariot wheel styling" to drop.
+
 ## 2. Case pages
 
 | # | Task | Status |
