@@ -27,7 +27,7 @@ const sheetPieces = Array.from({ length: 4 }, (_, i) =>
 );
 const vt = (i: number) => `view-transition-name: sheet-c${i}`;
 ---
-<Base title={`${d.title} · Chariot`} description={d.summary} dock>
+<Base title={`${d.title} · Chariot`} description={d.summary} dock theme="paper">
   <Dock slot="dock" current={project.id} />
 
   <section class="sheet" style={`--c:${d.color}`} aria-label={`${d.title} project sheet`}>
