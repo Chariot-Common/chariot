@@ -1,0 +1,187 @@
+---
+// HealthFlex by Loop, as what we made: the website's hero, a dark green page held by two rings of
+// tiles (people and soft 3D illustrations) that turn against each other round the line.
+// At rest the page lies on the paper with its tiles in a loose pile in the middle. Raise --x from
+// 0 to 1: the page stands up and the tiles deal out into their two rings (01), the rings turn the
+// way they do on the site (02), the line sets in the middle (03), and the 3D illustrations (clover,
+// dumbbell, stethoscope, leaf, paw...) lift off the page and float above it (04). The standing page
+// leans toward the pointer. Clicked, the rings whirl, the tiles fly out and the case opens.
+// Every tile is cut from the live site's own ring images (public/media/healthflex): o = the outer
+// ring, i = the inner; b is left/top/width in % of its ring, ill marks a 3D illustration.
+interface Props { size?: number; style?: string }
+const { size = 360, style } = Astro.props;
+const src = (n: string) => `/media/healthflex/${n}`;
+
+const outer = [
+  { n: 'o0', b: [0.76, 29.1, 13.61], ill: true }, { n: 'o1', b: [5.83, 3.82, 29.51], ill: false },
+  { n: 'o2', b: [33.19, 0, 18.19], ill: true }, { n: 'o3', b: [52.43, 0.14, 22.01], ill: false },
+  { n: 'o4', b: [71.11, 8.06, 17.71], ill: true }, { n: 'o5', b: [82.08, 21.18, 16.88], ill: true },
+  { n: 'o6', b: [82.5, 42.71, 17.5], ill: false }, { n: 'o7', b: [75.14, 73.89, 14.38], ill: true },
+  { n: 'o8', b: [50.69, 81.6, 28.96], ill: false }, { n: 'o9', b: [28.06, 85.28, 21.11], ill: true },
+  { n: 'o10', b: [11.32, 74.72, 19.72], ill: false }, { n: 'o11', b: [0, 43.82, 17.99], ill: true },
+];
+const inner = [
+  { n: 'i0', b: [0.14, 18.75, 21.46], ill: false }, { n: 'i1', b: [13.47, 2.71, 25.42], ill: true },
+  { n: 'i2', b: [37.01, 0, 52.22], ill: false }, { n: 'i3', b: [80.28, 22.29, 16.81], ill: true },
+  { n: 'i4', b: [82.57, 36.6, 17.43], ill: false }, { n: 'i5', b: [38.4, 68.54, 54.31], ill: true },
+  { n: 'i6', b: [11.6, 73.12, 28.12], ill: false }, { n: 'i7', b: [0, 50, 20.28], ill: true },
+];
+// each tile's box in the ring's pixels (the ring is 1440 square), for its height and centre
+const sizes: Record<string, [number, number]> = {
+  o0: [196, 211], o1: [425, 404], o2: [262, 188], o3: [317, 225], o4: [255, 250], o5: [243, 309], o6: [252, 509], o7: [207, 206],
+  o8: [417, 265], o9: [304, 212], o10: [284, 271], o11: [259, 506], i0: [309, 427], i1: [366, 325], i2: [752, 398], i3: [242, 231],
+  i4: [251, 514], i5: [782, 453], i6: [405, 354], i7: [292, 414],
+};
+let k = 0;
+const tile = (t: { n: string; b: number[]; ill: boolean }, ring: 'o' | 'i') => {
+  const [w, h] = sizes[t.n];
+  const hp = t.b[2] * h / w; // height in % of the ring (the ring is square)
+  const cx = (t.b[0] + t.b[2] / 2) / 100 - .5, cy = (t.b[1] + hp / 2) / 100 - .5;
+  const order = k++;
+  // the pile: every tile a little off centre, at its own angle
+  const r = ((order * 47) % 70) - 35;
+  return { ...t, ring, style: `--l:${t.b[0]};--t:${t.b[1]};--tw:${t.b[2]};--ox:${cx.toFixed(3)};--oy:${cy.toFixed(3)};--k:${order};--r:${r}deg;--j:${(order % 5) * -.6}s` };
+};
+const tilesO = outer.map((t) => tile(t, 'o'));
+const tilesI = inner.map((t) => tile(t, 'i'));
+// the outer ring is a little wider than the page, so its tiles hang over the edge
+const rings = [{ ring: 'o', list: tilesO, sz: 108 }, { ring: 'i', list: tilesI, sz: 80.7 }];
+// the line, in the middle (boxes in % of the hero block, 1040 x 720)
+const C = (b: number[], s: number) => `--l:${b[0]};--t:${(b[1] * 1040 / 720).toFixed(2)};--tw:${b[2].toFixed(2)};--s:${s}`;
+const centre = [
+  { n: 'logo.webp', b: [37.79, 0.67, 24.42], s: 0, c: 'logo' },
+  { n: 'head.webp', b: [4.23, 16.92, 92.6], s: .2, c: 'head' },
+  { n: 'sub.webp', b: [1.44, 39.04, 96.83], s: .55, c: 'sub' },
+  { n: 'cta.webp', b: [15.48, 56.92, 69.04], s: .85, c: 'cta' },
+];
+---
+<div class="hf3d" style={`--w:${size}px;${style ?? ''}`} role="img" aria-label="HealthFlex by Loop: the website's hero, its two rings of tiles dealing out and turning round the line, the 3D illustrations lifting off the page">
+  <div class="rig">
+    <div class="panel">
+      <span class="glow" aria-hidden="true"></span>
+      {rings.map((rg) => (
+        <div class:list={['ring', rg.ring]} style={`--sz:${rg.sz}`} aria-hidden="true">
+          <div class="spin">
+            {rg.list.map((t) => (
+              <img class:list={['tile', { ill: t.ill }]} src={src(t.n + '.webp')} alt="" loading="lazy" decoding="async" style={t.style} />
+            ))}
+          </div>
+        </div>
+      ))}
+      <div class="centre" aria-hidden="true">
+        {centre.map((c) => <img class:list={['ln', c.c]} src={src(c.n)} alt="" loading="lazy" decoding="async" style={C(c.b, c.s)} />)}
+      </div>
+    </div>
+    <span class="kick k1" aria-hidden="true"><b>01</b> The tiles</span>
+    <span class="kick k2" aria-hidden="true"><b>02</b> The rings turn</span>
+    <span class="kick k3" aria-hidden="true"><b>03</b> The line</span>
+    <span class="kick k4" aria-hidden="true"><b>04</b> 3D lifts off</span>
+  </div>
+</div>
+
+<style>
+  @property --x { syntax: '<number>'; inherits: true; initial-value: 0; }
+  @property --bob { syntax: '<number>'; inherits: false; initial-value: 0; }
+
+  .hf3d { --x: 0; position: relative; width: var(--w); height: var(--w); perspective: calc(var(--w) * 3.4); }
+  .rig { position: absolute; inset: 0; transform-style: preserve-3d;
+    /* --px/--py: the pointer over the page (-1..1), eased in JS */
+    transform: translateY(calc(var(--x) * var(--w) * -.03)) rotateY(calc(var(--px, 0) * var(--x) * 16deg)) rotateX(calc(58deg - var(--x) * 50deg - var(--py, 0) * var(--x) * 12deg)) rotateZ(calc(-24deg + var(--x) * 22deg)) scale(calc(1 - var(--x) * .12)); }
+
+  /* the hero: deep green, a soft glow behind the line, fine grain */
+  .panel { position: absolute; inset: 0; border-radius: calc(var(--w) * .05); transform-style: preserve-3d;
+    background: radial-gradient(60% 60% at 50% 50%, #0E4A35, #003328 70%, #00291F);
+    box-shadow: 0 calc(var(--w) * .05) calc(var(--w) * .1) calc(var(--w) * -.03) rgb(30 23 16 / .38), inset 0 0 0 1px rgb(255 255 255 / .04); }
+  .glow { position: absolute; inset: 22%; border-radius: 50%; background: radial-gradient(closest-side, rgb(190 221 47 / .16), transparent);
+    opacity: clamp(0, calc((var(--x) - .4) * 3), 1); }
+  .panel::after { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: .5;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .8 0 0 0 0 1 0 0 0 0 .8 0 0 0 .14 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+  /* ---- the two rings ---- */
+  .ring { position: absolute; left: 50%; top: 50%; width: calc(var(--sz) * 1%); aspect-ratio: 1; translate: -50% -50%; transform-style: preserve-3d;
+    --rs: calc(var(--w) * var(--sz) / 100);
+    /* 02: they swing round into place as the tiles land, the outer and inner opposite ways */
+    rotate: calc((1 - var(--x)) * var(--dir) * 70deg); }
+  .ring.o { --dir: 1; } .ring.i { --dir: -1; }
+  .spin { position: absolute; inset: 0; transform-style: preserve-3d; animation: turn 90s linear infinite paused; }
+  .ring.i .spin { animation-direction: reverse; animation-duration: 70s; }
+
+  /* 01: each tile is dealt from the pile to its place in the ring */
+  .tile { position: absolute; left: calc(var(--l) * 1%); top: calc(var(--t) * 1%); width: calc(var(--tw) * 1%); height: auto; display: block;
+    --dp: clamp(0, calc((var(--x) - .04 - var(--k) * .013) / .24), 1);
+    --e: calc(1 - (1 - var(--dp)) * (1 - var(--dp)));
+    translate: calc(var(--ox) * var(--rs) * (var(--e) - 1)) calc(var(--oy) * var(--rs) * (var(--e) - 1));
+    rotate: calc(var(--r) * (1 - var(--e)));
+    scale: calc(.42 + var(--e) * .58);
+    transition: opacity .5s, filter .5s; }
+  /* 04: the 3D illustrations lift off the page and float */
+  .tile.ill { --lp: clamp(0, calc((var(--x) - .7 - var(--k) * .006) / .2), 1);
+    transform: translateZ(calc(var(--w) * (.075 * var(--lp) + .012 * var(--bob) * var(--lp))));
+    filter: drop-shadow(calc(var(--w) * .008 * var(--lp)) calc(var(--w) * .018 * var(--lp)) calc(var(--w) * .014 * var(--lp)) rgb(0 20 12 / .45));
+    animation: bob 3.2s ease-in-out var(--j) infinite alternate paused; }
+
+  /* 03: the line sets in the middle; the logo is there from the start */
+  .centre { position: absolute; left: 50%; top: 50%; width: 34%; aspect-ratio: 1040 / 720; translate: -50% -50%; transform: translateZ(1px); }
+  .ln { position: absolute; left: calc(var(--l) * 1%); top: calc(var(--t) * 1%); width: calc(var(--tw) * 1%); height: auto; display: block;
+    --p: clamp(0, calc((var(--x) - .42 - var(--s) * .26) / .12), 1); }
+  .ln.logo { opacity: clamp(0, calc(var(--x) * 6), 1); }
+  .ln.head, .ln.sub { clip-path: inset(-4% calc((1 - var(--p)) * 100%) -4% 0); }
+  .ln.cta { opacity: var(--p); scale: calc(.6 + var(--p) * .4); }
+
+  /* labels */
+  .kick { position: absolute; right: calc(100% + 28px); white-space: nowrap; padding: 4px 7px; background: #fff; border-radius: 3px;
+    box-shadow: 0 0 0 1px rgb(30 23 16 / .1), 0 4px 10px -6px rgb(30 23 16 / .3); font: 500 9px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: #001C16;
+    opacity: clamp(0, calc((var(--x) - var(--k0)) * 6), 1); transform: translateZ(2px); }
+  .kick b { color: #4E9A1E; margin-right: 3px; }
+  .k1 { --k0: .04; top: 8%; } .k2 { --k0: .22; top: 26%; } .k3 { --k0: .44; top: 44%; } .k4 { --k0: .7; top: 62%; }
+
+  /* alive (hovered, focused, or in view on a phone): the rings turn, the illustrations float */
+  :global(a:is(:hover, :focus-visible, .peek)) .hf3d :is(.spin, .tile.ill) { animation-play-state: running; }
+  @keyframes turn { to { rotate: 360deg; } }
+  @keyframes bob { from { --bob: -1; } to { --bob: 1; } }
+
+  /* clicked: the rings whirl, the tiles fly out, the line goes */
+  :global(.fly) .hf3d .spin { animation: turn 1.1s cubic-bezier(.5, 0, .7, .4) forwards running; }
+  :global(.fly) .hf3d .tile { translate: calc(var(--ox) * var(--rs) * 1.6) calc(var(--oy) * var(--rs) * 1.6); opacity: 0;
+    transition: translate .8s cubic-bezier(.5, 0, .8, .3) calc(var(--k) * 12ms), opacity .5s .35s; }
+  :global(.fly) .hf3d .centre { opacity: 0; scale: 1.3; transition: opacity .5s .2s, scale .7s; }
+  :global(.fly) .hf3d .kick { opacity: 0; transition: opacity .15s; }
+
+  @media (max-width: 760px) { .kick { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .spin, .tile.ill { animation: none; } }
+</style>
+
+<script>
+  // The standing page leans toward the pointer; a click whirls the rings before the case opens.
+  import { navigate } from 'astro:transitions/client';
+  const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.addEventListener('astro:page-load', () => {
+    document.querySelectorAll<HTMLElement>('.hf3d').forEach((hf) => {
+      const link = hf.closest<HTMLAnchorElement>('a[href]');
+      if (!link || calm || link.dataset.hfWired) return;
+      link.dataset.hfWired = '1';
+      link.addEventListener('click', (e) => {
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+        e.preventDefault();
+        if (link.classList.contains('fly')) return;
+        link.classList.add('fly');
+        setTimeout(() => { navigate(link.href); }, 950);
+        setTimeout(() => link.classList.remove('fly'), 2200);
+      });
+      let tx = 0, ty = 0, cx = 0, cy = 0, raf = 0;
+      const step = () => {
+        cx += (tx - cx) * .12; cy += (ty - cy) * .12;
+        hf.style.setProperty('--px', cx.toFixed(4)); hf.style.setProperty('--py', cy.toFixed(4));
+        raf = Math.abs(tx - cx) + Math.abs(ty - cy) > .002 ? requestAnimationFrame(step) : 0;
+      };
+      const aim = (x: number, y: number) => { tx = x; ty = y; if (!raf) raf = requestAnimationFrame(step); };
+      link.addEventListener('pointermove', (e) => {
+        if (e.pointerType === 'touch') return;
+        const r = hf.getBoundingClientRect();
+        const c = (v: number) => Math.max(-1, Math.min(1, v));
+        aim(c((e.clientX - r.left) / r.width * 2 - 1), c((e.clientY - r.top) / r.height * 2 - 1));
+      });
+      link.addEventListener('pointerleave', () => aim(0, 0));
+    });
+  });
+</script>

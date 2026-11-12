@@ -23,8 +23,9 @@ same object carries into the case page.
 | 1.5 | Stoa object | ✅ |
 | 1.6 | Alai object | ✅ |
 | 1.7 | Paper Planes object | ✅ |
-| 1.8 | HealthFlex object | 🔨 next |
-| 1.9 | Value Research object | ⬜ |
+| 1.8 | HealthFlex object | ✅ |
+| 1.8b | The light: a long shadow under every object | ✅ |
+| 1.9 | Value Research object | 🔨 next |
 | 1.10 | Neon Fund, Doxel, Tortoise objects | ⏸ |
 | 1.11 | The "coming soon" projects | ⏸ |
 
@@ -36,7 +37,8 @@ same object carries into the case page.
 **1.5 Stoa** *(brand identity, website, product).* The lion mark as a thick medallion in ink; on hover it stands up red, its construction grid draws, and the rays pattern, website and business card fan out.
 **1.6 Alai** *(product design, AI UX, design system).* A blank slide lies on the paper with Alai's prompt bar. On hover the prompt types itself (01 Prompt), the slide stands up and builds itself from the real product recording, looping (02 The build), a content card and the chart lift off (03 Components), and the theme switcher slides out (04 Themes).
 **1.7 Paper Planes** *(UI/UX, website, editorial).* Built from the real Paper Planes homepage, cut into its pieces (`public/media/paperplanes/`). At rest the page lies on the paper with only its masthead printed. On hover it stands up, its twelve-column grid drops in, the type sets line by line (kicker, headline, deck, sections, story cards) and the pictures drop into their frames, labelled 01 The grid, 02 Type sets, 03 Pictures. Then 04 Things lift off: the kettle, its lid and the teacups (cut out of the hero illustration) and the puzzle card's hands and loose pieces drop onto the page and rest above it. The kettle steams and its lid rattles, the hands sway, the pieces float into place, and the standing page leans toward the pointer so the layers slide against the print. The grid then lifts away. Clicked, its top corners fold in, it becomes a paper plane and flies off with a dashed trail, and the case page opens. See `PaperPlanes.astro`. *Need from team:* more Paper Planes screens (an article page) if the case should show more than the homepage.
-**1.8 HealthFlex** *(website, visual design).* The site in 3D; sections separate and their 3D illustrations (clover, dumbbell, stethoscope) pop out as pieces.
+**1.8 HealthFlex** *(website, visual design).* Built from the live site's hero (healthflex.loophealth.com): its two rings of tiles, people and soft 3D illustrations, each tile cut out on its own (`public/media/healthflex/`), plus the logo, line and button. At rest the dark green page lies on the paper with its tiles in a loose pile. On hover it stands up, the tiles deal out of the pile into the two rings (01), the rings swing into place and keep turning against each other as on the site (02), the line sets in the middle (03), and the 3D illustrations (clover, dumbbell, stethoscope, leaf, paw, bottle, cross) lift off the page and float (04). The page leans toward the pointer. Clicked, the rings whirl, the tiles fly out and the case opens. See `HealthFlexSite.astro`.
+**1.8b The light** *(after teenage engineering's EP-35 page).* Pointed at, every object is lit from above: a soft pool of light round it and an unrealistically long shadow down the paper, like the wheel at the top of the page.
 **1.9 Value Research** *(product design, UI/UX).* A fund screen; the flow plays: search, a fund, its star rating, compare.
 **1.10 Neon Fund, Doxel, Tortoise.** Same rule, each in its own motion. *Need from team:* a line on what we made, 3 to 5 screens, the logo (SVG).
 **1.11 Coming soon** (Cruise, Rang De, AtLabs, Freight Tiger, Draconic). They show empty "screens coming" frames that don't open. *Need from team:* hide them until ready, or keep? Plus assets when ready.
