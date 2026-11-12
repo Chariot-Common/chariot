@@ -62,13 +62,13 @@ same object carries into the case page.
 | 3.1 | What a chariot means | ✅ |
 | 3.2 | The wheel as a labelled diagram | ✅ |
 | 3.3 | How we work | ✅ |
-| 3.4 | The Charioteers, as a team tree | 🔨 built, waiting on names and photos |
+| 3.4 | The Charioteers, as a team tree | 🔨 images and motion redone; waiting on your review, names and photos |
 | 3.5 | Contact and Join | 🔨 links in place, Join page to come |
 
 **3.1** A chariot only moves when the wheel, the horses and the driver pull together: that is how we work with clients.
 **3.2** The wheel drawn like a patent engraving: hub = the question, spokes = three directions, rim = one honest call, tyre = what ships.
 **3.3** The process, step by step, from the homepage paragraph.
-**3.4** `/studio` is now a small museum of Chariot, after Gem Quest, the Berlin museums, the old-masters-with-a-MacBook image and mew.xyz: a dark "Chari( )ot" opener with a strip of figures, a type collage of what we believe (our own withchariot.com copy only), the Charioteers as a tree of lines where hovering draws an AI detection box round each one's thing, how we work as four exhibits on pedestals against an orange wall, and a join list. Fill in the `crew` list at the top of `src/pages/studio.astro`; photos go in `public/media/people/photos/<slug>.jpg`.
+**3.4** `/studio` is now a small museum of Chariot, after Gem Quest, the Berlin museums, the old-masters-with-a-MacBook image, mew.xyz and dmcg. *Round 2 (12 Nov): the images and the motion.* The six paintings are cut out of their parchment with a paper edge left round each figure (`public/media/people/cut/`), so they stand on the page instead of sitting in beige cards. The engravings are ink on transparency (`public/media/wheel/ink/`), so they print onto paper and the orange wall. Opener: a Charioteer jumps into the brackets of "Chari( )ot" every couple of seconds (point at one in the row below to pick them). Collage: the hub turns, the wheel rolls in, the chariot rolls along its line with the scroll, two Charioteers step out of the words. Tree: lines draw to each Charioteer; each one idles in their own way; pointing scans the figure, boxes the person, then locks onto their thing and counts up the score (on phones it happens as they scroll into view). Wall: the engravings stand on black plinths with brass number plates, each with its own motion (spin, rock, turn, roll); swipe, arrows or keys, and it moves on by itself while in view. Everything comes into focus out of a blur as it scrolls in (after dmcg). Fill in the `crew` list at the top of `src/pages/studio.astro`; photos go in `public/media/people/photos/<slug>.jpg`.
 **3.5** Contact shows who you'll talk to; Join lists roles. *Need from team:* the contact address to use, open roles.
 
 ## 4. The characters
@@ -76,7 +76,7 @@ same object carries into the case page.
 | # | Task | Status |
 |---|---|---|
 | 4.1 | Names and one thing for all six | ⏸ |
-| 4.2 | Transparent cut-outs | ⏸ |
+| 4.2 | Transparent cut-outs | 🔨 paper-edge cut-outs made from the paintings |
 | 4.3 | Margin drawings beside "how we work" on the homepage | ⬜ |
 | 4.4 | Crew on each case page; 404 page | ⬜ |
 
