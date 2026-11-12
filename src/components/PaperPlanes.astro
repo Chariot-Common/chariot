@@ -1,0 +1,149 @@
+---
+// Paper Planes, as what we made: the website of a design + culture publication, an editorial page.
+// At rest the page lies on the paper with only its masthead printed. Raise --x from 0 to 1: the page
+// stands up, its column grid draws, the type sets line by line (kicker, headline, deck, sections,
+// story cards) and the pictures drop into their frames; then the grid lifts away and the page is
+// done. Clicked, its top corners fold in, it becomes a paper plane and flies off into the case.
+// Every piece is cut from the real Paper Planes homepage (public/media/paperplanes), placed where
+// it sits on that page (left/top/width in % of the 1400 x 1405 screen).
+interface Props { size?: number; style?: string }
+const { size = 460, style } = Astro.props;
+const src = (n: string) => `/media/paperplanes/${n}`;
+const P = (x0: number, y0: number, x1: number) => `--l:${(x0 / 14).toFixed(2)};--t:${(y0 / 14.05).toFixed(2)};--pw:${((x1 - x0) / 14).toFixed(2)}`;
+
+// type sets in this order (--s from 0 to 1 across the type phase)
+const type = [
+  { n: 'kicker.webp', b: [135, 44, 332], s: 0 },
+  { n: 'icons.webp', b: [1178, 38, 1270], s: .1 },
+  { n: 'headline.webp', b: [918, 202, 1266], s: .25 },
+  { n: 'deck.webp', b: [918, 494, 1242], s: .45 },
+  { n: 'sections.webp', b: [130, 752, 1270], s: .6 },
+  { n: 'card1-txt.webp', b: [135, 1203, 580], s: .8 },
+  { n: 'card2-txt.webp', b: [625, 1203, 1070], s: .9 },
+];
+// rules draw with the type
+const rules = [
+  { b: [920, 156, 1264], s: .2 }, { b: [137, 735, 1264], s: .55 }, { b: [137, 803, 1264], s: .65 },
+];
+// pictures drop in after
+const pics = [
+  { n: 'hero.jpg', b: [137, 156, 872], h: 480, s: 0 },
+  { n: 'card1-img.jpg', b: [137, 902, 578], h: 288, s: .45 },
+  { n: 'card2-img.jpg', b: [627, 902, 1068], h: 288, s: .65 },
+  { n: '', b: [1107, 902, 1264], h: 503, s: .85 },
+];
+const cols = Array.from({ length: 12 }, (_, i) => i);
+---
+<div class="pp3d" style={`--w:${size}px;${style ?? ''}`} role="img" aria-label="Paper Planes: a magazine page whose column grid draws itself, then its type and pictures set onto it">
+  <div class="rig">
+    <div class="sheet">
+      <div class="grid" aria-hidden="true">
+        {cols.map((i) => <i style={`--i:${i}`}></i>)}
+      </div>
+      {pics.map((p) => (
+        <span class="pic" style={`${P(p.b[0], p.b[1], p.b[2])};--ph:${(p.h / 14.05).toFixed(2)};--s:${p.s}`} aria-hidden="true">
+          {p.n && <img src={src(p.n)} alt="" loading="lazy" decoding="async" />}
+        </span>
+      ))}
+      <img class="type mast" src={src('masthead.webp')} alt="" style={P(132, 64, 782)} />
+      {rules.map((r) => <span class="rule" style={`${P(r.b[0], r.b[1], r.b[2])};--s:${r.s}`} aria-hidden="true"></span>)}
+      {type.map((t) => <img class="type" src={src(t.n)} alt="" loading="lazy" decoding="async" style={`${P(t.b[0], t.b[1], t.b[2])};--s:${t.s}`} />)}
+      <!-- the two top corners, for the fold -->
+      <span class="flap l" aria-hidden="true"></span><span class="flap r" aria-hidden="true"></span>
+    </div>
+    <span class="kick k1" aria-hidden="true"><b>01</b> The grid</span>
+    <span class="kick k2" aria-hidden="true"><b>02</b> Type sets</span>
+    <span class="kick k3" aria-hidden="true"><b>03</b> Pictures</span>
+  </div>
+  <svg class="plane" viewBox="0 0 120 80" aria-hidden="true">
+    <path class="trail" d="M-260 150 C -180 120, -90 100, 10 46" pathLength="1" />
+    <path d="M4 44 L116 8 L48 50 Z" fill="#FFFFFF" />
+    <path d="M48 50 L116 8 L62 76 Z" fill="#E9E7E1" />
+    <path d="M48 50 L62 76 L54 54 Z" fill="#CFCBC2" />
+    <path d="M4 44 L116 8 L62 76 L48 50 Z" fill="none" stroke="#1E1710" stroke-width="1.2" stroke-linejoin="round" />
+  </svg>
+</div>
+
+<style>
+  @property --x { syntax: '<number>'; inherits: true; initial-value: 0; }
+
+  .pp3d { --x: 0; --cyan: #2EA8E6; position: relative; width: var(--w); height: calc(var(--w) * 1.0036); perspective: calc(var(--w) * 3.4);
+    /* phases */
+    --g: clamp(0, calc(var(--x) / .3), 1);
+    --gone: clamp(0, calc((var(--x) - .86) / .14), 1); }
+  .rig { position: absolute; inset: 0; transform-style: preserve-3d;
+    transform: translateY(calc(var(--x) * var(--w) * -.04)) rotateX(calc(58deg - var(--x) * 50deg)) rotateZ(calc(-24deg + var(--x) * 22deg)) scale(calc(1 - var(--x) * .1)); }
+
+  .sheet { position: absolute; inset: 0; background: #FFFFFF; border-radius: 2px; transform-style: preserve-3d;
+    box-shadow: 0 0 0 1px rgb(30 23 16 / .08), 0 calc(var(--w) * .05) calc(var(--w) * .1) calc(var(--w) * -.03) rgb(30 23 16 / .32); }
+
+  /* the column grid: twelve columns drop from the top, one after another */
+  .grid { position: absolute; left: 9.8%; right: 9.7%; top: 0; bottom: 0; display: grid; grid-template-columns: repeat(12, 1fr); column-gap: 1.6%;
+    opacity: calc(1 - var(--gone)); }
+  .grid i { background: rgb(46 168 230 / .12); border-inline: 1px solid rgb(46 168 230 / .5); transform-origin: 50% 0;
+    scale: 1 clamp(0, calc((var(--x) - var(--i) * .014) / .16), 1); }
+
+  /* pieces sit where they sit on the real page */
+  .type, .pic, .rule { position: absolute; left: calc(var(--l) * 1%); top: calc(var(--t) * 1%); width: calc(var(--pw) * 1%); }
+  .type { height: auto; display: block; }
+  /* type sets left to right, like a line of metal type going into the stick */
+  .type:not(.mast) { --p: clamp(0, calc((var(--x) - .24 - var(--s) * .32) / .1), 1);
+    clip-path: inset(-2% calc((1 - var(--p)) * 100%) -2% 0); translate: 0 calc((1 - var(--p)) * -6px); }
+  .rule { height: 1px; background: #1E1710; transform-origin: 0 0; scale: clamp(0, calc((var(--x) - .24 - var(--s) * .32) / .1), 1) 1; }
+  /* pictures drop into their frames */
+  .pic { height: calc(var(--ph) * 1%); overflow: hidden; background: #EFEFEF; --p: clamp(0, calc((var(--x) - .46 - var(--s) * .26) / .16), 1);
+    opacity: var(--p); clip-path: inset(0 0 calc((1 - var(--p)) * 100%) 0); }
+  .pic img { width: 100%; height: 100%; object-fit: cover; display: block; scale: calc(1.12 - var(--p) * .12); }
+
+  /* labels, in the publication's own small caps */
+  .kick { position: absolute; right: calc(100% + 10px); white-space: nowrap; padding: 4px 7px; background: #fff; border-radius: 3px;
+    box-shadow: 0 0 0 1px rgb(30 23 16 / .1), 0 4px 10px -6px rgb(30 23 16 / .3); font: 500 9px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: #1E1710;
+    opacity: clamp(0, calc((var(--x) - var(--k0)) * 6), 1); transform: translateZ(2px); }
+  .kick b { color: var(--cyan); margin-right: 3px; }
+  .k1 { --k0: .05; top: 6%; } .k2 { --k0: .3; top: 22%; } .k3 { --k0: .52; top: 40%; }
+
+  /* ---- the fold and the flight (on click: .fly) ---- */
+  .flap { position: absolute; inset: 0; background: linear-gradient(135deg, #F4F2EE, #FFFFFF 60%); backface-visibility: hidden; opacity: 0; pointer-events: none; }
+  .flap.l { clip-path: polygon(50% 0, 0 50%, 50% 50%); transform-origin: 25% 25%; transform: rotate3d(-1, 1, 0, 180deg); }
+  .flap.r { clip-path: polygon(50% 0, 100% 50%, 50% 50%); transform-origin: 75% 25%; transform: rotate3d(1, 1, 0, 180deg); }
+  .plane { position: absolute; left: 50%; top: 50%; width: 46%; translate: -50% -50%; opacity: 0; overflow: visible; pointer-events: none;
+    filter: drop-shadow(0 10px 12px rgb(30 23 16 / .25)); }
+  .trail { fill: none; stroke: #1E1710; stroke-width: 1; stroke-dasharray: .015 .02; opacity: 0; }
+
+  :global(.fly) .pp3d .flap { opacity: 1; animation: fold .4s cubic-bezier(.5, 0, .3, 1) forwards; }
+  :global(.fly) .pp3d .sheet { animation: corners .4s cubic-bezier(.5, 0, .3, 1) forwards, tuck .3s ease-in .42s forwards; }
+  :global(.fly) .pp3d .kick { opacity: 0; transition: opacity .15s; }
+  :global(.fly) .pp3d .plane { animation: become .28s ease-out .52s forwards, away .75s cubic-bezier(.5, 0, .7, .4) .8s forwards; }
+  :global(.fly) .pp3d .trail { animation: trail .75s linear .8s forwards; }
+  @keyframes fold { to { transform: rotate3d(var(--ax, -1), 1, 0, 0deg); } }
+  .flap.r { --ax: 1; }
+  @keyframes corners { 50%, 100% { clip-path: polygon(50% 0, 50% 0, 100% 50%, 100% 100%, 0 100%, 0 50%); } from { clip-path: polygon(0 0, 100% 0, 100% 50%, 100% 100%, 0 100%, 0 50%); } }
+  @keyframes tuck { to { scale: .2 1; opacity: 0; } }
+  @keyframes become { from { opacity: 0; scale: .5; rotate: -30deg; } to { opacity: 1; scale: 1; rotate: 0deg; } }
+  @keyframes away { to { translate: calc(-50% + var(--w) * 1.4) calc(-50% - var(--w) * 1.1); rotate: -18deg; scale: .5; opacity: 0; } }
+  @keyframes trail { 0% { opacity: 0; } 20% { opacity: .6; } 100% { opacity: 0; } }
+
+  /* on a phone the labels would run off the left edge */
+  @media (max-width: 760px) { .kick { display: none; } }
+</style>
+
+<script>
+  // Clicking Paper Planes folds the page into a plane and flies it off before the case opens.
+  import { navigate } from 'astro:transitions/client';
+  const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.addEventListener('astro:page-load', () => {
+    document.querySelectorAll<HTMLElement>('.pp3d').forEach((pp) => {
+      const link = pp.closest<HTMLAnchorElement>('a[href]');
+      if (!link || calm || link.dataset.ppWired) return;
+      link.dataset.ppWired = '1';
+      link.addEventListener('click', (e) => {
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+        e.preventDefault();
+        if (link.classList.contains('fly')) return;
+        link.classList.add('fly');
+        setTimeout(() => { navigate(link.href); }, 1250);
+        setTimeout(() => link.classList.remove('fly'), 2400);
+      });
+    });
+  });
+</script>

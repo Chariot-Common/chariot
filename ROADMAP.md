@@ -22,8 +22,8 @@ same object carries into the case page.
 | 1.4 | The Ken object | ✅ |
 | 1.5 | Stoa object | ✅ |
 | 1.6 | Alai object | ✅ |
-| 1.7 | Paper Planes object | 🔨 next |
-| 1.8 | HealthFlex object | ⬜ |
+| 1.7 | Paper Planes object | ✅ |
+| 1.8 | HealthFlex object | 🔨 next |
 | 1.9 | Value Research object | ⬜ |
 | 1.10 | Neon Fund, Doxel, Tortoise objects | ⏸ |
 | 1.11 | The "coming soon" projects | ⏸ |
@@ -35,7 +35,7 @@ same object carries into the case page.
 **1.4 The Ken** *(product strategy, visual design, design system).* The homepage stands as a sheet; on hover its system comes out as a print specimen: masthead, colour, type, story card, actions and tags, apps.
 **1.5 Stoa** *(brand identity, website, product).* The lion mark as a thick medallion in ink; on hover it stands up red, its construction grid draws, and the rays pattern, website and business card fan out.
 **1.6 Alai** *(product design, AI UX, design system).* A blank slide lies on the paper with Alai's prompt bar. On hover the prompt types itself (01 Prompt), the slide stands up and builds itself from the real product recording, looping (02 The build), a content card and the chart lift off (03 Components), and the theme switcher slides out (04 Themes).
-**1.7 Paper Planes** *(UI/UX, website, editorial).* A magazine page: its column grid draws, type and pictures set onto it, then it folds into a plane and flies into the site.
+**1.7 Paper Planes** *(UI/UX, website, editorial).* Built from the real Paper Planes homepage, cut into its pieces (`public/media/paperplanes/`). At rest the page lies on the paper with only its masthead printed. On hover it stands up, its twelve-column grid drops in, the type sets line by line (kicker, headline, deck, sections, story cards) and the pictures drop into their frames, labelled 01 The grid, 02 Type sets, 03 Pictures; then the grid lifts away. Clicked, its top corners fold in, it becomes a paper plane and flies off with a dashed trail, and the case page opens. See `PaperPlanes.astro`. *Need from team:* more Paper Planes screens (an article page) if the case should show more than the homepage.
 **1.8 HealthFlex** *(website, visual design).* The site in 3D; sections separate and their 3D illustrations (clover, dumbbell, stethoscope) pop out as pieces.
 **1.9 Value Research** *(product design, UI/UX).* A fund screen; the flow plays: search, a fund, its star rating, compare.
 **1.10 Neon Fund, Doxel, Tortoise.** Same rule, each in its own motion. *Need from team:* a line on what we made, 3 to 5 screens, the logo (SVG).
@@ -62,7 +62,7 @@ same object carries into the case page.
 | 3.1 | What a chariot means | ✅ |
 | 3.2 | The wheel as a labelled diagram | ✅ |
 | 3.3 | How we work | ✅ |
-| 3.4 | The Charioteers, as a team tree | 🔨 images and motion redone; waiting on your review, names and photos |
+| 3.4 | The Charioteers, as a team tree | ✅ direction approved; waiting on names and photos |
 | 3.5 | Contact and Join | 🔨 links in place, Join page to come |
 
 **3.1** A chariot only moves when the wheel, the horses and the driver pull together: that is how we work with clients.
@@ -86,7 +86,7 @@ Saved in `public/media/people/`. Aakash = armour, Joshua = speaker, Samridhi = y
 
 | # | Task | Status |
 |---|---|---|
-| 5.1 | Phone pass on every page | ⬜ |
+| 5.1 | Phone pass on every page | 🔨 work list no longer runs off the side on phones |
 | 5.2 | Speed: image sizes, loading | ⬜ |
 | 5.3 | Accessibility: labels, keyboard, reduced motion | ⬜ |
 | 5.4 | Review, merge, deploy | ⬜ |

@@ -15,18 +15,19 @@ import SkywaySite from './SkywaySite.astro';
 import KenSystem from './KenSystem.astro';
 import StoaBrand from './StoaBrand.astro';
 import AlaiProduct from './AlaiProduct.astro';
+import PaperPlanes from './PaperPlanes.astro';
 
 type Screen = { src: string; video?: string; framed?: boolean };
 type Project = {
   name: string; slug?: string; size: 'big' | 'small'; tags: string[];
-  desktop?: Screen[]; phone?: Screen[]; extra?: 'site' | 'leaves' | 'stoa' | 'ken' | 'alai'; soon?: boolean;
+  desktop?: Screen[]; phone?: Screen[]; extra?: 'site' | 'leaves' | 'stoa' | 'ken' | 'alai' | 'planes'; soon?: boolean;
 };
 const m = (p: string) => `/media/home/${p}`;
 const projects: Project[] = [
   { name: 'Cruise', size: 'big', tags: ['Product strategy', 'Product design'], soon: true },
   { name: 'Rang De', size: 'big', tags: ['Brand', 'Website'], soon: true },
   { name: 'AtLabs', size: 'small', tags: ['Product design'], soon: true },
-  { name: 'Paper Planes', slug: 'paper-planes', size: 'big', tags: ['UI/UX', 'Website', 'Editorial design'], desktop: [{ src: m('paperplanes.jpg') }] },
+  { name: 'Paper Planes', slug: 'paper-planes', size: 'big', tags: ['UI/UX', 'Website', 'Editorial design'], extra: 'planes' },
   { name: 'Freight Tiger', size: 'small', tags: ['Product design'], soon: true },
   { name: 'Alai', slug: 'alai', size: 'big', tags: ['Product design', 'AI UX', 'Design system'], extra: 'alai' },
   { name: 'The Ken', slug: 'the-ken', size: 'big', tags: ['Product strategy', 'Visual design', 'Design system'], extra: 'ken' },
@@ -47,7 +48,7 @@ const entries = new Map((await getCollection('projects')).map((e) => [e.id, e.da
 const small = (src: string) => (src.includes('framerusercontent.com') ? `${src}?scale-down-to=1024` : src);
 const fanFor = (p: Project): string[] => {
   const d = p.slug ? entries.get(p.slug) : undefined;
-  if (!d || p.soon || p.extra === 'leaves' || p.extra === 'site' || p.extra === 'stoa' || p.extra === 'ken' || p.extra === 'alai') return [];
+  if (!d || p.soon || p.extra === 'leaves' || p.extra === 'site' || p.extra === 'stoa' || p.extra === 'ken' || p.extra === 'alai' || p.extra === 'planes') return [];
     return (d.pieces.length ? d.pieces.slice(0, 3).map((x) => x.src) : [d.poster]).map(small);
 };
 // where each card lands: behind top-right, in front bottom-right (carries the chip), behind left
@@ -83,7 +84,7 @@ const leaves = [
 ---
 <div class="list">
   {placed.map((p) => {
-    const holder = p.extra === 'stoa' ? 'is-stoa' : p.extra === 'ken' ? 'is-ken' : p.extra === 'alai' ? 'is-alai' : p.extra === 'site' ? 'is-site' : p.desktop || p.soon ? 'is-desk' : 'is-phone';
+    const holder = p.extra === 'stoa' ? 'is-stoa' : p.extra === 'ken' ? 'is-ken' : p.extra === 'alai' ? 'is-alai' : p.extra === 'planes' ? 'is-pp' : p.extra === 'site' ? 'is-site' : p.desktop || p.soon ? 'is-desk' : 'is-phone';
     const pos = slots(p.fan.length);
     return (
     <a class:list={['proj', p.size, p.side, p.extra && `x-${p.extra}`, { soon: p.soon, duo: p.desktop && p.phone }]}
@@ -110,6 +111,7 @@ const leaves = [
           {p.extra === 'stoa' && <StoaBrand size={200} />}
           {p.extra === 'ken' && <KenSystem size={420} />}
           {p.extra === 'alai' && <AlaiProduct size={440} />}
+          {p.extra === 'planes' && <PaperPlanes size={400} />}
 
           {p.soon && (
             <div class="device desktop placeholder"><div class="bar"><b></b><b></b><b></b></div><div class="screen"><span>{p.name}<br />screens coming</span></div></div>
@@ -284,6 +286,12 @@ const leaves = [
   .is-alai :global(.alai3d) { transition: --x .45s var(--ease); }
   .proj:is(:hover, :focus-visible, .peek) .is-alai :global(.alai3d) { --x: 1; transition: --x 1.3s var(--snap); }
   .is-alai .solo-chip { right: -4%; bottom: 4%; }
+  /* Paper Planes: the page's grid draws, type and pictures set; clicked, it folds and flies (PaperPlanes.astro) */
+  .obj.is-pp { width: 400px; height: 440px; }
+  .is-pp :global(.pp3d) { transition: --x .5s var(--ease); }
+  .proj:is(:hover, :focus-visible, .peek) .is-pp :global(.pp3d) { --x: 1; transition: --x 2.6s cubic-bezier(.35, .1, .25, 1); }
+  .proj.fly .is-pp :global(.pp3d) { --x: 1; transition: none; }
+  .is-pp .solo-chip { right: -14%; bottom: 0; }
   .is-stoa .solo-chip { right: -40%; bottom: 0; }
 
   /* ---------- even: every project the same size, one column ---------- */
@@ -296,7 +304,12 @@ const leaves = [
   :global([data-layout="even"]) .duo .phone { width: 130px; }
 
   @media (max-width: 760px) {
-    .list { grid-template-columns: 1fr; row-gap: 12vh; }
+    /* minmax(0, 1fr): the 3D objects have fixed widths, which would otherwise widen the column past the screen */
+    .list { grid-template-columns: minmax(0, 1fr); row-gap: 12vh; }
+    .proj, .stage, .obj { min-width: 0; }
+    /* the wide 3D objects are scaled down; flex keeps them centred even though their box is wider than the column */
+    .obj.is-pp, .obj.is-alai, .obj.is-ken { display: flex; justify-content: center; align-items: center; }
+    .obj.is-pp > :global(*), .obj.is-alai > :global(*), .obj.is-ken > :global(*) { flex: none; }
     .proj.small.r { margin-top: 0; }
     .proj.solo { translate: none; }
     .big .stage, .small .stage { min-height: 0; }
@@ -304,6 +317,8 @@ const leaves = [
     .obj.is-stoa { scale: .8; }
     .obj.is-ken, .obj.is-alai { width: 100%; height: 300px; }
     .is-alai :global(.alai3d) { scale: .62; }
+    .obj.is-pp { width: 100%; height: 330px; }
+    .is-pp :global(.pp3d) { scale: .72; }
     .is-ken :global(.ken3d) { scale: .62; }
     .obj.is-phone { width: 190px; }
     /* on a phone the fan stays tight to the device so nothing runs off the screen */
@@ -316,7 +331,7 @@ const leaves = [
   @media (prefers-reduced-motion: reduce) {
     .screen .cur.scrolling { transform: none; }
     .card, .cloud, .leaf, .solo-chip { transition: opacity .2s !important; translate: none !important; scale: 1 !important; }
-    .is-site :global(.site3d), .is-ken :global(.ken3d), .is-stoa :global(.stoa-brand), .is-alai :global(.alai3d) { transition: none !important; }
+    .is-site :global(.site3d), .is-ken :global(.ken3d), .is-stoa :global(.stoa-brand), .is-alai :global(.alai3d), .is-pp :global(.pp3d) { transition: none !important; }
     .leaf { rotate: var(--r) !important; }
     .cloud svg, .leaf svg { animation: none !important; }
   }
