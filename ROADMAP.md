@@ -128,7 +128,6 @@ Saved in `public/media/people/`. Aakash = armour, Joshua = speaker, Samridhi = y
 - Lazy images don't load in a headless tab: set `loading='eager'` and `decode()` them before a screenshot.
 
 **Small things left open**
-- HealthFlex's last tweaks (bigger pile, bigger line, tiles rising to the pointer) were checked at desktop width only; re-check at 375px.
 - Case pages for Paper Planes and HealthFlex still use the shared sheet; the objects don't carry into them yet (roadmap 2.4).
 - `public/media/about/*-light.png` is unused; the ink engravings in `public/media/wheel/ink/` are heavy (roadmap 5.2).
 - The step labels (01, 02...) are hidden on phones for Paper Planes and HealthFlex.
