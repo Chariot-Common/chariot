@@ -8,14 +8,14 @@ const path = Astro.url.pathname;
 ---
 <header class="nav">
   <nav class="side" aria-label="Main">
-    <a href="/lab/wheel" data-tick>Workshop</a>
+    <a href="/studio" aria-current={path.startsWith('/studio') ? 'page' : undefined} data-tick>Studio</a>
     <a href="mailto:hello@withchariot.com" data-tick>Contact</a>
   </nav>
 
-  <a href="/lab/home" class="name mark" aria-label="Chariot, home" data-tick><Logo /><span class="sun" aria-hidden="true"></span></a>
+  <a href="/" class="name mark" aria-label="Chariot, home" data-tick><Logo /><span class="sun" aria-hidden="true"></span></a>
 
   <nav class="side right" aria-label="More">
-    <a class="pill" href="/work" aria-current={path.startsWith('/work') ? 'page' : undefined} data-tick>Projects</a>
+    <a class="pill" href="/#work" aria-current={path.startsWith('/work') ? 'page' : undefined} data-tick>Projects</a>
     <a href="/careers" data-tick>Join</a>
     <button class="sound" type="button" aria-pressed="true" data-sound>
       <svg viewBox="0 0 22 16" aria-hidden="true"><path d="M2 8l9-6v12z" /><path class="w1" d="M14 5.5a3.5 3.5 0 010 5" /><path class="w2" d="M17 3a7 7 0 010 10" /></svg>

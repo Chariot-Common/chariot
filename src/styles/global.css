@@ -127,3 +127,14 @@ a { color: inherit; text-decoration: none; }
   .js [data-reveal] { filter: none; transform: none; opacity: 1; transition: none; }
   ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation-duration: .01ms !important; }
 }
+
+/* ---------- paper: the project pages on white, to match the lab homepage ---------- */
+html.theme-paper {
+  --bg: #FFFFFF; --surface: #F3F1EC; --ink: #1E1710; --muted: #6F685E;
+  --line: rgb(30 23 16 / .16); color-scheme: light;
+}
+
+/* on phones the project switcher needs the room: keep only Work on the left and the sound toggle on the right */
+@media (max-width: 600px) {
+  .frame-top nav[aria-label="Main"] a:not(:first-child), .frame-right > a, .frame-right .sound > span { display: none; }
+}

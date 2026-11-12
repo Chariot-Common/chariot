@@ -68,6 +68,7 @@ const steps = ['The question', 'Directions', 'The call', 'The result'];
   .copy { display: grid; min-height: 7.5em; max-width: 30ch; font: 600 clamp(26px, 3.1vw, 46px)/1.1 var(--serif); letter-spacing: -.03em; }
   .beat { grid-area: 1 / 1; margin: 0; display: grid; align-content: start; gap: 14px; text-wrap: balance; }
   .beat .label { color: var(--c); filter: brightness(1.6); }
+  :global(html.theme-paper) .beat .label { filter: none; }
   /* the outgoing line is gone before the next one arrives, so two never overlap */
   .q { opacity: clamp(0, calc(1 - var(--k) * 2), 1); transform: translateY(calc(var(--k) * -12px)); }
   .call { opacity: calc(clamp(0, calc(var(--k) * 2 - 1), 1) - clamp(0, calc(var(--r) * 2), 1)); transform: translateY(calc((1 - var(--k)) * 12px - var(--r) * 12px)); }

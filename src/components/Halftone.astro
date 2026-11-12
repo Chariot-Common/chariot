@@ -34,6 +34,10 @@ const { src, alt, tint = 'var(--ink)', dot = 6, position = 'center', eager = fal
     mix-blend-mode: screen;
   }
   .ht-tint { position: absolute; inset: 0; background: var(--tint); mix-blend-mode: multiply; }
+  /* paper ground: the same dots as on the dark ground, printed in tinted ink instead of light */
+  :global(html.theme-paper) .ht-print { mix-blend-mode: multiply; }
+  :global(html.theme-paper) .ht-screen { filter: contrast(22); }
+  :global(html.theme-paper) .ht-tint { mix-blend-mode: screen; }
   .ht-full {
     position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: var(--pos);
     opacity: 0; filter: blur(6px); transform: scale(1.015);

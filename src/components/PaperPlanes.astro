@@ -1,0 +1,236 @@
+---
+// Paper Planes, as what we made: the website of a design + culture publication, an editorial page.
+// At rest the page lies on the paper with only its masthead printed. Raise --x from 0 to 1: the page
+// stands up, its column grid draws, the type sets line by line (kicker, headline, deck, sections,
+// story cards) and the pictures drop into their frames; then the grid lifts away and the page is
+// done. Clicked, its top corners fold in, it becomes a paper plane and flies off into the case.
+// Every piece is cut from the real Paper Planes homepage (public/media/paperplanes), placed where
+// it sits on that page (left/top/width in % of the 1400 x 1405 screen).
+interface Props { size?: number; style?: string }
+const { size = 460, style } = Astro.props;
+const src = (n: string) => `/media/paperplanes/${n}`;
+const P = (x0: number, y0: number, x1: number) => `--l:${(x0 / 14).toFixed(2)};--t:${(y0 / 14.05).toFixed(2)};--pw:${((x1 - x0) / 14).toFixed(2)}`;
+
+// type sets in this order (--s from 0 to 1 across the type phase)
+const type = [
+  { n: 'kicker.webp', b: [135, 44, 332], s: 0 },
+  { n: 'icons.webp', b: [1178, 38, 1270], s: .1 },
+  { n: 'headline.webp', b: [918, 202, 1266], s: .25 },
+  { n: 'deck.webp', b: [918, 494, 1242], s: .45 },
+  { n: 'sections.webp', b: [130, 752, 1270], s: .6 },
+  { n: 'card1-txt.webp', b: [135, 1203, 580], s: .8 },
+  { n: 'card2-txt.webp', b: [625, 1203, 1070], s: .9 },
+];
+// rules draw with the type
+const rules = [
+  { b: [920, 156, 1264], s: .2 }, { b: [137, 735, 1264], s: .55 }, { b: [137, 803, 1264], s: .65 },
+];
+// pictures drop in after (the hero and the puzzle card print without their objects: those lift off below)
+const pics = [
+  { n: 'hero-bg.jpg', b: [137, 156, 872], h: 480, s: 0 },
+  { n: 'card1-img.jpg', b: [137, 902, 578], h: 288, s: .45 },
+  { n: 'card2-bg.jpg', b: [627, 902, 1068], h: 288, s: .65 },
+  { n: '', b: [1107, 902, 1264], h: 503, s: .85 },
+];
+// cut from the hero illustration (boxes in the hero's own 735 x 480 pixels, which sits at 137,156 on the page)
+const hx = (b: number[]) => P(137 + b[0], 156 + b[1], 137 + b[2]);
+const kettle = [235, 141, 479, 420], lid = [309, 198, 439, 268], cups = [33, 265, 229, 402];
+// cut from the puzzle illustration (441 x 288): four hands come in from the edges, four loose pieces fly into place
+const F = (f: string) => { const [a, b] = f.split(' '); return `--fx:${a};--fy:${b}`; };
+const C = (b: number[]) => `--l:${(b[0] / 4.41).toFixed(2)};--t:${(b[1] / 2.88).toFixed(2)};--pw:${((b[2] - b[0]) / 4.41).toFixed(2)}`;
+const hands = [
+  { n: 'c2-hand1', b: [168, 0, 275, 131], o: '60% 0', f: '0 -110%', d: 3.4 },
+  { n: 'c2-hand2', b: [275, 0, 409, 49], o: '70% 0', f: '10% -120%', d: 4.1 },
+  { n: 'c2-hand3', b: [285, 71, 441, 262], o: '100% 70%', f: '110% 0', d: 3.7 },
+  { n: 'c2-hand4', b: [0, 94, 188, 288], o: '0 100%', f: '-110% 30%', d: 3.1 },
+];
+const pieces = [
+  { n: 'c2-piece1', b: [122, 82, 161, 112], f: '-260% -180%', r: -160 },
+  { n: 'c2-piece2', b: [158, 117, 200, 147], f: '220% -260%', r: 140 },
+  { n: 'c2-piece3', b: [216, 148, 271, 179], f: '160% 260%', r: -120 },
+  { n: 'c2-piece4', b: [50, 236, 85, 271], f: '-200% 140%', r: 200 },
+];
+const cols = Array.from({ length: 12 }, (_, i) => i);
+---
+<div class="pp3d" style={`--w:${size}px;${style ?? ''}`} role="img" aria-label="Paper Planes: a magazine page whose column grid draws itself, then its type and pictures set onto it">
+  <div class="rig">
+    <div class="sheet">
+      <div class="grid" aria-hidden="true">
+        {cols.map((i) => <i style={`--i:${i}`}></i>)}
+      </div>
+      {pics.map((p) => (
+        <span class="pic" style={`${P(p.b[0], p.b[1], p.b[2])};--ph:${(p.h / 14.05).toFixed(2)};--s:${p.s}`} aria-hidden="true">
+          {p.n && <img src={src(p.n)} alt="" loading="lazy" decoding="async" />}
+        </span>
+      ))}
+      <img class="type mast" src={src('masthead.webp')} alt="" style={P(132, 64, 782)} />
+      {rules.map((r) => <span class="rule" style={`${P(r.b[0], r.b[1], r.b[2])};--s:${r.s}`} aria-hidden="true"></span>)}
+      {type.map((t) => <img class="type" src={src(t.n)} alt="" loading="lazy" decoding="async" style={`${P(t.b[0], t.b[1], t.b[2])};--s:${t.s}`} />)}
+      <!-- objects lift off the page: the kettle (its lid rattles, it steams) and the teacups -->
+      <img class="pop cups" src={src('cups.webp')} alt="" style={`${hx(cups)};--z:.05;--s:0`} />
+      <img class="pop kettle" src={src('kettle.webp')} alt="" style={`${hx(kettle)};--z:.09;--s:.25`} />
+      <img class="pop lid" src={src('lid.webp')} alt="" style={`${hx(lid)};--z:.1;--s:.25`} />
+      <svg class="pop steam" viewBox="0 0 60 80" style={`${P(268, 206, 418)};--z:.11;--s:.4`} aria-hidden="true">
+        <path d="M44 78 C 36 66, 52 58, 42 46 S 30 30, 40 16 S 34 4, 30 0" pathLength="1" />
+        <path d="M50 76 C 46 62, 58 56, 52 44 S 44 28, 52 14" pathLength="1" />
+        <path d="M38 76 C 30 64, 40 52, 30 40 S 22 24, 26 10" pathLength="1" />
+      </svg>
+      <!-- the puzzle card, as its own layer: hands reach in, the loose pieces fly into place -->
+      <span class="pop c2" style={`${P(627, 902, 1068)};--ph:${(288 / 14.05).toFixed(2)};--z:.06;--s:.5`} aria-hidden="true">
+        {hands.map((h) => <img class="hand" src={src(h.n + '.webp')} alt="" style={`${C(h.b)};transform-origin:${h.o};${F(h.f)};--d:${h.d}s`} />)}
+        {pieces.map((q, i) => <img class="piece" src={src(q.n + '.webp')} alt="" style={`${C(q.b)};${F(q.f)};--r:${q.r}deg;--i:${i}`} />)}
+      </span>
+      <!-- the two top corners, for the fold -->
+      <span class="flap l" aria-hidden="true"></span><span class="flap r" aria-hidden="true"></span>
+    </div>
+    <span class="kick k1" aria-hidden="true"><b>01</b> The grid</span>
+    <span class="kick k2" aria-hidden="true"><b>02</b> Type sets</span>
+    <span class="kick k3" aria-hidden="true"><b>03</b> Pictures</span>
+    <span class="kick k4" aria-hidden="true"><b>04</b> Things lift off</span>
+  </div>
+  <svg class="plane" viewBox="0 0 120 80" aria-hidden="true">
+    <path class="trail" d="M-260 150 C -180 120, -90 100, 10 46" pathLength="1" />
+    <path d="M4 44 L116 8 L48 50 Z" fill="#FFFFFF" />
+    <path d="M48 50 L116 8 L62 76 Z" fill="#E9E7E1" />
+    <path d="M48 50 L62 76 L54 54 Z" fill="#CFCBC2" />
+    <path d="M4 44 L116 8 L62 76 L48 50 Z" fill="none" stroke="#1E1710" stroke-width="1.2" stroke-linejoin="round" />
+  </svg>
+</div>
+
+<style>
+  @property --x { syntax: '<number>'; inherits: true; initial-value: 0; }
+
+  .pp3d { --x: 0; --cyan: #2EA8E6; position: relative; width: var(--w); height: calc(var(--w) * 1.0036); perspective: calc(var(--w) * 3.4);
+    /* phases */
+    --g: clamp(0, calc(var(--x) / .3), 1);
+    --gone: clamp(0, calc((var(--x) - .86) / .14), 1); }
+  .rig { position: absolute; inset: 0; transform-style: preserve-3d;
+    /* --px/--py: the pointer over the page (-1..1), eased in JS; it tilts the page once it stands up */
+    transform: translateY(calc(var(--x) * var(--w) * -.04)) rotateY(calc(var(--px, 0) * var(--x) * 16deg)) rotateX(calc(58deg - var(--x) * 50deg - var(--py, 0) * var(--x) * 12deg)) rotateZ(calc(-24deg + var(--x) * 22deg)) scale(calc(1 - var(--x) * .1)); }
+
+  .sheet { position: absolute; inset: 0; background: #FFFFFF; border-radius: 2px; transform-style: preserve-3d;
+    box-shadow: 0 0 0 1px rgb(30 23 16 / .08), 0 calc(var(--w) * .05) calc(var(--w) * .1) calc(var(--w) * -.03) rgb(30 23 16 / .32); }
+  /* light across the paper, following the pointer */
+  .sheet::after { content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit; opacity: var(--x);
+    background: radial-gradient(circle at calc(50% + var(--px, 0) * 45%) calc(35% + var(--py, 0) * 45%), rgb(255 255 255 / .22), transparent 55%),
+      linear-gradient(calc(160deg + var(--px, 0) * 30deg), transparent 55%, rgb(30 23 16 / .06)); }
+
+  /* the column grid: twelve columns drop from the top, one after another */
+  .grid { position: absolute; left: 9.8%; right: 9.7%; top: 0; bottom: 0; display: grid; grid-template-columns: repeat(12, 1fr); column-gap: 1.6%;
+    opacity: calc(1 - var(--gone)); }
+  .grid i { background: rgb(46 168 230 / .12); border-inline: 1px solid rgb(46 168 230 / .5); transform-origin: 50% 0;
+    scale: 1 clamp(0, calc((var(--x) - var(--i) * .014) / .16), 1); }
+
+  /* pieces sit where they sit on the real page */
+  .type, .pic, .rule { position: absolute; left: calc(var(--l) * 1%); top: calc(var(--t) * 1%); width: calc(var(--pw) * 1%); }
+  .type { height: auto; display: block; }
+  /* type sets left to right, like a line of metal type going into the stick */
+  .type:not(.mast) { --p: clamp(0, calc((var(--x) - .2 - var(--s) * .3) / .1), 1);
+    clip-path: inset(-2% calc((1 - var(--p)) * 100%) -2% 0); translate: 0 calc((1 - var(--p)) * -6px); }
+  .rule { height: 1px; background: #1E1710; transform-origin: 0 0; scale: clamp(0, calc((var(--x) - .2 - var(--s) * .3) / .1), 1) 1; }
+  /* pictures drop into their frames */
+  .pic { height: calc(var(--ph) * 1%); overflow: hidden; background: #EFEFEF; --p: clamp(0, calc((var(--x) - .42 - var(--s) * .22) / .14), 1);
+    opacity: var(--p); clip-path: inset(0 0 calc((1 - var(--p)) * 100%) 0); }
+  .pic img { width: 100%; height: 100%; object-fit: cover; display: block; scale: calc(1.12 - var(--p) * .12); }
+
+  /* labels, in the publication's own small caps */
+  .kick { position: absolute; right: calc(100% + 10px); white-space: nowrap; padding: 4px 7px; background: #fff; border-radius: 3px;
+    box-shadow: 0 0 0 1px rgb(30 23 16 / .1), 0 4px 10px -6px rgb(30 23 16 / .3); font: 500 9px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: #1E1710;
+    opacity: clamp(0, calc((var(--x) - var(--k0)) * 6), 1); transform: translateZ(2px); }
+  .kick b { color: var(--cyan); margin-right: 3px; }
+  .k1 { --k0: .05; top: 6%; } .k2 { --k0: .2; top: 22%; } .k3 { --k0: .42; top: 40%; } .k4 { --k0: .56; top: 58%; }
+
+  /* ---- 04: things lift off the page ----
+     each layer drops from above onto its picture and comes to rest a little above the paper (--z, in page widths),
+     so when the pointer tilts the page the kettle, the cups and the puzzle card move against the print beneath */
+  .pop { position: absolute; left: calc(var(--l) * 1%); top: calc(var(--t) * 1%); width: calc(var(--pw) * 1%); height: auto; display: block;
+    --lp: clamp(0, calc((var(--x) - .5 - var(--s) * .24) / .22), 1);
+    --fall: calc((1 - var(--lp)) * (1 - var(--lp)));
+    transform: translateZ(calc(var(--w) * (var(--z) * var(--lp) + var(--fall) * .5)));
+    opacity: clamp(0, calc(var(--lp) * 5), 1); pointer-events: none; }
+  img.pop { filter: drop-shadow(calc(var(--w) * var(--z) * .12) calc(var(--w) * var(--z) * .22) calc(var(--w) * var(--z) * .14) rgb(30 23 16 / .38)); }
+  .lid { translate: 0 0; }
+  .steam { overflow: visible; opacity: calc(clamp(0, calc(var(--lp) * 3 - 1), 1) * .9); }
+  .steam { filter: drop-shadow(0 0 1.2px rgb(40 52 70 / .7)) drop-shadow(0 1px 3px rgb(40 52 70 / .35)); }
+  .steam path { fill: none; stroke: #fff; stroke-width: 5; stroke-linecap: round; stroke-dasharray: .45 .55; stroke-dashoffset: 1; opacity: 0; }
+  .c2 { height: calc(var(--ph) * 1%); overflow: hidden; }
+  .c2 img { position: absolute; left: calc(var(--l) * 1%); top: calc(var(--t) * 1%); width: calc(var(--pw) * 1%); height: auto; display: block; }
+  .hand { translate: calc(var(--fx) * (1 - var(--lp))) calc(var(--fy) * (1 - var(--lp))); }
+  .piece { --pp: clamp(0, calc(var(--lp) * 1.6 - .5 - var(--i) * .1), 1);
+    translate: calc(var(--fx) * (1 - var(--pp))) calc(var(--fy) * (1 - var(--pp))); rotate: calc(var(--r) * (1 - var(--pp)));
+    filter: drop-shadow(0 calc(var(--w) * .006) calc(var(--w) * .006) rgb(30 23 16 / .3)); }
+
+  /* once the page is alive (hovered, focused, or in view on a phone): steam rises, the lid rattles, hands work the puzzle */
+  .steam path { animation: steam 2.6s cubic-bezier(.3, 0, .6, 1) infinite paused; }
+  .steam path:nth-child(2) { animation-delay: -.9s; animation-duration: 3s; }
+  .steam path:nth-child(3) { animation-delay: -1.7s; animation-duration: 2.8s; }
+  .lid { animation: rattle 1.1s steps(1) infinite paused; }
+  .hand { animation: sway var(--d) ease-in-out infinite alternate paused; }
+  .piece { animation: bob 2.4s ease-in-out infinite alternate paused; animation-delay: calc(var(--i) * -.7s); }
+  :global(a:is(:hover, :focus-visible, .peek)) .pp3d :is(.steam path, .lid, .hand, .piece) { animation-play-state: running; }
+  @keyframes steam { 0% { stroke-dashoffset: 1; opacity: 0; translate: 0 6%; } 22% { opacity: 1; } 70% { opacity: .85; } 100% { stroke-dashoffset: .4; opacity: 0; translate: -4% -10%; } }
+  @keyframes rattle { 0%, 100% { translate: 0 0; rotate: 0deg; } 12% { translate: 0 -9%; rotate: -2.5deg; } 24% { translate: 0 -2%; rotate: 1.5deg; } 36% { translate: 0 -7%; rotate: 2deg; } 48% { translate: 0 0; rotate: 0deg; } }
+  @keyframes sway { from { rotate: -2.5deg; } to { rotate: 2.5deg; } }
+  @keyframes bob { from { transform: translateY(-6%) rotate(-4deg); } to { transform: translateY(6%) rotate(4deg); } }
+
+  /* ---- the fold and the flight (on click: .fly) ---- */
+  .flap { position: absolute; inset: 0; background: linear-gradient(135deg, #F4F2EE, #FFFFFF 60%); backface-visibility: hidden; opacity: 0; pointer-events: none; }
+  .flap.l { clip-path: polygon(50% 0, 0 50%, 50% 50%); transform-origin: 25% 25%; transform: rotate3d(-1, 1, 0, 180deg); }
+  .flap.r { clip-path: polygon(50% 0, 100% 50%, 50% 50%); transform-origin: 75% 25%; transform: rotate3d(1, 1, 0, 180deg); }
+  .plane { position: absolute; left: 50%; top: 50%; width: 46%; translate: -50% -50%; opacity: 0; overflow: visible; pointer-events: none;
+    filter: drop-shadow(0 10px 12px rgb(30 23 16 / .25)); }
+  .trail { fill: none; stroke: #1E1710; stroke-width: 1; stroke-dasharray: .015 .02; opacity: 0; }
+
+  :global(.fly) .pp3d .flap { opacity: 1; animation: fold .4s cubic-bezier(.5, 0, .3, 1) forwards; }
+  :global(.fly) .pp3d .sheet { animation: corners .4s cubic-bezier(.5, 0, .3, 1) forwards, tuck .3s ease-in .42s forwards; }
+  :global(.fly) .pp3d .kick { opacity: 0; transition: opacity .15s; }
+  :global(.fly) .pp3d .plane { animation: become .28s ease-out .52s forwards, away .75s cubic-bezier(.5, 0, .7, .4) .8s forwards; }
+  :global(.fly) .pp3d .trail { animation: trail .75s linear .8s forwards; }
+  @keyframes fold { to { transform: rotate3d(var(--ax, -1), 1, 0, 0deg); } }
+  .flap.r { --ax: 1; }
+  @keyframes corners { 50%, 100% { clip-path: polygon(50% 0, 50% 0, 100% 50%, 100% 100%, 0 100%, 0 50%); } from { clip-path: polygon(0 0, 100% 0, 100% 50%, 100% 100%, 0 100%, 0 50%); } }
+  @keyframes tuck { to { scale: .2 1; opacity: 0; } }
+  @keyframes become { from { opacity: 0; scale: .5; rotate: -30deg; } to { opacity: 1; scale: 1; rotate: 0deg; } }
+  @keyframes away { to { translate: calc(-50% + var(--w) * 1.4) calc(-50% - var(--w) * 1.1); rotate: -18deg; scale: .5; opacity: 0; } }
+  @keyframes trail { 0% { opacity: 0; } 20% { opacity: .6; } 100% { opacity: 0; } }
+
+  /* on a phone the labels would run off the left edge */
+  @media (max-width: 760px) { .kick { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .steam path, .lid, .hand, .piece { animation: none; } .steam path { stroke-dashoffset: .5; opacity: .6; } }
+</style>
+
+<script>
+  // Clicking Paper Planes folds the page into a plane and flies it off before the case opens.
+  import { navigate } from 'astro:transitions/client';
+  const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.addEventListener('astro:page-load', () => {
+    document.querySelectorAll<HTMLElement>('.pp3d').forEach((pp) => {
+      const link = pp.closest<HTMLAnchorElement>('a[href]');
+      if (!link || calm || link.dataset.ppWired) return;
+      link.dataset.ppWired = '1';
+      link.addEventListener('click', (e) => {
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+        e.preventDefault();
+        if (link.classList.contains('fly')) return;
+        link.classList.add('fly');
+        setTimeout(() => { navigate(link.href); }, 1250);
+        setTimeout(() => link.classList.remove('fly'), 2400);
+      });
+      // the standing page leans toward the pointer; the lifted layers slide against the print
+      let tx = 0, ty = 0, cx = 0, cy = 0, raf = 0;
+      const step = () => {
+        cx += (tx - cx) * .12; cy += (ty - cy) * .12;
+        pp.style.setProperty('--px', cx.toFixed(4)); pp.style.setProperty('--py', cy.toFixed(4));
+        raf = Math.abs(tx - cx) + Math.abs(ty - cy) > .002 ? requestAnimationFrame(step) : 0;
+      };
+      const aim = (x: number, y: number) => { tx = x; ty = y; if (!raf) raf = requestAnimationFrame(step); };
+      link.addEventListener('pointermove', (e) => {
+        if (e.pointerType === 'touch') return;
+        const r = pp.getBoundingClientRect();
+        const k = (v: number) => Math.max(-1, Math.min(1, v));
+        aim(k((e.clientX - r.left) / r.width * 2 - 1), k((e.clientY - r.top) / r.height * 2 - 1));
+      });
+      link.addEventListener('pointerleave', () => aim(0, 0));
+    });
+  });
+</script>

@@ -1,0 +1,79 @@
+---
+// Skyway, as what we made: the mobile website, in 3D.
+// At rest it is a phone lying on the paper, showing the hero. Raise --x from 0 to 1 and the
+// site comes apart into the layers we designed, like an exploded drawing, each one labelled:
+// hero (the brand story), nutrition and ingredients (the content), the product page (the
+// three-click checkout). A few of Skyway's cartoon clouds drift between the layers.
+// The homepage animates --x on hover; the case page drives it from scroll.
+// The screens always load up front: lazy loading does not fire reliably inside 3D-transformed layers.
+interface Props { size?: number; class?: string; style?: string }
+const { size = 170, class: cls, style } = Astro.props;
+const m = (p: string) => `/media/home/${p}`;
+// bottom to top. Apart, each layer rises (z) and slides along the phone's length (s), so the
+// stack fans out diagonally and every screen stays readable; n is its place on the page, top down.
+// cy is where that layer's middle lands (% of the object's height) once apart: the labels are set
+// flat at those heights beside the stack, outside the 3D scene, so no layer can ever cover them.
+const layers = [
+  { src: m('sky-3-screen.jpg'), tag: 'Product page', sub: '3 clicks to checkout', z: 0, s: 0, n: 4, cy: 80 },
+  { src: m('sky-2.jpg'), tag: 'Ingredients', sub: 'Content: the why', z: 95, s: -30, n: 3, cy: 55 },
+  { src: m('sky-1.jpg'), tag: 'Nutrition', sub: 'Content, at a glance', z: 190, s: -60, n: 2, cy: 29 },
+  { src: m('sky-hero.jpg'), tag: 'Hero', sub: 'The brand story', z: 285, s: -90, n: 1, cy: 2 },
+];
+const slab = Array.from({ length: 7 }, (_, i) => i);
+const cloud = 'M18 56C6 56 0 48 2 40c2-8 10-12 18-10 0-12 12-20 24-16C50 4 66 0 76 8c8-6 24-2 26 12 10 0 18 10 14 20-2 10-10 16-20 16Z';
+// clouds float at their own heights on the left; the labels own the right
+const puffs = [{ x: -74, y: 46, z: 50, w: .6 }, { x: -58, y: 14, z: 150, w: .45 }, { x: -70, y: -6, z: 250, w: .55 }];
+---
+<div class:list={['site3d', cls]} data-vt="sky-site" style={`--w:${size}px;--k:${size / 170};${style ?? ''}`} role="img" aria-label="The Skyway mobile website, coming apart into its designed layers: hero, nutrition, ingredients and the product page with a three-click checkout">
+  <div class="rig">
+    <div class="slab" aria-hidden="true">{slab.map((i) => <i style={`--i:${i}`}></i>)}</div>
+    {layers.map((l, i) => (
+      <div class="layer" style={`--z:${l.z};--s:${l.s};--i:${i}`} aria-hidden="true">
+        <img src={l.src} alt="" loading="eager" decoding="async" />
+      </div>
+    ))}
+    {puffs.map((c, i) => (
+      <svg class="puff" viewBox="0 0 120 60" aria-hidden="true" style={`--px:${c.x}%;--py:${c.y}%;--z:${c.z};--pw:${c.w};--i:${i}`}><path fill="#fff" d={cloud} /></svg>
+    ))}
+  </div>
+  <ol class="callouts" aria-hidden="true">
+    {layers.map((l, i) => <li style={`--cy:${l.cy};--i:${3 - i}`}><b>{String(l.n).padStart(2, '0')} {l.tag}</b>{l.sub}</li>)}
+  </ol>
+</div>
+
+<style>
+  /* --x: 0 together, 1 apart. Registered so it can be transitioned. */
+  @property --x { syntax: '<number>'; inherits: true; initial-value: 0; }
+
+  .site3d { --x: 0; --h: calc(var(--w) * 2.16); position: relative; width: var(--w); height: var(--h); perspective: calc(var(--w) * 9); }
+  .rig { position: absolute; inset: 0; transform-style: preserve-3d;
+    transform: translateY(calc(var(--x) * var(--w) * .62)) rotateX(56deg) rotateZ(calc(-34deg - var(--x) * 6deg)); }
+
+  /* the phone: a real slab, a few millimetres thick */
+  .slab, .slab i { position: absolute; inset: 0; transform-style: preserve-3d; }
+  .slab i { border-radius: calc(var(--w) * .17); background: #1E1710; transform: translateZ(calc(var(--i) * -1.6px)); }
+  .slab i:first-child { background: #2A231C; }
+  .slab i:last-child { box-shadow: 0 0 calc(var(--w) * .25) calc(var(--w) * .02) rgb(30 23 16 / .28); }
+
+  /* the screens: at rest they sit on the phone as one; apart, each rises to its own height */
+  .layer { position: absolute; inset: calc(var(--w) * .035); transform-style: preserve-3d; border-radius: calc(var(--w) * .14);
+    transform: translate3d(0, calc(var(--x) * var(--s) * var(--k) * 1px), calc(1px + var(--i) * .4px + var(--x) * var(--z) * var(--k) * 1px)); }
+  .layer img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; border-radius: inherit;
+    box-shadow: 0 0 0 1px rgb(255 255 255 / .5), 0 calc(var(--w) * .1) calc(var(--w) * .2) rgb(30 60 140 / calc(var(--x) * .28)); }
+  .layer + .layer img { backface-visibility: hidden; }
+
+  /* callouts: flat, beside the stack, each at its layer's height with a leader line back to it */
+  .callouts { list-style: none; margin: 0; padding: 0; position: absolute; inset: 0; pointer-events: none; }
+  .callouts li { position: absolute; left: calc(var(--w) * 1.66); top: calc(var(--cy) * 1%); translate: 0 -50%;
+    display: grid; gap: 2px; padding: 6px 9px; white-space: nowrap; border-radius: 6px; background: #fff;
+    font: 400 11px/1.2 var(--sans); color: #8A8378; box-shadow: 0 0 0 1px rgb(30 23 16 / .08), 0 6px 14px -8px rgb(30 23 16 / .3);
+    opacity: clamp(0, calc(var(--x) * 4 - 3 - var(--i) * .12), 1); }
+  .callouts b { font-weight: 500; color: #1E1710; }
+  .callouts li::before { content: ""; position: absolute; right: 100%; top: 50%; width: calc(var(--w) * .16); height: 1px; background: rgb(30 23 16 / .28); }
+  .callouts li::after { content: ""; position: absolute; right: calc(100% + var(--w) * .16 - 2px); top: calc(50% - 2px); width: 5px; height: 5px; border-radius: 50%; background: #1E1710; }
+
+  /* Skyway's own clouds, floating between the layers */
+  .puff { position: absolute; left: var(--px); top: var(--py); width: calc(var(--w) * var(--pw)); height: auto;
+    transform: translateZ(calc(var(--x) * var(--z) * var(--k) * 1px)) rotateZ(34deg) rotateX(-56deg);
+    filter: drop-shadow(0 6px 8px rgb(60 100 170 / .25)); opacity: clamp(0, calc(var(--x) * 2 - .6), 1); }
+</style>
