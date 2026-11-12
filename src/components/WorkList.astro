@@ -289,7 +289,7 @@ const leaves = [
   /* Paper Planes: the page's grid draws, type and pictures set; clicked, it folds and flies (PaperPlanes.astro) */
   .obj.is-pp { width: 400px; height: 440px; }
   .is-pp :global(.pp3d) { transition: --x .5s var(--ease); }
-  .proj:is(:hover, :focus-visible, .peek) .is-pp :global(.pp3d) { --x: 1; transition: --x 2.6s cubic-bezier(.35, .1, .25, 1); }
+  .proj:is(:hover, :focus-visible, .peek) .is-pp :global(.pp3d) { --x: 1; transition: --x 3.2s cubic-bezier(.35, .1, .25, 1); }
   .proj.fly .is-pp :global(.pp3d) { --x: 1; transition: none; }
   .is-pp .solo-chip { right: -14%; bottom: 0; }
   .is-stoa .solo-chip { right: -40%; bottom: 0; }
@@ -318,7 +318,7 @@ const leaves = [
     .obj.is-ken, .obj.is-alai { width: 100%; height: 300px; }
     .is-alai :global(.alai3d) { scale: .62; }
     .obj.is-pp { width: 100%; height: 330px; }
-    .is-pp :global(.pp3d) { scale: .72; }
+    .is-pp :global(.pp3d) { scale: .64; }
     .is-ken :global(.ken3d) { scale: .62; }
     .obj.is-phone { width: 190px; }
     /* on a phone the fan stays tight to the device so nothing runs off the screen */
