@@ -38,9 +38,10 @@ const tile = (t: { n: string; b: number[]; ill: boolean }, ring: 'o' | 'i') => {
   const hp = t.b[2] * h / w; // height in % of the ring (the ring is square)
   const cx = (t.b[0] + t.b[2] / 2) / 100 - .5, cy = (t.b[1] + hp / 2) / 100 - .5;
   const order = k++;
-  // the pile: every tile a little off centre, at its own angle
+  // the pile: every tile a little off centre, at its own angle, stacked in the order it is dealt
   const r = ((order * 47) % 70) - 35;
-  return { ...t, ring, style: `--l:${t.b[0]};--t:${t.b[1]};--tw:${t.b[2]};--ox:${cx.toFixed(3)};--oy:${cy.toFixed(3)};--k:${order};--r:${r}deg;--j:${(order % 5) * -.6}s` };
+  const jx = (((order * 37) % 13) - 6) / 50, jy = (((order * 53) % 11) - 5) / 55;
+  return { ...t, ring, style: `--l:${t.b[0]};--t:${t.b[1]};--tw:${t.b[2]};--ox:${cx.toFixed(3)};--oy:${cy.toFixed(3)};--jx:${jx};--jy:${jy};--k:${order};--r:${r}deg;--j:${(order % 5) * -.6}s` };
 };
 const tilesO = outer.map((t) => tile(t, 'o'));
 const tilesI = inner.map((t) => tile(t, 'i'));
@@ -82,6 +83,7 @@ const centre = [
 <style>
   @property --x { syntax: '<number>'; inherits: true; initial-value: 0; }
   @property --bob { syntax: '<number>'; inherits: false; initial-value: 0; }
+  @property --near { syntax: '<number>'; inherits: false; initial-value: 0; }
 
   .hf3d { --x: 0; position: relative; width: var(--w); height: var(--w); perspective: calc(var(--w) * 3.4); }
   .rig { position: absolute; inset: 0; transform-style: preserve-3d;
@@ -110,18 +112,21 @@ const centre = [
   .tile { position: absolute; left: calc(var(--l) * 1%); top: calc(var(--t) * 1%); width: calc(var(--tw) * 1%); height: auto; display: block;
     --dp: clamp(0, calc((var(--x) - .04 - var(--k) * .013) / .24), 1);
     --e: calc(1 - (1 - var(--dp)) * (1 - var(--dp)));
-    translate: calc(var(--ox) * var(--rs) * (var(--e) - 1)) calc(var(--oy) * var(--rs) * (var(--e) - 1));
+    translate: calc((var(--ox) * (var(--e) - 1) + var(--jx) * (1 - var(--e))) * var(--rs)) calc((var(--oy) * (var(--e) - 1) + var(--jy) * (1 - var(--e))) * var(--rs));
     rotate: calc(var(--r) * (1 - var(--e)));
-    scale: calc(.42 + var(--e) * .58);
-    transition: opacity .5s, filter .5s; }
+    scale: calc((.92 + var(--e) * .08) * (1 + var(--near) * .07));
+    /* the pile has thickness; --lift is the 3D illustrations' own rise (04); --near is the pointer (JS) */
+    --lift: 0; --sh: var(--near);
+    transform: translateZ(calc(var(--w) * (var(--k) * .0025 * (1 - var(--e)) + var(--lift) + .06 * var(--near))));
+    filter: drop-shadow(calc(var(--w) * .008 * var(--sh)) calc(var(--w) * .018 * var(--sh)) calc(var(--w) * .014 * var(--sh)) rgb(0 20 12 / .45));
+    transition: opacity .5s; }
   /* 04: the 3D illustrations lift off the page and float */
   .tile.ill { --lp: clamp(0, calc((var(--x) - .7 - var(--k) * .006) / .2), 1);
-    transform: translateZ(calc(var(--w) * (.075 * var(--lp) + .012 * var(--bob) * var(--lp))));
-    filter: drop-shadow(calc(var(--w) * .008 * var(--lp)) calc(var(--w) * .018 * var(--lp)) calc(var(--w) * .014 * var(--lp)) rgb(0 20 12 / .45));
+    --lift: calc(.085 * var(--lp) + .012 * var(--bob) * var(--lp)); --sh: calc(var(--lp) + var(--near));
     animation: bob 3.2s ease-in-out var(--j) infinite alternate paused; }
 
   /* 03: the line sets in the middle; the logo is there from the start */
-  .centre { position: absolute; left: 50%; top: 50%; width: 34%; aspect-ratio: 1040 / 720; translate: -50% -50%; transform: translateZ(1px); }
+  .centre { position: absolute; left: 50%; top: 50%; width: 40%; aspect-ratio: 1040 / 720; translate: -50% -50%; transform: translateZ(1px); }
   .ln { position: absolute; left: calc(var(--l) * 1%); top: calc(var(--t) * 1%); width: calc(var(--tw) * 1%); height: auto; display: block;
     --p: clamp(0, calc((var(--x) - .42 - var(--s) * .26) / .12), 1); }
   .ln.logo { opacity: clamp(0, calc(var(--x) * 6), 1); }
@@ -182,6 +187,32 @@ const centre = [
         aim(c((e.clientX - r.left) / r.width * 2 - 1), c((e.clientY - r.top) / r.height * 2 - 1));
       });
       link.addEventListener('pointerleave', () => aim(0, 0));
+
+      // the tiles nearest the pointer rise toward it, as the rings carry them past
+      const tiles = [...hf.querySelectorAll<HTMLElement>('.tile')];
+      const near = tiles.map(() => 0);
+      let px = -1e4, py = -1e4, inside = false, loop = 0;
+      const lift = () => {
+        const R = hf.offsetWidth * .2;
+        const want = tiles.map((el) => {
+          const b = el.getBoundingClientRect();
+          const d = Math.hypot(b.left + b.width / 2 - px, b.top + b.height / 2 - py);
+          return inside ? Math.max(0, 1 - d / R) : 0;
+        });
+        let moving = false;
+        tiles.forEach((el, i) => {
+          near[i] += (want[i] - near[i]) * .18;
+          if (Math.abs(want[i] - near[i]) > .003) moving = true;
+          el.style.setProperty('--near', near[i].toFixed(3));
+        });
+        loop = inside || moving ? requestAnimationFrame(lift) : 0;
+      };
+      link.addEventListener('pointermove', (e) => {
+        if (e.pointerType === 'touch') return;
+        px = e.clientX; py = e.clientY; inside = true;
+        if (!loop) loop = requestAnimationFrame(lift);
+      });
+      link.addEventListener('pointerleave', () => { inside = false; if (!loop) loop = requestAnimationFrame(lift); });
     });
   });
 </script>
