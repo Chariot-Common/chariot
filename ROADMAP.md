@@ -16,8 +16,8 @@ same object carries into the case page.
 | # | Task | Status |
 |---|---|---|
 | 1.1 | White homepage at `/` | ✅ |
-| 1.2 | The wheel on white | ✅ |
-| 1.2b | Hero: night to dawn to day | ✅ |
+| 1.2 | The wheel on white | ✅ replaced (round 3) |
+| 1.2b | Hero: the crew in one light | ✅ |
 | 1.3 | Skyway object | ✅ |
 | 1.4 | The Ken object | ✅ |
 | 1.5 | Stoa object | ✅ |
@@ -32,6 +32,7 @@ same object carries into the case page.
 **1.1 White homepage.** The old dark homepage is gone; `/` is the white page, `/lab/home` and `/work` redirect to it.
 **1.2 The wheel on white.** Engraved in ink; its long shadow is fine hatching, plus a soft contact shadow.
 **1.2b Hero: night to dawn to day** *(the sun has been removed)* *(after cruise.money: dark and paper together, not one or the other).* The hero is a dark night panel set into the white page. The wheel is printed in cream light, the line reads "We craft products, brands and websites with nuance and good taste.", and Chariot's orange sun sits on the horizon. Scrolling, the sun rises, and the wheel rolls out of the night onto the paper, changing from light to ink exactly at the panel's edge. The top bar is cream over the night, ink over the paper. Also fixed: the first-scroll hang (fonts preloaded, the wheel only draws when it moves and sleeps off-screen, the dev server prepares three.js up front).
+**1.2b, round 3 (12 Nov): the wheel is replaced.** After Aakash's feedback (no old-school chariot wheel) and teenage engineering's EP-35 page: the six Charioteers stand still in a row in one pool of light on the night panel, a faint beam above them, and throw an unrealistically long shadow that runs out of the panel and down the paper; the process ("We start with the question...") is set large inside it, then the dot-matrix "Hold on... this shadow is longer than our process." On a phone, three of the crew stand larger. No three.js, no rolling, no lines parting. The wheel drawings in `public/media/wheel/` are no longer used on the homepage.
 **1.3 Skyway** *(we made: website, D2C, content).* The mobile site lies on the paper in 3D; on hover it comes apart into hero, nutrition, ingredients and the product page with the 3-click checkout, labelled, among Skyway's clouds. Opens into its own case page.
 **1.4 The Ken** *(product strategy, visual design, design system).* The homepage stands as a sheet; on hover its system comes out as a print specimen: masthead, colour, type, story card, actions and tags, apps.
 **1.5 Stoa** *(brand identity, website, product).* The lion mark as a thick medallion in ink; on hover it stands up red, its construction grid draws, and the rays pattern, website and business card fan out.
@@ -43,7 +44,7 @@ same object carries into the case page.
 **1.10 Neon Fund, Doxel, Tortoise.** Same rule, each in its own motion. *Need from team:* a line on what we made, 3 to 5 screens, the logo (SVG).
 **1.11 Coming soon** (Cruise, Rang De, AtLabs, Freight Tiger, Draconic). They show empty "screens coming" frames that don't open. *Need from team:* hide them until ready, or keep? Plus assets when ready.
 
-**Round 3 feedback (12 Nov, Aakash).** Done on the homepage: the technique labels (01 The grid, 02 Type sets...) and the name chips are gone, the caption gives each project's own one-line summary instead of tags, the list is wider (1240px) with objects about a third bigger and larger type, and the objects no longer all rise from the same tilted angle: Paper Planes faces you and builds in place, Alai is a screen that turns to face you, Stoa's medallion turns on its rim, The Ken and HealthFlex keep theirs. Motion is calmer: no rattling lid or bobbing pieces, slower steam and sway, half the pointer lean. *Still open:* whether the engraved wheel in the hero counts as the "old-school chariot wheel styling" to drop.
+**Round 3 feedback (12 Nov, Aakash).** Done on the homepage: the technique labels (01 The grid, 02 Type sets...) and the name chips are gone, the caption gives each project's own one-line summary instead of tags, the list is wider (1240px) with objects about a third bigger and larger type, and the objects no longer all rise from the same tilted angle: Paper Planes faces you and builds in place, Alai is a screen that turns to face you, Stoa's medallion turns on its rim, The Ken and HealthFlex keep theirs. Motion is calmer: no rattling lid or bobbing pieces, slower steam and sway, half the pointer lean. The engraved wheel in the hero is replaced too (see 1.2b).
 
 ## 2. Case pages
 
