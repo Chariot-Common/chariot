@@ -66,13 +66,14 @@ same object carries into the case page.
 | 3.1 | What a chariot means | ✅ |
 | 3.2 | The wheel as a labelled diagram | ✅ |
 | 3.3 | How we work | ✅ |
-| 3.4 | The Charioteers, as a team tree | ✅ direction approved; waiting on names and photos |
+| 3.4 | The Charioteers | 🔨 round 3: still figures, EP-1320 manner; waiting on names |
 | 3.5 | Contact and Join | 🔨 links in place, Join page to come |
 
 **3.1** A chariot only moves when the wheel, the horses and the driver pull together: that is how we work with clients.
 **3.2** The wheel drawn like a patent engraving: hub = the question, spokes = three directions, rim = one honest call, tyre = what ships.
 **3.3** The process, step by step, from the homepage paragraph.
 **3.4** `/studio` is now a small museum of Chariot, after Gem Quest, the Berlin museums, the old-masters-with-a-MacBook image, mew.xyz and dmcg. *Round 2 (12 Nov): the images and the motion.* The six paintings are cut out of their parchment with a paper edge left round each figure (`public/media/people/cut/`), so they stand on the page instead of sitting in beige cards. The engravings are ink on transparency (`public/media/wheel/ink/`), so they print onto paper and the orange wall. Opener: a Charioteer jumps into the brackets of "Chari( )ot" every couple of seconds (point at one in the row below to pick them). Collage: the hub turns, the wheel rolls in, the chariot rolls along its line with the scroll, two Charioteers step out of the words. Tree: lines draw to each Charioteer; each one idles in their own way; pointing scans the figure, boxes the person, then locks onto their thing and counts up the score (on phones it happens as they scroll into view). Wall: the engravings stand on black plinths with brass number plates, each with its own motion (spin, rock, turn, roll); swipe, arrows or keys, and it moves on by itself while in view. Everything comes into focus out of a blur as it scrolls in (after dmcg). Fill in the `crew` list at the top of `src/pages/studio.astro`; photos go in `public/media/people/photos/<slug>.jpg`.
+**3.4, round 3 (12 Nov, after Aakash's feedback and teenage engineering's EP-1320 medieval page).** The page is toned right down and set like a page from an illuminated book. The six paintings are cut tight round each figure with no paper edge (`public/media/people/fig/`) and stand still: Aakash in a parchment arch on the dark opening panel, the crew standing either side of a scroll that lists how we work, each Charioteer on a card with their name and role, and the handstand figure at the foot of the invitation. A red ornamental band divides the sections. The only motion is sections fading up as they arrive and a card lifting when pointed at. Gone: the jumping brackets, the idle hopping, the detection boxes, the wheel engravings and the rolling chariot. The old `public/media/people/cut/` and `public/media/wheel/ink/` files are no longer used anywhere.
 **3.5** Contact shows who you'll talk to; Join lists roles. *Need from team:* the contact address to use, open roles.
 
 ## 4. The characters
