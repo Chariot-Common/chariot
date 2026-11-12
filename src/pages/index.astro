@@ -33,7 +33,13 @@ const plain = lines.map((l) => l.replace(/[|[\]]/g, '').replace(/\s+/g, ' ').tri
         <div class="shadow" aria-hidden="true"></div>
         <div class="floor" aria-hidden="true"></div>
         <canvas class="disc" aria-hidden="true"></canvas>
-        <div class="hero" aria-hidden="true"></div>
+        <!-- the night: a dark panel set into the paper; the wheel
+             rolls out of it onto the paper, changing from light to ink exactly at the edge -->
+        <header class="hero">
+          <div class="sky" aria-hidden="true"><span class="grain"></span></div>
+          <h1 class="line">We craft products, brands and websites with nuance and good taste.</h1>
+          <p class="meta"><span>Product · Brand · Web</span><span class="cue">Scroll to roll the wheel</span></p>
+        </header>
         <div class="para" aria-label={plain}>
           {lines.map((l) => {
             const [a, b] = l.split('|');
@@ -63,8 +69,29 @@ const plain = lines.map((l) => l.replace(/[|[\]]/g, '').replace(/\s+/g, ' ').tri
   :global(html:has(.home)), :global(body:has(.home)) { background: #FFFFFF; color-scheme: light; }
   .night { position: relative; background: var(--paper); color: var(--ink); overflow: hidden; }
   .track { position: relative; }
-  .hero { height: 100svh; }
+
+  /* ---- the night: a dark panel set into the paper, like a card on the table ---- */
+  .home { --night: #110E0B; --cream: #F3EADB; --sun: #FF8D25; }
+  .hero { position: relative; height: calc(100svh - 20px); margin: 10px; border-radius: 28px; overflow: hidden; color: var(--cream);
+    background: radial-gradient(120% 90% at 50% 0%, #1E1913, var(--night) 60%); isolation: isolate; }
+  .sky { position: absolute; inset: 0; z-index: -1; }
+  /* fine grain, so the night reads as printed, not flat */
+  .grain { position: absolute; inset: 0; opacity: .14; mix-blend-mode: screen;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 .95 0 0 0 0 .88 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  .line { position: absolute; left: clamp(20px, 3vw, 44px); bottom: clamp(56px, 9vh, 96px); margin: 0; max-width: 16ch;
+    font: 600 clamp(34px, 5.4vw, 92px)/.98 var(--serif); letter-spacing: -.03em; text-wrap: balance;
+    opacity: calc(1 - var(--p, 0) * 1.8); translate: 0 calc(var(--p, 0) * -40px); }
+  .meta { position: absolute; left: clamp(20px, 3vw, 44px); right: clamp(20px, 3vw, 44px); bottom: clamp(20px, 3vh, 32px); margin: 0;
+    display: flex; justify-content: space-between; font: 500 12px/1 var(--sans); letter-spacing: .12em; text-transform: uppercase; color: rgb(243 234 219 / .6);
+    opacity: calc(1 - var(--p, 0) * 3); }
+  .cue::after { content: " ↓"; }
+  @media (max-width: 820px) { .cue { display: none; } }
+  /* on phones the process lines are set a size smaller so each one fits the width */
+  @media (max-width: 560px) { .night .para { font-size: 4.9vw; } }
+
+  /* the top bar is cream over the night and ink over the paper */
   .home :global(.nav) { --nav-ink: #1E1710; }
+  .home.over-night :global(.nav) { --nav-ink: #F3EADB; }
   .spot { display: none; }
   /* the wheel stands on the paper: a soft contact shadow right under it, travelling and shrinking with it */
   .floor { position: absolute; left: 50%; top: 0; z-index: 1; width: 1px; height: 1px; pointer-events: none;
@@ -104,13 +131,17 @@ const plain = lines.map((l) => l.replace(/[|[\]]/g, '').replace(/\s+/g, ' ').tri
     varying vec2 vUv;
     void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }
   `;
-  // printed like an engraving on paper: ink lines that swell where the wood falls into shade,
-  // stay hairline-thin in the light, cross-hatch in the deepest shadow, and a cut line round every edge
+  // Printed two ways, split exactly at the edge of the night panel (uEdge, in canvas pixels):
+  //   in the night, cream lines that swell where the light hits the wood, cross-hatched in the highlights;
+  //   on the paper, ink lines that swell where the wood falls into shade, cross-hatched in the deepest shadow.
+  // A cut line runs round every edge in both. As the wheel rolls out of the night it changes print as it crosses.
   const FRAG = /* glsl */ `
     uniform sampler2D tScene;
     uniform vec2 uRes;
     uniform float uCell;
     uniform vec3 uInk;
+    uniform vec3 uLight;
+    uniform float uEdge;
     float hatch(vec2 p, float ang, float w) {
       float c = cos(ang), s = sin(ang);
       float v = (p.x * c + p.y * s) / uCell;
@@ -121,14 +152,22 @@ const plain = lines.map((l) => l.replace(/[|[\]]/g, '').replace(/\s+/g, ' ').tri
       vec2 frag = gl_FragCoord.xy;
       vec4 s = texture2D(tScene, frag / uRes);
       float lum = dot(s.rgb, vec3(0.299, 0.587, 0.114));
+      // on the paper: ink in the shade
       float shade = 1.0 - clamp(lum * 1.6, 0.0, 1.0);
-      float a = hatch(frag, 0.78, mix(0.07, 0.46, shade) * uCell) * step(0.02, s.a);
-      a = max(a, hatch(frag, -0.78, (shade - 0.55) * uCell * 0.5) * step(0.55, shade) * s.a);
+      float ap = hatch(frag, 0.78, mix(0.07, 0.46, shade) * uCell) * step(0.02, s.a);
+      ap = max(ap, hatch(frag, -0.78, (shade - 0.55) * uCell * 0.5) * step(0.55, shade) * s.a);
+      // in the night: light where the light falls
+      float lit = s.a * clamp(lum * 1.7, 0.0, 1.0);
+      float an = hatch(frag, 0.78, lit * uCell * 0.42) * step(0.04, lit);
+      an = max(an, hatch(frag, -0.78, (lit - 0.6) * uCell * 0.5) * step(0.6, lit));
+      float paper = 1.0 - step(uEdge, frag.y);
+      float a = mix(an, ap, paper);
       vec2 px = 1.5 / uRes;
       float e = abs(texture2D(tScene, frag / uRes + vec2(px.x, 0.0)).a - texture2D(tScene, frag / uRes - vec2(px.x, 0.0)).a)
               + abs(texture2D(tScene, frag / uRes + vec2(0.0, px.y)).a - texture2D(tScene, frag / uRes - vec2(0.0, px.y)).a);
       a = max(a, clamp(e * 1.4, 0.0, 1.0));
-      gl_FragColor = vec4(uInk * a, a);
+      vec3 col = mix(uLight, uInk, paper);
+      gl_FragColor = vec4(col * a, a);
       #include <colorspace_fragment>
     }
   `;
@@ -265,6 +304,8 @@ const plain = lines.map((l) => l.replace(/[|[\]]/g, '').replace(/\s+/g, ' ').tri
       uRes: { value: new THREE.Vector2(1, 1) },
       uCell: { value: 3.2 * dpr },
       uInk: { value: new THREE.Color(getComputedStyle(section).color) },
+      uLight: { value: new THREE.Color('#F3EADB') },
+      uEdge: { value: 0 },
     };
     const quad = new THREE.Scene();
     const quadCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
@@ -283,8 +324,8 @@ const plain = lines.map((l) => l.replace(/[|[\]]/g, '').replace(/\s+/g, ' ').tri
       rt.setSize(S * dpr, S * dpr);
       uniforms.uRes.value.set(S * dpr, S * dpr);
       slot.style.height = `${2.6 * R}px`;
-      // the shadow starts under the wheel in the spotlight and runs to the end of the words
-      const top = hero.offsetTop + hero.offsetHeight * 0.5 + Rhero * 0.8;
+      // the shadow starts where the night panel ends and runs to the end of the words
+      const top = hero.offsetTop + hero.offsetHeight;
       shadow.style.top = `${top}px`;
       shadow.style.height = `${slot.offsetTop + slot.offsetHeight - top}px`;
     }
@@ -293,14 +334,21 @@ const plain = lines.map((l) => l.replace(/[|[\]]/g, '').replace(/\s+/g, ' ').tri
     // The wheel starts in the spotlight and aims for the middle of the screen, trailing it a
     // little, so the words rise past it and it rolls down through them, parting each line;
     // it comes to rest in its slot above the dot-matrix line.
-    let theta = 0.5, y = -1, raf = 0;
+    // Only draws when something changed, and stops altogether while the track is off-screen.
+    let theta = 0.5, y = -1, raf = 0, visible = true, last = '';
+    const wide = () => innerWidth > 820;
     function frame() {
-      raf = requestAnimationFrame(frame);
+      raf = visible ? requestAnimationFrame(frame) : 0;
       const tr = track.getBoundingClientRect(), sr = slot.getBoundingClientRect();
-      const heroY = hero.offsetTop + hero.offsetHeight * 0.5;
+      // the night: how far it has scrolled away (the line fades with it), and whether the bar sits over it
+      const hr = hero.getBoundingClientRect();
+      hero.style.setProperty('--p', Math.min(1, Math.max(0, -hr.top / (hr.height * 0.8))).toFixed(3));
+      home.classList.toggle('over-night', hr.bottom > 64);
+      // in the night: centred beside the line on wide screens, above it on phones
+      const heroY = hero.offsetTop + hero.offsetHeight * (wide() ? 0.5 : 0.34);
       const from = rows[0].el.offsetTop + para.offsetTop - R * 1.1;
       const land = sr.top + sr.height / 2 - tr.top;
-      const want = innerHeight * 0.5 - tr.top;
+      const want = innerHeight * (wide() ? 0.5 : 0.34) - tr.top;
       const aimY = Math.min(land, Math.max(heroY, want));
       y = y < 0 || reduce ? aimY : y + (aimY - y) * 0.1;
       const landed = aimY >= land - 1;
@@ -308,12 +356,18 @@ const plain = lines.map((l) => l.replace(/[|[\]]/g, '').replace(/\s+/g, ' ').tri
       const k0 = Math.min(1, Math.max(0, (y - heroY) / Math.max(1, from - heroY)));
       const k = k0 * k0 * (3 - 2 * k0);
       tilt.scale.setScalar((Rhero + (R - Rhero) * k) / Rhero);
-      disc.style.transform = `translate(-50%, ${y - S / 2}px)`;
-      // the contact shadow sits just under the rim, as wide as the wheel and very flat
+      // in the night the wheel stands to the right of the line; it comes to the middle as it rolls down
+      const xOff = wide() ? (1 - k) * innerWidth * 0.2 : 0;
+      disc.style.transform = `translate(calc(-50% + ${xOff}px), ${y - S / 2}px)`;
+      // the contact shadow sits just under the rim, as wide as the wheel and very flat; only on the paper
       const rad = Rhero + (R - Rhero) * k;
+      const panelBottom = hero.offsetTop + hero.offsetHeight;
       floor.style.width = `${rad * 1.7}px`;
       floor.style.height = `${rad * 0.22}px`;
-      floor.style.transform = `translate(-50%, ${y + rad * 1.02 - rad * 0.11}px)`;
+      floor.style.transform = `translate(calc(-50% + ${xOff}px), ${y + rad * 1.02 - rad * 0.11}px)`;
+      floor.style.opacity = y + rad > panelBottom ? '1' : '0';
+      // where the night ends, in the canvas's own pixels (counted from the bottom, as the shader does)
+      uniforms.uEdge.value = (S - (panelBottom - (y - S / 2))) * dpr;
       const reach = R * 2.1;
       for (const r of rows) {
         const cy = r.el.offsetTop + para.offsetTop + r.el.offsetHeight / 2;
@@ -329,6 +383,9 @@ const plain = lines.map((l) => l.replace(/[|[\]]/g, '').replace(/\s+/g, ' ').tri
       theta += (aimTheta - theta) * 0.16;
       tilt.rotation.y = theta;
       wheel.rotation.z = theta * 0.35;
+      const state = `${y.toFixed(1)}|${theta.toFixed(4)}|${S}`;
+      if (state === last) return;
+      last = state;
       renderer.setRenderTarget(rt);
       renderer.setClearColor(0x000000, 0);
       renderer.clear();
@@ -338,14 +395,22 @@ const plain = lines.map((l) => l.replace(/[|[\]]/g, '').replace(/\s+/g, ' ').tri
       renderer.render(quad, quadCam);
     }
 
-    document.fonts.ready.then(measure);
+    const remeasure = () => { measure(); last = ''; };
+    document.fonts.ready.then(remeasure);
     measure();
-    addEventListener('resize', measure);
+    addEventListener('resize', remeasure);
     frame();
+    // off-screen, the wheel sleeps
+    const io = new IntersectionObserver(([en]) => {
+      visible = en.isIntersecting;
+      if (visible && !raf) frame();
+    });
+    io.observe(track);
 
     return () => {
+      io.disconnect();
       cancelAnimationFrame(raf);
-      removeEventListener('resize', measure);
+      removeEventListener('resize', remeasure);
       rt.dispose();
       renderer.dispose();
     };

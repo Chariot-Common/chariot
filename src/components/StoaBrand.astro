@@ -1,0 +1,79 @@
+---
+// Stoa, as what we made: a brand identity, then the website and product it lives on.
+// At rest the lion mark is a thick medallion lying on the paper, printed in ink.
+// Raise --x from 0 to 1: it stands up to face you, its construction grid draws itself round it,
+// it takes Stoa's red, and the identity fans out behind it: the rays pattern, the website and
+// a business card. Each piece is labelled.
+// The homepage animates --x on hover.
+interface Props { size?: number; style?: string }
+const { size = 200, style } = Astro.props;
+const coin = Array.from({ length: 12 }, (_, i) => i);
+// final spot (% of the mark's width), how far back (z, negative is behind) and its turn
+const apps = [
+  { cls: 'rays', left: -88, top: -6, w: 74, z: -90, ry: 22, kick: '02 Pattern', head: 'The rays' },
+  { cls: 'site', left: 64, top: -30, w: 128, z: -140, ry: -16, kick: '03 Website', head: 'Earn competence. Not degrees.' },
+  { cls: 'card', left: 78, top: 82, w: 74, z: 40, ry: -10, kick: '04 Stationery', head: 'The card' },
+];
+---
+<div class="stoa-brand" style={`--w:${size}px;${style ?? ''}`} role="img" aria-label="Stoa's lion mark on its construction grid, with the identity behind it: the rays pattern, the website and a business card">
+  <div class="rig">
+    {apps.map((a, i) => (
+      <div class:list={['app', a.cls]} aria-hidden="true" style={`--l:${a.left};--t:${a.top};--aw:${a.w};--z:${a.z};--ry:${a.ry}deg;--i:${i}`}>
+        <span class="kick"><b>{a.kick}</b> {a.head}</span>
+        {a.cls === 'rays' && <img src="https://framerusercontent.com/images/Bx4hhN3wsHQSCvE43J69bZng7Y.jpg?scale-down-to=512" alt="" loading="eager" />}
+        {a.cls === 'site' && <img src="/media/home/stoa-site.jpg" alt="" loading="eager" />}
+        {a.cls === 'card' && (
+          <div class="biz"><span class="mini"></span><span class="wm">STOA</span><span class="ln">Earn competence.<br />Not degrees.</span></div>
+        )}
+      </div>
+    ))}
+
+    <div class="mark" data-vt="sheet-poster">
+      <span class="kick main"><b>01 The mark</b> on its grid</span>
+      <div class="coin" aria-hidden="true">{coin.map((i) => <i style={`--z:${i}`}></i>)}</div>
+      <svg class="grid" viewBox="0 0 100 100" aria-hidden="true">
+        <circle cx="50" cy="50" r="48" pathLength="1" />
+        <circle cx="50" cy="50" r="31" pathLength="1" />
+        <rect x="14" y="14" width="72" height="72" pathLength="1" />
+        <path d="M50 -4V104M-4 50H104M8 8L92 92M92 8L8 92" pathLength="1" />
+      </svg>
+    </div>
+  </div>
+</div>
+
+<style>
+  @property --x { syntax: '<number>'; inherits: true; initial-value: 0; }
+
+  .stoa-brand { --x: 0; --red: #C8102E; position: relative; width: var(--w); aspect-ratio: 1; perspective: calc(var(--w) * 5); }
+  .rig { position: absolute; inset: 0; transform-style: preserve-3d; }
+
+  /* the medallion: lying tilted at rest, standing up to face you when it comes alive */
+  .mark { position: absolute; inset: 0; transform-style: preserve-3d; z-index: 2;
+    transform: rotateX(calc(52deg - var(--x) * 52deg)) rotateZ(calc(-18deg + var(--x) * 18deg)) translateZ(calc(var(--x) * var(--w) * .2)); }
+  .coin, .coin i { position: absolute; inset: 0; transform-style: preserve-3d; }
+  .coin i { background: color-mix(in srgb, var(--red) calc(var(--x) * 100%), #1E1710);
+    -webkit-mask: url(/media/objects/stoa-lion.png) center / contain no-repeat; mask: url(/media/objects/stoa-lion.png) center / contain no-repeat; mask-mode: luminance;
+    transform: translateZ(calc((var(--z) - 11) * 1.5px)); }
+  .coin i:last-child { background: color-mix(in srgb, #E8243D calc(var(--x) * 100%), #3A3128); }
+  /* the construction grid draws itself as the mark stands up */
+  .grid { position: absolute; inset: -8%; width: 116%; height: 116%; overflow: visible; transform: translateZ(1px); pointer-events: none; }
+  .grid * { fill: none; stroke: var(--red); stroke-width: .25; stroke-dasharray: 1; stroke-dashoffset: calc(1 - var(--x)); opacity: calc(var(--x) * .7); vector-effect: non-scaling-stroke; }
+
+  /* the identity, fanned out behind and around */
+  .app { position: absolute; left: calc(var(--l) * 1%); top: calc(var(--t) * 1%); width: calc(var(--aw) * 1%); transform-style: preserve-3d;
+    transform: translate3d(calc((1 - var(--x)) * (14 - var(--l)) * var(--w) / 100), calc((1 - var(--x)) * (30 - var(--t)) * var(--w) / 100), calc(var(--x) * var(--z) * 1px)) rotateY(calc(var(--x) * var(--ry))) scale(calc(.4 + var(--x) * .6));
+    opacity: clamp(0, calc(var(--x) * 2.4 - .5 - var(--i) * .2), 1); }
+  .app img { display: block; width: 100%; height: auto; border-radius: 4px; box-shadow: 0 0 0 1px rgb(30 23 16 / .08), 0 calc(var(--w) * .08) calc(var(--w) * .12) calc(var(--w) * -.05) rgb(30 23 16 / .4); }
+  .biz { position: relative; aspect-ratio: 1.75; border-radius: 4px; background: #F7F0E3; display: grid; grid-template-columns: auto 1fr; align-content: center; gap: 4px 10px; padding: 0 12%;
+    box-shadow: 0 0 0 1px rgb(30 23 16 / .08), 0 calc(var(--w) * .08) calc(var(--w) * .12) calc(var(--w) * -.05) rgb(30 23 16 / .4); }
+  .biz .mini { grid-row: span 2; width: calc(var(--w) * .2); aspect-ratio: 1; background: var(--red);
+    -webkit-mask: url(/media/objects/stoa-lion.png) center / contain no-repeat; mask: url(/media/objects/stoa-lion.png) center / contain no-repeat; mask-mode: luminance; }
+  .biz .wm { align-self: end; font: 600 calc(var(--w) * .07)/1 var(--serif); letter-spacing: .18em; color: #5A1A12; }
+  .biz .ln { align-self: start; font: 400 calc(var(--w) * .038)/1.25 var(--serif); color: #7A5A48; }
+
+  .kick { position: absolute; left: 0; bottom: calc(100% + 6px); white-space: nowrap; padding: 4px 7px; border-radius: 4px; background: #fff;
+    box-shadow: 0 0 0 1px rgb(30 23 16 / .08), 0 4px 10px -6px rgb(30 23 16 / .3);
+    font: 400 10px/1.2 var(--serif); color: #7A5A48; opacity: clamp(0, calc(var(--x) * 3 - 2), 1); }
+  .kick b { font: 600 9px/1 var(--sans); letter-spacing: .1em; text-transform: uppercase; color: var(--red); margin-right: 4px; }
+  .kick.main { left: 50%; bottom: auto; top: calc(100% + 14px); translate: -50% 0; transform: translateZ(2px); }
+</style>

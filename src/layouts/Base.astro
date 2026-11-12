@@ -31,6 +31,10 @@ html[data-vt="sheet"][data-astro-transition="back"]::view-transition-new(sheet-c
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="preconnect" href="https://framerusercontent.com" crossorigin />
+    <!-- the fonts arrive before the first scroll, so nothing reflows under the wheel -->
+    <link rel="preload" as="font" type="font/woff2" href="https://framerusercontent.com/assets/hGfOMJHoWJ8P7J0CRnqTITqGcM.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/otf" href="https://framerusercontent.com/assets/6dskZA0R15ANQPQJVqYdi9VBtvk.otf" crossorigin />
+    <link rel="preload" as="font" type="font/otf" href="https://framerusercontent.com/assets/xu1fWaw7ISudVCGePq1Bpxpw.otf" crossorigin />
     <style is:global set:html={sheetCss}></style>
     <ClientRouter />
     <script is:inline>document.documentElement.classList.add('js');</script>

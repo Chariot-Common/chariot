@@ -1,8 +1,8 @@
 ---
-// Skyway, told in its own language: the sky, cartoon clouds and the Cloud Shake.
-// It continues the homepage hover. The bottle you clicked lands on paper here (view transition),
-// then as you scroll it takes off: the sky opens, clouds roll in and the site rises on phones.
-//   1. Take-off: bottle on paper → sky, clouds, three phones
+// Skyway: what we made was the website, so the case opens on the website itself, in 3D.
+// It continues the homepage hover. The 3D site you clicked lands here (view transition); as you
+// scroll it comes apart into the layers we designed, each one labelled, with Skyway's clouds.
+//   1. The site, exploded: hero, nutrition, ingredients, product page with the checkout
 //   2. The brief
 //   3. Made for the thumb: the mobile-first screens, on a patch of sky
 //   4. Three clicks to checkout
@@ -11,6 +11,7 @@
 // Copy is from skyway.md (the current withchariot.com case study).
 import Base from '../../layouts/Base.astro';
 import Dock from '../../components/Dock.astro';
+import SkywaySite from '../../components/SkywaySite.astro';
 import { getCollection } from 'astro:content';
 
 const all = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
@@ -23,20 +24,13 @@ const small = (src: string) => `${src}?scale-down-to=2048`;
 
 const phones = [
   { src: m('sky-1.jpg'), label: 'Nutrition, up front' },
-  // this capture comes with its own phone frame; it is cropped off inside ours
-  { src: m('sky-3.jpg'), label: 'One shake, one decision', framed: true },
+  { src: m('sky-3-screen.jpg'), label: 'One shake, one decision' },
   { src: m('sky-2.jpg'), label: 'What goes in, and why' },
 ];
 const steps = [
   { n: '1', head: 'Pick a flavour', body: 'Banana-berry or choco-hazel, right on the product page.' },
   { n: '2', head: 'Pick a pack', body: 'Six or twelve, with the price per bottle beside it.' },
   { n: '3', head: 'Check out', body: 'No detours. Three clicks from Instagram to ordered.' },
-];
-// clouds in their own lanes: x/y in % of the hero, w in vw, d = how far they travel in
-const heroClouds = [
-  { x: -4, y: 14, w: 22, d: -30, back: false }, { x: 8, y: 58, w: 14, d: -24, back: true },
-  { x: -2, y: 80, w: 18, d: -28, back: false }, { x: 76, y: 10, w: 24, d: 30, back: false },
-  { x: 84, y: 46, w: 14, d: 22, back: true }, { x: 72, y: 76, w: 20, d: 28, back: false },
 ];
 const cloud = 'M18 56C6 56 0 48 2 40c2-8 10-12 18-10 0-12 12-20 24-16C50 4 66 0 76 8c8-6 24-2 26 12 10 0 18 10 14 20-2 10-10 16-20 16Z';
 ---
@@ -47,26 +41,22 @@ const cloud = 'M18 56C6 56 0 48 2 40c2-8 10-12 18-10 0-12 12-20 24-16C50 4 66 0 
     <linearGradient id="sw-cloud" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" /><stop offset=".68" stop-color="#fff" /><stop offset="1" stop-color="#D6E5F8" /></linearGradient>
   </defs></svg>
 
-  <!-- 1. Take-off -->
+  <!-- 1. The site, exploded -->
   <section class="hero" data-progress="pin">
     <div class="pin">
       <div class="sky" aria-hidden="true"></div>
-      {heroClouds.map((c, k) => (
-        <svg class:list={['cl', { back: c.back }]} viewBox="0 0 120 60" aria-hidden="true" style={`--x:${c.x}%;--y:${c.y}%;--w:${c.w}vw;--d:${c.d}vw;--k:${k}`}><path fill="url(#sw-cloud)" d={cloud} /></svg>
-      ))}
-
       <div class="title">
-        <p class="label">Case No. 03 · Website · D2C eCommerce · Content</p>
+        <p class="label">Case No. 03</p>
         <h1 class="display">Skyway</h1>
         <p class="sub">{me.summary}</p>
+        <ul class="made" aria-label="What we made">
+          {me.disciplines.map((d) => <li>{d}</li>)}
+        </ul>
       </div>
-
-      <div class="phones" aria-hidden="true">
-        {phones.map((p, k) => <div class="ph" style={`--k:${k}`}><img src={p.src} alt="" class:list={{ framed: p.framed }} /></div>)}
+      <div class="stage">
+        <SkywaySite size={205} style="view-transition-name: sky-site" />
       </div>
-      <span class="ground" aria-hidden="true"></span>
-      <img class="bottle" src="/media/home/sky-bottle-cut.png" alt="Skyway Cloud Shake, banana-berry" width="119" height="380" style="view-transition-name: sky-bottle" />
-      <p class="hint label" aria-hidden="true">Scroll to take off</p>
+      <p class="hint label" aria-hidden="true">Scroll to take it apart</p>
     </div>
   </section>
 
@@ -138,44 +128,27 @@ const cloud = 'M18 56C6 56 0 48 2 40c2-8 10-12 18-10 0-12 12-20 24-16C50 4 66 0 
   .defs { position: absolute; }
   .label { color: var(--muted); }
 
-  /* ---- 1. take-off: --p runs 0 → 1 across the pinned hero ---- */
-  .hero { height: 260vh; }
-  .pin { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; }
-  /* the sky opens from the bottle outward */
-  .hero { --s: clamp(0, calc(var(--p, 0) * 2.4), 1); --up: clamp(0, calc((var(--p, 0) - .12) * 1.8), 1); --ph: clamp(0, calc((var(--p, 0) - .22) * 2.2), 1); }
-  .sky { position: absolute; inset: 0; background: radial-gradient(120vmax 90vmax at 50% 62%, var(--sky-soft), #E7F0FC 45%, #fff 75%);
-    opacity: var(--s); -webkit-mask: linear-gradient(#000 78%, transparent); mask: linear-gradient(#000 78%, transparent); }
-  .cl { position: absolute; left: var(--x); top: var(--y); width: var(--w); height: auto; z-index: 3;
-    filter: drop-shadow(0 14px 14px rgb(60 100 170 / .16));
-    opacity: calc(var(--s) * 1.4 - var(--k) * .08); translate: calc((1 - var(--s)) * var(--d)) 0;
-    animation: drift calc(7s + var(--k) * .9s) ease-in-out infinite alternate; }
-  .cl.back { z-index: 1; filter: drop-shadow(0 8px 8px rgb(60 100 170 / .1)); }
-  @keyframes drift { to { transform: translateX(1.4vw) translateY(-.6vh); } }
+  /* ---- 1. the site, exploded: --p runs 0 → 1 across the pinned hero ---- */
+  .hero { height: 230vh; }
+  .pin { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); align-items: center; padding: 0 var(--gutter); }
+  /* the site comes apart over the first two thirds of the scroll, then holds */
+  .hero :global(.site3d) { --x: clamp(0, calc((var(--p, 0) - .04) * 1.6), 1); }
+  .sky { position: absolute; inset: 0; background: radial-gradient(60vw 70vh at 66% 55%, var(--sky-soft), #EEF4FC 50%, #fff 78%);
+    opacity: clamp(0, calc(var(--p, 0) * 3), 1); }
+  .title { position: relative; z-index: 2; display: grid; gap: 14px; align-content: center; padding-left: 4vw; }
+  .title h1 { margin: 0; font-size: clamp(56px, 8vw, 140px); line-height: .9; }
+  .title .sub { margin: 0; max-width: 30ch; font: 300 clamp(16px, 1.4vw, 20px)/1.4 var(--sans); color: var(--muted); }
+  .made { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .made li { padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); font: 400 14px/1 var(--sans); }
+  .stage { position: relative; z-index: 2; display: grid; place-items: center; translate: 0 4vh; }
+  .hint { position: absolute; bottom: 3vh; left: 0; right: 0; text-align: center; z-index: 6; opacity: calc(1 - var(--p, 0) * 6); }
 
-  .title { position: absolute; left: 0; right: 0; top: 13vh; z-index: 2; display: grid; justify-items: center; gap: 10px; text-align: center; padding: 0 var(--gutter);
-    opacity: calc(1 - var(--up) * 1.6); translate: 0 calc(var(--up) * -6vh); }
-  .title h1 { margin: 0; font-size: clamp(56px, 9vw, 150px); line-height: .9; }
-  .title .sub { margin: 0; max-width: 34ch; font: 300 clamp(16px, 1.4vw, 20px)/1.4 var(--sans); color: var(--muted); }
-
-  /* the bottle: stands on the paper, then lifts off and tilts like the flyer on its label */
-  .bottle { position: absolute; z-index: 5; left: 50%; bottom: 15vh; width: clamp(110px, 11vw, 150px); height: auto; max-width: none; translate: -50% 0;
-    filter: drop-shadow(0 18px 16px rgb(30 23 16 / .16));
-    transform: translate(calc(var(--up) * -17vw), calc(var(--up) * -22vh)) rotate(calc(var(--up) * -11deg)); }
-  .ground { position: absolute; z-index: 1; left: 50%; bottom: calc(15vh - 10px); width: clamp(110px, 11vw, 150px); height: 20px; translate: -50% 0; border-radius: 50%;
-    background: radial-gradient(closest-side, rgb(30 23 16 / .26), rgb(30 23 16 / .08) 60%, transparent);
-    transform: translateX(calc(var(--up) * -17vw)) scale(calc(1 - var(--up) * .5)); opacity: calc(1 - var(--up) * .6); }
-
-  /* the site rises on three phones, fanned */
-  .phones { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
-  .ph { position: absolute; width: clamp(150px, 15vw, 230px); aspect-ratio: 9 / 19.2; border-radius: 30px; background: #1E1710; padding: 6px;
+  /* phone frames, used in "made for the thumb" */
+  .ph { position: relative; aspect-ratio: 9 / 19.2; border-radius: 30px; background: #1E1710; padding: 6px;
     box-shadow: 0 30px 60px -30px rgb(30 23 16 / .5); overflow: hidden; }
   .ph img { width: 100%; height: 100%; object-fit: cover; object-position: top; border-radius: 24px; }
   .ph img.framed { object-position: center; scale: 1.1; }
-  .phones .ph { left: 50%; top: 50%;
-    --tx: calc(var(--k) * 15vw - 2vw); --r: calc((var(--k) - 1) * 5deg);
-    transform: translate(calc(-50% + var(--tx)), calc(-42% + (1 - var(--ph)) * 70vh)) rotate(var(--r)); }
-  .phones .ph:nth-child(2) { z-index: 1; transform: translate(calc(-50% + var(--tx)), calc(-48% + (1 - clamp(0, calc(var(--ph) * 1.2), 1)) * 70vh)) rotate(var(--r)); }
-  .hint { position: absolute; bottom: 2.4vh; left: 0; right: 0; text-align: center; z-index: 6; opacity: calc(1 - var(--p, 0) * 6); }
+  @keyframes drift { to { transform: translateX(1.4vw) translateY(-.6vh); } }
 
   /* ---- 2. brief ---- */
   .brief { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: 4vw; padding: 16vh var(--gutter) 12vh; max-width: 1400px; margin: 0 auto; }
@@ -227,13 +200,14 @@ const cloud = 'M18 56C6 56 0 48 2 40c2-8 10-12 18-10 0-12 12-20 24-16C50 4 66 0 
     .row figure:nth-child(2) { translate: none; }
     .clicks ol { grid-template-columns: minmax(0, 1fr); gap: 5vh; }
     .clicks li:not(:last-child)::after { display: none; }
-    .phones .ph { --tx: calc((var(--k) - 1) * 28vw); width: 30vw; }
-    .bottle { transform: translate(calc(var(--up) * -30vw), calc(var(--up) * -40vh)) rotate(calc(var(--up) * -11deg)); }
-    .ground { transform: translateX(calc(var(--up) * -30vw)) scale(calc(1 - var(--up) * .5)); }
+    .pin { grid-template-columns: minmax(0, 1fr); align-content: center; gap: 2vh; padding-top: 70px; }
+    .title { padding-left: 0; justify-items: center; text-align: center; }
+    .made { justify-content: center; }
+    .stage { scale: .62; margin: -14vh 0; }
     .pc1 { width: 50vw; }
     .pc2 { width: 34vw; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .cl, .pc { animation: none; }
+    .pc { animation: none; }
   }
 </style>

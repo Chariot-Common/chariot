@@ -7,4 +7,8 @@ export default defineConfig({
     '/lab/home': '/',
     '/work': '/#work',
   },
+  // prepare these up front in dev, so the first visit doesn't stall and reload mid-scroll
+  vite: {
+    optimizeDeps: { include: ['three', 'lenis'] },
+  },
 });

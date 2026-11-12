@@ -1,0 +1,107 @@
+---
+// The Ken, as what we made: a product strategy, a visual language and a design system that
+// runs from web to apps to email. At rest it is the homepage, standing on the paper as a sheet.
+// Raise --x from 0 to 1 and the system comes out of the page toward you and sets itself out like
+// a specimen sheet: the masthead, the colours, the type, the components, a story card and the app.
+// Each part leaves from the place it lives on the page. Labelled in The Ken's own print voice:
+// small red kickers, serif heads, hairline rules, registration marks.
+// The homepage animates --x on hover; the case page can drive it from scroll.
+interface Props { size?: number; style?: string }
+const { size = 420, style } = Astro.props;
+// final spot (left/top, % of the page width) and the spot on the page it comes from (hx/hy);
+// z is how far toward you it floats
+const parts = [
+  { cls: 'logo', left: -8, top: -21, w: 40, hx: 2, hy: 2, z: 70, kick: 'Masthead', head: 'The mark, set large' },
+  { cls: 'colour', left: -31, top: 4, w: 21, hx: 10, hy: 30, z: 120, kick: 'Colour', head: 'Paper, ink, Ken red' },
+  { cls: 'type', left: 82, top: -17, w: 30, hx: 42, hy: 14, z: 100, kick: 'Type', head: 'Serif heads, sans labels' },
+  { cls: 'story', left: 88, top: 24, w: 27, hx: 70, hy: 20, z: 150, kick: 'Component', head: 'The story card' },
+  { cls: 'ui', left: 30, top: 66, w: 40, hx: 40, hy: 40, z: 170, kick: 'Component', head: 'Actions and tags' },
+  { cls: 'app', left: -16, top: 50, w: 15, hx: 6, hy: 36, z: 210, kick: 'Apps', head: 'iOS, Android, iPad' },
+];
+const swatches = [
+  { c: '#E8432B', n: 'Ken red' }, { c: '#1B1613', n: 'Ink' }, { c: '#F4EDE3', n: 'Paper' }, { c: '#8C8379', n: 'Byline' },
+];
+const sheet = Array.from({ length: 6 }, (_, i) => i);
+---
+<div class="ken3d" style={`--w:${size}px;${style ?? ''}`} role="img" aria-label="The Ken homepage, with the design system coming out of it: masthead, colour, type, story card, actions and the apps">
+  <div class="rig">
+    <div class="sheet" aria-hidden="true">
+      {sheet.map((i) => <i style={`--i:${i}`}></i>)}
+      <img class="face" src="/media/objects/ken-home.jpg" alt="" loading="eager" decoding="async" data-vt="sheet-poster" />
+      <span class="reg r1"></span><span class="reg r2"></span>
+    </div>
+
+    {parts.map((p, i) => (
+      <div class:list={['part', p.cls]} aria-hidden="true"
+           style={`--l:${p.left};--t:${p.top};--pw:${p.w};--dx:${p.hx - p.left};--dy:${p.hy - p.top};--z:${p.z};--i:${i}`}>
+        <span class="kick"><b>{p.kick}</b> {p.head}</span>
+        {p.cls === 'logo' && <div class="card"><img src="/media/objects/ken-logo.png" alt="" loading="eager" /></div>}
+        {p.cls === 'colour' && (
+          <div class="card chips">{swatches.map((s) => <span><i style={`background:${s.c}`}></i>{s.n}</span>)}</div>
+        )}
+        {p.cls === 'type' && (
+          <div class="card spec"><span class="aa">Aa</span><span class="hd">Real-money games made MPL a unicorn.</span><span class="kk">Business · 6 min read</span></div>
+        )}
+        {p.cls === 'story' && <div class="card pic"><img src="/media/objects/ken-story.jpg" alt="" loading="eager" /></div>}
+        {p.cls === 'ui' && (
+          <div class="card bits"><span class="btn">Subscribe</span><span class="ghost">Read later</span><span class="pill">Newsletter</span><span class="pill">Story · Long read</span></div>
+        )}
+        {p.cls === 'app' && <div class="card phone"><img src="/media/home/ken-mobile.jpg" alt="" loading="eager" /></div>}
+      </div>
+    ))}
+  </div>
+</div>
+
+<style>
+  @property --x { syntax: '<number>'; inherits: true; initial-value: 0; }
+
+  .ken3d { --x: 0; --red: #E8432B; --ink: #1B1613; --paper: #F4EDE3;
+    position: relative; width: var(--w); height: calc(var(--w) * .72); perspective: calc(var(--w) * 3.2); }
+  /* at rest the sheet is turned a little away; as the system comes out it turns to face you */
+  .rig { position: absolute; inset: 0; transform-style: preserve-3d;
+    transform: rotateX(calc(14deg - var(--x) * 8deg)) rotateY(calc(-26deg + var(--x) * 18deg)) scale(calc(1 - var(--x) * .14)); }
+
+  /* the page, as a sheet of card with a little thickness */
+  .sheet { position: absolute; inset: 0; transform-style: preserve-3d; }
+  .sheet i { position: absolute; inset: 0; border-radius: 4px; background: #E6DDD0; transform: translateZ(calc(var(--i) * -1.4px)); }
+  .sheet i:last-of-type { box-shadow: 0 calc(var(--w) * .08) calc(var(--w) * .12) calc(var(--w) * -.04) rgb(30 23 16 / .35); }
+  .face { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; border-radius: 4px; transform: translateZ(1px);
+    box-shadow: 0 0 0 1px rgb(30 23 16 / .08); filter: saturate(calc(1 - var(--x) * .5)) brightness(calc(1 + var(--x) * .04)); }
+  /* registration marks: the print tell */
+  .reg { position: absolute; width: calc(var(--w) * .05); aspect-ratio: 1; border-radius: 50%; border: 1px solid var(--red); opacity: var(--x); transform: translateZ(2px); }
+  .reg::before, .reg::after { content: ""; position: absolute; background: var(--red); }
+  .reg::before { left: 50%; top: -40%; bottom: -40%; width: 1px; }
+  .reg::after { top: 50%; left: -40%; right: -40%; height: 1px; }
+  .r1 { left: -9%; bottom: -10%; }
+  .r2 { right: -8%; bottom: -10%; }
+
+  /* the parts: each leaves its home on the page and floats out to its place on the specimen */
+  .part { position: absolute; left: calc(var(--l) * 1%); top: calc(var(--t) * var(--w) / 100); width: calc(var(--pw) * 1%); transform-style: preserve-3d;
+    transform: translate3d(calc((1 - var(--x)) * var(--dx) * var(--w) / 100), calc((1 - var(--x)) * var(--dy) * var(--w) / 100), calc(2px + var(--x) * var(--z) * var(--w) / 420))
+               scale(calc(.35 + var(--x) * .65));
+    opacity: clamp(0, calc(var(--x) * 2.6 - var(--i) * .22), 1); }
+  .card { background: #fff; border-radius: 4px; box-shadow: 0 0 0 1px rgb(30 23 16 / .08), 0 calc(var(--w) * .04) calc(var(--w) * .06) calc(var(--w) * -.03) rgb(30 23 16 / .35); overflow: hidden; }
+  .kick { position: absolute; left: 0; bottom: calc(100% + 6px); white-space: nowrap; padding: 4px 7px; border-radius: 4px; background: #fff;
+    box-shadow: 0 0 0 1px rgb(30 23 16 / .08), 0 4px 10px -6px rgb(30 23 16 / .3);
+    font: 400 10px/1.2 var(--serif); color: #6E6157; opacity: clamp(0, calc(var(--x) * 3 - 2), 1); }
+  .kick b { font: 600 9px/1 var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--red); margin-right: 4px; }
+
+  .logo .card { padding: 10px 12px; background: var(--paper); }
+  .logo img { display: block; width: 100%; height: auto; }
+  .chips { display: grid; gap: 6px; padding: 9px; background: #fff; }
+  .chips span { display: flex; align-items: center; gap: 7px; font: 400 10px/1 var(--sans); color: var(--ink); }
+  .chips i { width: 22px; height: 22px; border-radius: 3px; box-shadow: inset 0 0 0 1px rgb(30 23 16 / .1); flex: none; }
+  .spec { display: grid; gap: 4px; padding: 10px 12px; background: var(--paper); color: var(--ink); }
+  .spec .aa { font: 600 calc(var(--w) * .1)/.9 var(--serif); letter-spacing: -.02em; }
+  .spec .hd { font: 600 11px/1.15 var(--serif); }
+  .spec .kk { font: 600 8px/1 var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--red); }
+  .pic img, .phone img { display: block; width: 100%; height: auto; }
+  .pic { aspect-ratio: 720 / 560; }
+  .pic img { height: 100%; object-fit: cover; object-position: top; }
+  .phone { border-radius: 10px; border: 3px solid var(--ink); aspect-ratio: 9 / 19; }
+  .phone img { height: 100%; object-fit: cover; object-position: top; }
+  .bits { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px; background: #fff; font: 500 10px/1 var(--sans); }
+  .bits .btn { padding: 7px 12px; border-radius: 3px; background: var(--red); color: #fff; letter-spacing: .04em; }
+  .bits .ghost { padding: 7px 12px; border-radius: 3px; box-shadow: inset 0 0 0 1px var(--ink); color: var(--ink); }
+  .bits .pill { padding: 5px 9px; border-radius: 999px; background: var(--paper); color: #6E6157; }
+</style>
