@@ -102,3 +102,33 @@ Saved in `public/media/people/`. Aakash = armour, Joshua = speaker, Samridhi = y
 4. For each remaining project: what we made (one line), 3 to 5 screens, logo as SVG.
 5. Stoa identity sheets.
 6. Contact address and open roles.
+
+---
+
+## Next session starts here (written 12 Nov, 17:05 IST)
+
+**Where things stand**
+- PR #1 is merged into `main` on `Chariot-Common/chariot`. Homepage objects done: Skyway, The Ken, Stoa, Alai, Paper Planes, HealthFlex.
+- **Not public yet.** The Vercel project that builds this repo (`chariot`, team `chariot4`) serves a different company's site on its main address, and the branch preview needs that team's login. This machine's Vercel CLI is linked to another project (`chariot-website`) and is not signed in. Someone has to run `vercel login`, or sort out who owns `chariot4`, before a public link exists.
+
+**Next objects, in order** (same rule: what Chariot made, cut from real assets, nothing drawn or invented)
+1. **1.9 Value Research** *(product design, UI/UX)*. We have one screen: `public/media/home/vr.jpg` (1400 x 1366), the "My Portfolio" dashboard with the performance chart. Plan from the roadmap: the flow plays (search, a fund, its star rating, compare). The one screen only supports the portfolio part: the total counts up, the tabs set, the chart line draws. *Need from team:* the search, fund and compare screens, or a live URL to capture them from.
+2. **Neon Fund** *(website)*. One screen: `neon.jpg` (404 x 815), "Be Curious. Be Neon." on a ray burst. No live URL is recorded in `src/content/projects/neon-fund.md`; find it or ask.
+3. **Doxel** *(website)*. One screen: `doxel.jpg` (953 x 617). No live URL recorded.
+4. **Tortoise** *(product design, UI/UX)*. One screen: `tortoise.jpg` (709 x 1535), the save-up plan. No live URL recorded.
+
+**How the last two objects were made** (reuse this)
+- *Assets from a live site, with real transparency:* open the image or element in the Playwright browser, screenshot it on black, then on white, and recover alpha from the difference (`alpha = 1 - mean(white - black) / 255`, colour = black shot / alpha). Split into pieces with connected components. HealthFlex's rings, logo, line and button were all made this way.
+- *Layers from a flat illustration:* OpenCV GrabCut seeded with a colour mask, then inpaint the background and print a soft shadow where the object stood. Paper Planes' kettle, lid, cups and hands were made this way.
+- *One number drives each object:* `--x` goes 0 to 1 on hover; every phase is a `clamp()` of it. Pointer lean is `--px/--py`, eased in JS. Copy `HealthFlexSite.astro` as the starting point.
+
+**Things that bit us**
+- The in-app browser pane is often hidden, and then its screenshots are stale. Verify in the Playwright browser instead (it saves under `.playwright-mcp/`; delete that folder before committing).
+- Don't run `astro build` while the dev server is up (it breaks the dev server). Restart the dev server after adding a new component.
+- Lazy images don't load in a headless tab: set `loading='eager'` and `decode()` them before a screenshot.
+
+**Small things left open**
+- HealthFlex's last tweaks (bigger pile, bigger line, tiles rising to the pointer) were checked at desktop width only; re-check at 375px.
+- Case pages for Paper Planes and HealthFlex still use the shared sheet; the objects don't carry into them yet (roadmap 2.4).
+- `public/media/about/*-light.png` is unused; the ink engravings in `public/media/wheel/ink/` are heavy (roadmap 5.2).
+- The step labels (01, 02...) are hidden on phones for Paper Planes and HealthFlex.
