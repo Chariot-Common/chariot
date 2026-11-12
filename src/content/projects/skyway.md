@@ -6,6 +6,7 @@ kind: web
 disciplines: [Website, D2C eCommerce, Content]
 color: "#2F7A55"
 poster: https://framerusercontent.com/images/5RZzEMXvwZihXi23qz9kvKMdV90.png
+presentation: custom
 pieces:
   - { src: https://framerusercontent.com/images/UPS0r7S3DFhogGn5bd8w8vmRxc.webp, label: Homepage }
   - { src: https://framerusercontent.com/images/c1H6h4M66NWsJXsdQW6edJxJs.png, label: Product page }

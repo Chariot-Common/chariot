@@ -1,149 +1,361 @@
 ---
+// The homepage, all on white paper, top to bottom (no dark-to-light switch).
+// 1. The wheel, engraved in ink, alone under the top bar (Nav).
+// 2. Scrolling, the wheel shrinks and rolls down its own long shadow; how we work is
+//    printed inside the shadow, and each line parts to let the wheel through.
+// 3. A deadpan line in dot matrix.
+// 4. The work, as real screens on real devices (WorkList), dmcg-style hovers. Then the ask.
+// The homepage (was /lab/home; that path now redirects here).
 import Base from '../layouts/Base.astro';
-import Wheel from '../components/Wheel.astro';
-import Halftone from '../components/Halftone.astro';
-import { getCollection } from 'astro:content';
+import Nav from '../components/Nav.astro';
+import WorkList from '../components/WorkList.astro';
 
-const projects = (await getCollection('projects', (p) => p.data.featured)).sort((a, b) => a.data.order - b.data.order);
-const n = projects.length;
-const pad = (i: number) => String(i).padStart(2, '0');
+// one line per row, "|" marks where the line parts for the wheel; [brackets] are the process
+const lines = [
+  'WE START WITH | THE [QUESTION,]',
+  'NOT THE | PIXEL. EVERY',
+  'PROJECT GETS | [THREE]',
+  '[DIRECTIONS,] | [ONE HONEST]',
+  '[CALL,] AND | HANDS ON',
+  'THE REINS FROM | SKETCH',
+  'TO THE LAST | SHIPPED SCREEN.',
+];
+const html = (s: string) => s.trim().replace(/\[([^\]]+)\]/g, '<em>$1</em>');
+const plain = lines.map((l) => l.replace(/[|[\]]/g, '').replace(/\s+/g, ' ').trim()).join(' ');
+
 ---
-<Base title="Chariot · Product, brand & web design">
-  <section class="home" style={`--n:${n}`}>
-    <div class="stage">
-      <div class="wheel-col"><Wheel count={n} /></div>
-
-      <div class="focus">
-        {projects.map((p, i) => (
-          <a
-            class:list={['slide', { on: i === 0 }]}
-            href={`/work/${p.id}`}
-            data-index={i}
-            data-slug={p.id}
-            data-cursor={`${p.data.title}|${p.data.disciplines.slice(0, 2).join(', ')}`}
-            data-tick
-            tabindex={i === 0 ? 0 : -1}
-            aria-hidden={i === 0 ? undefined : 'true'}
-          >
-            <div class="poster" data-poster>
-              <Halftone src={p.data.poster} alt={p.data.title} tint={p.data.color} eager={i < 2} />
-            </div>
-            <div class="caption">
-              <span class="label">{pad(i + 1)} / {pad(n)} · {p.data.kind}</span>
-              <h2>{p.data.title}</h2>
-              <p>{p.data.summary}</p>
-              <span class="open">Open project <span aria-hidden="true">→</span></span>
-            </div>
-          </a>
-        ))}
+<Base title="Chariot · Product, brand & web design" bare>
+  <div class="home">
+    <Nav />
+    <section class="night">
+      <div class="track">
+        <div class="spot" aria-hidden="true"></div>
+        <div class="shadow" aria-hidden="true"></div>
+        <div class="floor" aria-hidden="true"></div>
+        <canvas class="disc" aria-hidden="true"></canvas>
+        <div class="hero" aria-hidden="true"></div>
+        <div class="para" aria-label={plain}>
+          {lines.map((l) => {
+            const [a, b] = l.split('|');
+            return <div class="ln" aria-hidden="true"><span class="a" set:html={html(a)} /><span class="b" set:html={html(b)} /></div>;
+          })}
+        </div>
+        <span class="slot" aria-hidden="true"></span>
+        <p class="dm" data-dm={'HOLD ON...\nTHIS SHADOW IS LONGER\nTHAN OUR PROCESS.\n(IT ISN\'T.)'}>Hold on… this shadow is longer than our process. (It isn't.)</p>
       </div>
+    </section>
 
-      <div class="intro">
-        <p class="tagline display">We craft products, brands &amp; websites with nuance and good taste.</p>
-        <p class="hint label" aria-hidden="true">Scroll to turn the wheel</p>
+    <section class="paper" id="work">
+      <WorkList />
+
+      <div class="ask">
+        <h2>EVERY PROJECT STARTS<br />WITH A QUESTION.</h2>
+        <a class="pill" href="mailto:hello@withchariot.com" data-tick>ASK!</a>
       </div>
-    </div>
-    <div class="steps" aria-hidden="true">{projects.map(() => <div class="step"></div>)}</div>
-  </section>
-
-  <section class="list" aria-labelledby="all-work">
-    <h2 id="all-work" class="label">All work</h2>
-    <ol>
-      {projects.map((p, i) => (
-        <li>
-          <a href={`/work/${p.id}`} data-cursor={`${p.data.title}|${p.data.kind}`} data-tick>
-            <span class="label">{pad(i + 1)}</span>
-            <span class="t">{p.data.title}</span>
-            <span class="s">{p.data.summary}</span>
-            <span class="label k">{p.data.disciplines[0]}</span>
-          </a>
-        </li>
-      ))}
-    </ol>
-  </section>
+    </section>
+  </div>
 </Base>
 
 <style>
-  .home { position: relative; height: calc(var(--n) * 72vh + 100vh); }
-  .stage {
-    position: sticky; top: 0; height: 100vh; height: 100svh;
-    display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); align-items: center;
-    padding: 88px var(--gutter) 64px; gap: 4vw;
-  }
-  .wheel-col { height: min(76vh, 46vw); }
-  .steps { position: absolute; inset: 0; display: grid; grid-template-rows: repeat(var(--n), 72vh) 100vh; pointer-events: none; }
-  .step { scroll-snap-align: start; }
+  /* ---- one page, all paper: the wheel is printed in ink on white, top to bottom ---- */
+  .home { --paper: #FFFFFF; --ink: #1E1710; --rubric: #E0661B; background: var(--paper); color: var(--ink); }
+  /* no dark ground peeking through on overscroll */
+  :global(html:has(.home)), :global(body:has(.home)) { background: #FFFFFF; color-scheme: light; }
+  .night { position: relative; background: var(--paper); color: var(--ink); overflow: hidden; }
+  .track { position: relative; }
+  .hero { height: 100svh; }
+  .home :global(.nav) { --nav-ink: #1E1710; }
+  .spot { display: none; }
+  /* the wheel stands on the paper: a soft contact shadow right under it, travelling and shrinking with it */
+  .floor { position: absolute; left: 50%; top: 0; z-index: 1; width: 1px; height: 1px; pointer-events: none;
+    border-radius: 50%; background: radial-gradient(closest-side, rgb(30 23 16 / .22), rgb(30 23 16 / .08) 55%, transparent); }
+  /* the long shadow, engraved like the wheel: fine ink hatching that thins out as it runs down through the words */
+  .shadow { position: absolute; left: 50%; width: 70vw; transform: translateX(-50%); pointer-events: none;
+    background: repeating-linear-gradient(-45deg, rgb(30 23 16 / .2) 0 1px, transparent 1px 7px);
+    clip-path: polygon(44% 0, 56% 0, 100% 100%, 0 100%);
+    -webkit-mask: linear-gradient(#000, rgb(0 0 0 / .55) 45%, transparent 96%); mask: linear-gradient(#000, rgb(0 0 0 / .55) 45%, transparent 96%); }
+  .disc { position: absolute; left: 50%; top: 0; z-index: 2; pointer-events: none; }
 
-  .focus { position: relative; height: min(74vh, 600px); }
-  .slide {
-    position: absolute; inset: 0; display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 20px;
-    opacity: 0; pointer-events: none; transform: translateY(14px);
-    transition: opacity 420ms var(--ease), transform 620ms var(--ease);
-  }
-  .slide.on { opacity: 1; pointer-events: auto; transform: none; }
-  .poster { border-radius: 14px; overflow: hidden; background: var(--surface); min-height: 0; }
-  .caption { display: grid; gap: 6px; max-width: 46ch; }
-  .caption h2 { margin: 0; font: 600 clamp(30px, 3.4vw, 46px)/1.05 var(--serif); letter-spacing: -.04em; }
-  .open { margin-top: 8px; font: 500 12px/1 var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--accent); display: inline-flex; gap: 8px; }
-  .slide:hover .open span { transform: translateX(4px); }
-  .open span { transition: transform var(--fast) var(--ease); }
-  .intro { position: absolute; left: var(--gutter); top: 84px; max-width: 30ch; display: grid; gap: 10px; }
-  .tagline { margin: 0; font-size: clamp(20px, 1.8vw, 26px); color: var(--muted); }
-  .caption p { margin: 0; color: var(--muted); }
+  .para { position: relative; z-index: 1; padding-top: 10vh; font: 400 clamp(24px, 4.1vw, 74px)/1 var(--serif); letter-spacing: -.015em; }
+  .ln { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: .28em; white-space: nowrap; }
+  .ln .a, .ln .b { display: block; will-change: transform; }
+  .ln .a { justify-self: end; }
+  .ln .b { justify-self: start; }
+  .ln :global(em) { font-style: normal; transition: color .5s var(--ease); }
+  .ln.past :global(em) { color: var(--rubric); }
+  .slot { display: block; }
+  /* the deadpan line, in dot matrix; the real text stays for screen readers */
+  .dm { position: relative; z-index: 1; margin: 4vh auto 0; padding-bottom: 26vh; text-align: center; font-size: 0; color: transparent; }
+  .dm :global(canvas) { display: inline-block; }
 
-  .list { padding: 18vh var(--gutter) 22vh; max-width: 1240px; margin: 0 auto; }
-  .list h2 { margin: 0 0 18px; }
-  .list ol { list-style: none; margin: 0; padding: 0; border-top: 1px dashed var(--line); }
-  .list a {
-    display: grid; grid-template-columns: 44px minmax(0, 14ch) minmax(0, 1fr) auto; gap: 20px; align-items: baseline;
-    padding: 16px 0; border-bottom: 1px dashed var(--line);
-    transition: padding var(--fast) var(--ease), color var(--fast) var(--ease);
-  }
-  .list a:hover { padding-left: 10px; }
-  .list .t { font: 600 24px/1.1 var(--serif); letter-spacing: -.03em; }
-  .list .s { color: var(--muted); font-size: 15px; }
+  /* ---- the work, on the same paper ---- */
+  .paper { position: relative; background: var(--paper); color: var(--ink); padding: 14vh var(--gutter) 16vh; }
 
-  @media (max-width: 820px) {
-    .stage { grid-template-columns: minmax(0, 1fr); grid-template-rows: 38vh minmax(0, 1fr); padding-top: 72px; gap: 8px; }
-    .wheel-col { height: 100%; }
-    .focus { height: 100%; }
-    .intro { display: none; }
-    .list a { grid-template-columns: 32px minmax(0, 1fr); }
-    .list .s, .list .k { grid-column: 2; }
-  }
+  .ask { display: grid; justify-items: center; gap: 28px; margin-top: 26vh; text-align: center; }
+  .ask h2 { margin: 0; font: 400 clamp(30px, 4.6vw, 80px)/1 var(--serif); letter-spacing: -.015em; }
+  .pill { padding: 12px 26px; border: 1.5px solid currentColor; border-radius: 999px; font: 500 14px/1 var(--sans); letter-spacing: .08em; }
+  .pill:hover { background: var(--rubric); border-color: var(--rubric); color: var(--paper); }
+
 </style>
 
 <script>
-  // Scroll position through the section decides the project in focus and the wheel's turn.
-  function initHome() {
-    const home = document.querySelector<HTMLElement>('.home');
-    if (!home) return;
-    const slides = [...home.querySelectorAll<HTMLAnchorElement>('.slide')];
-    const n = slides.length;
-    let current = 0;
-    const update = () => {
-      const r = home.getBoundingClientRect();
-      const span = home.offsetHeight - innerHeight;
-      const progress = Math.min(1, Math.max(0, -r.top / Math.max(1, span * (n - 1) / n)));
-      const index = Math.round(progress * (n - 1));
-      dispatchEvent(new CustomEvent('wheel:progress', { detail: { progress, index } }));
-      if (index !== current) {
-        slides[current].classList.remove('on');
-        slides[current].setAttribute('aria-hidden', 'true');
-        slides[current].tabIndex = -1;
-        slides[index].classList.add('on');
-        slides[index].removeAttribute('aria-hidden');
-        slides[index].tabIndex = 0;
-        current = index;
+  import * as THREE from 'three';
+  const VERT = /* glsl */ `
+    varying vec2 vUv;
+    void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }
+  `;
+  // printed like an engraving on paper: ink lines that swell where the wood falls into shade,
+  // stay hairline-thin in the light, cross-hatch in the deepest shadow, and a cut line round every edge
+  const FRAG = /* glsl */ `
+    uniform sampler2D tScene;
+    uniform vec2 uRes;
+    uniform float uCell;
+    uniform vec3 uInk;
+    float hatch(vec2 p, float ang, float w) {
+      float c = cos(ang), s = sin(ang);
+      float v = (p.x * c + p.y * s) / uCell;
+      float d = abs(fract(v) - 0.5) * uCell;
+      return 1.0 - smoothstep(w - 0.6, w + 0.6, d);
+    }
+    void main() {
+      vec2 frag = gl_FragCoord.xy;
+      vec4 s = texture2D(tScene, frag / uRes);
+      float lum = dot(s.rgb, vec3(0.299, 0.587, 0.114));
+      float shade = 1.0 - clamp(lum * 1.6, 0.0, 1.0);
+      float a = hatch(frag, 0.78, mix(0.07, 0.46, shade) * uCell) * step(0.02, s.a);
+      a = max(a, hatch(frag, -0.78, (shade - 0.55) * uCell * 0.5) * step(0.55, shade) * s.a);
+      vec2 px = 1.5 / uRes;
+      float e = abs(texture2D(tScene, frag / uRes + vec2(px.x, 0.0)).a - texture2D(tScene, frag / uRes - vec2(px.x, 0.0)).a)
+              + abs(texture2D(tScene, frag / uRes + vec2(0.0, px.y)).a - texture2D(tScene, frag / uRes - vec2(0.0, px.y)).a);
+      a = max(a, clamp(e * 1.4, 0.0, 1.0));
+      gl_FragColor = vec4(uInk * a, a);
+      #include <colorspace_fragment>
+    }
+  `;
+
+  // ---- dot matrix: render the text tiny, then reprint every lit pixel as a round dot ----
+  function dotMatrix(el: HTMLElement) {
+    const rows = (el.dataset.dm || '').split('\n');
+    const src = document.createElement('canvas').getContext('2d', { willReadFrequently: true })!;
+    const fh = 8, lh = 10;
+    src.font = `bold ${fh}px monospace`;
+    const w = Math.ceil(Math.max(...rows.map((r) => src.measureText(r).width))) + 2;
+    src.canvas.width = w; src.canvas.height = rows.length * lh + 2;
+    src.font = `bold ${fh}px monospace`;
+    src.textBaseline = 'top';
+    src.fillStyle = '#fff';
+    rows.forEach((r, i) => src.fillText(r, (w - src.measureText(r).width) / 2, i * lh + 1));
+    const px = src.getImageData(0, 0, src.canvas.width, src.canvas.height).data;
+    const dot = Math.max(3, Math.round(innerWidth / 360));
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    const out = document.createElement('canvas');
+    out.width = src.canvas.width * dot * dpr; out.height = src.canvas.height * dot * dpr;
+    out.style.width = `${src.canvas.width * dot}px`; out.style.height = `${src.canvas.height * dot}px`;
+    const o = out.getContext('2d')!;
+    o.fillStyle = getComputedStyle(el).getPropertyValue('--ink').trim() || '#1E1710';
+    for (let y = 0; y < src.canvas.height; y++) for (let x = 0; x < src.canvas.width; x++) {
+      if (px[(y * src.canvas.width + x) * 4 + 3] > 110) {
+        o.beginPath(); o.arc((x + .5) * dot * dpr, (y + .5) * dot * dpr, dot * dpr * .42, 0, Math.PI * 2); o.fill();
       }
-    };
-    // only the poster being opened carries the shared name, so it grows into the project page
-    slides.forEach((s) => s.addEventListener('click', () => {
-      s.querySelector<HTMLElement>('[data-poster]')!.style.viewTransitionName = 'sheet-poster';
-    }));
-    addEventListener('scroll', update, { passive: true });
-    document.addEventListener('astro:before-swap', () => removeEventListener('scroll', update), { once: true });
-    update();
+    }
+    out.setAttribute('aria-hidden', 'true');
+    el.append(out);
   }
-  document.addEventListener('astro:page-load', initHome);
+
+  type Cleanup = () => void;
+  let cleanup: Cleanup | null = null;
+
+  function init(home: HTMLElement): Cleanup {
+    const section = home.querySelector<HTMLElement>('.night')!;
+    const disc = section.querySelector<HTMLCanvasElement>('.disc')!;
+    const slot = section.querySelector<HTMLElement>('.slot')!;
+    const hero = section.querySelector<HTMLElement>('.hero')!;
+    const shadow = section.querySelector<HTMLElement>('.shadow')!;
+    const floor = section.querySelector<HTMLElement>('.floor')!;
+    const track = section.querySelector<HTMLElement>('.track')!;
+    const rows = [...section.querySelectorAll<HTMLElement>('.ln')].map((el) => ({
+      el, a: el.querySelector<HTMLElement>('.a')!, b: el.querySelector<HTMLElement>('.b')!,
+    }));
+    const para = section.querySelector<HTMLElement>('.para')!;
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    section.querySelectorAll<HTMLElement>('.dm').forEach(dotMatrix);
+
+    // ---- the wheel ----
+    const renderer = new THREE.WebGLRenderer({ canvas: disc, antialias: false, alpha: true, premultipliedAlpha: true });
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    renderer.setPixelRatio(dpr);
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(28, 1, 0.1, 50);
+    camera.position.set(0, 0, 5.4);
+    const wheel = new THREE.Group();
+    const tilt = new THREE.Group();
+    tilt.rotation.x = -0.12;
+    tilt.add(wheel);
+    scene.add(tilt);
+    // built to the drawings in public/media/wheel: six turned spokes with collars at both ends,
+    // a thick wooden rim with a thin tyre, a bronze plate clamped over the rim at every spoke,
+    // a stepped turned hub with a linchpin and ring in front and the axle stub behind.
+    // Flat-shaded so the engraving picks out every facet.
+    const wood = new THREE.MeshStandardMaterial({ color: 0xb59772, metalness: 0, roughness: 0.85, flatShading: true });
+    const brass = new THREE.MeshStandardMaterial({ color: 0xd9c49a, metalness: 0.35, roughness: 0.45, flatShading: true });
+    const annulus = (outer: number, inner: number, depth: number, m: THREE.Material) => {
+      const shape = new THREE.Shape().absarc(0, 0, outer, 0, Math.PI * 2, false);
+      shape.holes.push(new THREE.Path().absarc(0, 0, inner, 0, Math.PI * 2, true));
+      const g = new THREE.ExtrudeGeometry(shape, { depth, bevelEnabled: true, bevelSize: 0.008, bevelThickness: 0.008, bevelSegments: 1, curveSegments: 96 });
+      g.translate(0, 0, -depth / 2);
+      wheel.add(new THREE.Mesh(g, m));
+    };
+    annulus(1.0, 0.82, 0.16, wood);   // the rim, six felloes
+    annulus(1.05, 0.995, 0.12, brass); // the tyre
+    // rivets round the tyre, as in the edge-on drawing
+    const rivet = new THREE.SphereGeometry(0.018, 6, 4);
+    for (let i = 0; i < 18; i++) {
+      const a = (i / 18) * Math.PI * 2;
+      const n = new THREE.Mesh(rivet, brass);
+      n.position.set(Math.cos(a) * 1.052, Math.sin(a) * 1.052, 0);
+      wheel.add(n);
+    }
+    // a spoke turned on a lathe: collar, swell, slim waist, swell, collar
+    const spokeGeo = new THREE.LatheGeometry([
+      [0.0, 0.2], [0.075, 0.2], [0.075, 0.25], [0.06, 0.27], [0.065, 0.3], [0.05, 0.33],
+      [0.034, 0.48], [0.04, 0.62], [0.055, 0.7], [0.065, 0.72], [0.075, 0.74], [0.075, 0.8], [0.0, 0.83],
+    ].map(([r, h]) => new THREE.Vector2(r, h)), 10);
+    const plateGeo = new THREE.BoxGeometry(0.17, 0.22, 0.2);
+    for (let i = 0; i < 6; i++) {
+      const a = Math.PI / 2 + (i / 6) * Math.PI * 2;
+      const s = new THREE.Mesh(spokeGeo, wood);
+      s.rotation.z = a - Math.PI / 2;
+      wheel.add(s);
+      // the bronze plate where the spoke meets the rim, two rivets on its face
+      const plate = new THREE.Mesh(plateGeo, brass);
+      plate.position.set(Math.cos(a) * 0.91, Math.sin(a) * 0.91, 0);
+      plate.rotation.z = a - Math.PI / 2;
+      wheel.add(plate);
+      for (const o of [-0.05, 0.05]) {
+        const n = new THREE.Mesh(rivet, brass);
+        n.position.set(Math.cos(a) * (0.91 + o), Math.sin(a) * (0.91 + o), 0.105);
+        wheel.add(n);
+      }
+    }
+    // the hub: a stepped turned bulb, deeper behind than in front
+    const hub = new THREE.Mesh(new THREE.LatheGeometry([
+      [0.06, -0.34], [0.12, -0.32], [0.17, -0.27], [0.2, -0.2], [0.225, -0.1], [0.23, 0],
+      [0.22, 0.07], [0.2, 0.1], [0.2, 0.12], [0.17, 0.15], [0.17, 0.17], [0.13, 0.2], [0.13, 0.22], [0.08, 0.25], [0.0, 0.26],
+    ].map(([r, h]) => new THREE.Vector2(r, h)), 24), wood);
+    hub.rotation.x = Math.PI / 2;
+    wheel.add(hub);
+    const knob = new THREE.Mesh(new THREE.SphereGeometry(0.055, 16, 10), brass);
+    knob.position.z = 0.28;
+    wheel.add(knob);
+    const ringPin = new THREE.Mesh(new THREE.TorusGeometry(0.035, 0.009, 6, 20), brass);
+    ringPin.scale.y = 1.9;
+    ringPin.position.set(0, -0.08, 0.3);
+    wheel.add(ringPin);
+    const axle = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.22, 16), wood);
+    axle.rotation.x = Math.PI / 2;
+    axle.position.z = -0.42;
+    wheel.add(axle);
+    scene.add(new THREE.HemisphereLight(0xfff4e6, 0x1a140c, 0.9));
+    const key = new THREE.DirectionalLight(0xffffff, 3.2); key.position.set(-2.5, 3, 3); scene.add(key);
+    const rim = new THREE.DirectionalLight(0xffe2c0, 0.5); rim.position.set(3, -1.5, 2); scene.add(rim);
+
+    const rt = new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: 4 });
+    const uniforms = {
+      tScene: { value: rt.texture },
+      uRes: { value: new THREE.Vector2(1, 1) },
+      uCell: { value: 3.2 * dpr },
+      uInk: { value: new THREE.Color(getComputedStyle(section).color) },
+    };
+    const quad = new THREE.Scene();
+    const quadCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+    quad.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShaderMaterial({ uniforms, vertexShader: VERT, fragmentShader: FRAG, transparent: true })));
+
+    // ---- sizing ----
+    // In the spotlight the wheel is big; by the time it reaches the words it has shrunk to
+    // about a line and a half. The canvas is sized for the big wheel and the model scales.
+    let R = 0, Rhero = 0, S = 0;
+    function measure() {
+      R = rows[0].el.getBoundingClientRect().height * 0.9;
+      Rhero = Math.min(innerHeight * 0.26, innerWidth * 0.3);
+      S = Math.ceil((2 * Rhero) / 0.78);
+      disc.style.width = disc.style.height = `${S}px`;
+      renderer.setSize(S, S, false);
+      rt.setSize(S * dpr, S * dpr);
+      uniforms.uRes.value.set(S * dpr, S * dpr);
+      slot.style.height = `${2.6 * R}px`;
+      // the shadow starts under the wheel in the spotlight and runs to the end of the words
+      const top = hero.offsetTop + hero.offsetHeight * 0.5 + Rhero * 0.8;
+      shadow.style.top = `${top}px`;
+      shadow.style.height = `${slot.offsetTop + slot.offsetHeight - top}px`;
+    }
+
+    // ---- motion ----
+    // The wheel starts in the spotlight and aims for the middle of the screen, trailing it a
+    // little, so the words rise past it and it rolls down through them, parting each line;
+    // it comes to rest in its slot above the dot-matrix line.
+    let theta = 0.5, y = -1, raf = 0;
+    function frame() {
+      raf = requestAnimationFrame(frame);
+      const tr = track.getBoundingClientRect(), sr = slot.getBoundingClientRect();
+      const heroY = hero.offsetTop + hero.offsetHeight * 0.5;
+      const from = rows[0].el.offsetTop + para.offsetTop - R * 1.1;
+      const land = sr.top + sr.height / 2 - tr.top;
+      const want = innerHeight * 0.5 - tr.top;
+      const aimY = Math.min(land, Math.max(heroY, want));
+      y = y < 0 || reduce ? aimY : y + (aimY - y) * 0.1;
+      const landed = aimY >= land - 1;
+      // big in the light, line-sized among the words
+      const k0 = Math.min(1, Math.max(0, (y - heroY) / Math.max(1, from - heroY)));
+      const k = k0 * k0 * (3 - 2 * k0);
+      tilt.scale.setScalar((Rhero + (R - Rhero) * k) / Rhero);
+      disc.style.transform = `translate(-50%, ${y - S / 2}px)`;
+      // the contact shadow sits just under the rim, as wide as the wheel and very flat
+      const rad = Rhero + (R - Rhero) * k;
+      floor.style.width = `${rad * 1.7}px`;
+      floor.style.height = `${rad * 0.22}px`;
+      floor.style.transform = `translate(-50%, ${y + rad * 1.02 - rad * 0.11}px)`;
+      const reach = R * 2.1;
+      for (const r of rows) {
+        const cy = r.el.offsetTop + para.offsetTop + r.el.offsetHeight / 2;
+        const t = Math.max(0, 1 - Math.abs(cy - y) / reach);
+        const x = t * t * (3 - 2 * t) * R * 1.25;
+        r.a.style.transform = `translateX(${-x}px)`;
+        r.b.style.transform = `translateX(${x}px)`;
+        r.el.classList.toggle('past', cy < y);
+      }
+      // it turns slowly under the light, rolls as it travels, and settles face-on when it lands
+      const roll = (y - heroY) / (R * 1.6) + performance.now() / 6000 * (1 - k);
+      const aimTheta = reduce ? 0.5 : landed ? Math.round(roll / Math.PI) * Math.PI : roll;
+      theta += (aimTheta - theta) * 0.16;
+      tilt.rotation.y = theta;
+      wheel.rotation.z = theta * 0.35;
+      renderer.setRenderTarget(rt);
+      renderer.setClearColor(0x000000, 0);
+      renderer.clear();
+      renderer.render(scene, camera);
+      renderer.setRenderTarget(null);
+      renderer.clear();
+      renderer.render(quad, quadCam);
+    }
+
+    document.fonts.ready.then(measure);
+    measure();
+    addEventListener('resize', measure);
+    frame();
+
+    return () => {
+      cancelAnimationFrame(raf);
+      removeEventListener('resize', measure);
+      rt.dispose();
+      renderer.dispose();
+    };
+  }
+
+  document.addEventListener('astro:page-load', () => {
+    cleanup?.();
+    cleanup = null;
+    const h = document.querySelector<HTMLElement>('.home');
+    if (h) cleanup = init(h);
+  });
+  document.addEventListener('astro:before-swap', () => { cleanup?.(); cleanup = null; });
 </script>

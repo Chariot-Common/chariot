@@ -133,3 +133,8 @@ html.theme-paper {
   --bg: #FFFFFF; --surface: #F3F1EC; --ink: #1E1710; --muted: #6F685E;
   --line: rgb(30 23 16 / .16); color-scheme: light;
 }
+
+/* on phones the project switcher needs the room: keep only Work on the left and the sound toggle on the right */
+@media (max-width: 600px) {
+  .frame-top nav[aria-label="Main"] a:not(:first-child), .frame-right > a, .frame-right .sound > span { display: none; }
+}
