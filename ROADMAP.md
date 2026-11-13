@@ -102,7 +102,7 @@ Saved in `public/media/people/`. Aakash = armour, Joshua = speaker, Samridhi = y
 ---
 
 ### Waiting on the team (short list)
-1. ~~Who the three unnamed characters are~~ Named: backpack = Tanujaa Hemakumar, glasses = Siddharth Thorat, handstand = Shreesh Kuliyal. Still need: Tanujaa's role, and everyone's "one thing".
+1. ~~Who the three unnamed characters are~~ Named: backpack = Tanujaa Hemakumar, glasses = Shreesh Kuliyal, handstand = Siddharth Thorat. Still need: Tanujaa's role, and everyone's "one thing".
 2. Transparent versions of the six characters.
 3. Hide or keep the five "coming soon" projects.
 4. For each remaining project: what we made (one line), 3 to 5 screens, logo as SVG.
