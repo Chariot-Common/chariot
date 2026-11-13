@@ -84,8 +84,8 @@ same object carries into the case page.
 
 | # | Task | Status |
 |---|---|---|
-| 4.1 | Names and one thing for all six | ⏸ |
-| 4.2 | Transparent cut-outs | 🔨 paper-edge cut-outs made from the paintings |
+| 4.1 | Names and one thing for all six | 🔨 names done; Tanujaa's role still to come |
+| 4.2 | New paintings (v3), rest + power, cut out | ✅ in the Studio tree; opener, collage and join list still use the old ones |
 | 4.3 | Margin drawings beside "how we work" on the homepage | ⬜ |
 | 4.4 | Crew on each case page; 404 page | ⬜ |
 

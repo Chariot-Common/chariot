@@ -19,6 +19,8 @@ import Nav from '../components/Nav.astro';
 
 const night = (img: string) => `/media/people/night/${img}`;
 const fig = (img: string) => `/media/people/fig/${img}`;
+// the v3 paintings (13 Nov): each Charioteer at rest, and with their power (one orange mark)
+const v3 = (slug: string, k: 'rest' | 'power') => `/media/people/v3/${({ backpack: 'tanujaa', glasses: 'shreesh', handstand: 'siddharth' } as Record<string, string>)[slug] ?? slug}-${k}.webp`;
 
 // The crew. Fill in the blanks (name, role) and drop a real photo at
 // public/media/people/photos/<slug>.jpg, then set photo: true. box is where their one thing sits
@@ -91,18 +93,16 @@ const habits = [
     <!-- 3. paper: the Charioteers, as a tree -->
     <section class="paper tree" aria-labelledby="h-team" data-tree>
       <h2 id="h-team" class="tree-h" data-reveal><span class="dots" aria-hidden="true">· · · ·</span>The Charioteers</h2>
-      <p class="hint" data-reveal>Point at a Charioteer. The machine will tell you what they carry.</p>
+      <p class="hint" data-reveal>Point at a Charioteer to see them at work.</p>
       <div class="family">
         <svg class="lines" aria-hidden="true" data-lines></svg>
         {everyone.map((c, i) => (
           <figure class:list={['node', { top: i === 0 }]} data-node data-reveal style={`--i:${i}`} data-thing={c.thing} data-score={c.score}>
             <div class="pose-wrap">
               <div class="pose">
-                <img class="art" src={fig(c.img)} width={c.w} height={c.h} alt={c.name ? `${c.name}, painted with their ${c.thing}` : `A Charioteer, painted with their ${c.thing}`} loading="lazy" />
+                <img class="art" src={v3(c.slug, 'rest')} width="640" height="960" alt={`${c.name}, painted with their ${c.thing}`} loading="eager" decoding="async" />
+                <img class="power" src={v3(c.slug, 'power')} width="640" height="960" alt="" aria-hidden="true" loading="eager" decoding="async" />
                 {c.photo && <img class="real" src={`/media/people/photos/${c.slug}.jpg`} alt="" loading="lazy" />}
-                <span class="scan" style={`--m:url(${fig(c.img)})`} aria-hidden="true"></span>
-                <span class="pbox" aria-hidden="true"><i>person 0.99</i></span>
-                <span class="box" style={`--x:${c.box[0]}%;--y:${c.box[1]}%;--w:${c.box[2]}%;--h:${c.box[3]}%`} aria-hidden="true"><i data-label>{c.thing} {c.score}</i></span>
               </div>
               <span class="floor" aria-hidden="true"></span>
             </div>
@@ -220,24 +220,11 @@ const habits = [
   .real { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .4s; }
   .node:hover .real { opacity: 1; }
   .floor { position: absolute; left: 18%; right: 18%; bottom: -6px; height: 12px; border-radius: 50%; background: radial-gradient(closest-side, rgb(22 19 15 / .22), transparent); z-index: -1; }
-  /* the machine reads the painting: a scan line sweeps the figure only */
-  .scan { position: absolute; inset: 0; pointer-events: none; opacity: 0;
-    -webkit-mask: var(--m) center / 100% 100% no-repeat; mask: var(--m) center / 100% 100% no-repeat;
-    background: linear-gradient(180deg, transparent 0 40%, rgb(240 88 46 / .55) 49%, rgb(255 255 255 / .8) 50%, transparent 60%) 0 0 / 100% 250% no-repeat; }
-  .node:hover .scan, .node.on .scan { animation: scan 1.1s var(--ease) both; }
-  @keyframes scan { 0% { opacity: 1; background-position: 0 100%; } 85% { opacity: 1; } 100% { opacity: 0; background-position: 0 0; } }
-  /* first it finds a person, then it locks onto their thing */
-  .pbox, .box { position: absolute; pointer-events: none; opacity: 0; }
-  .pbox { inset: -2% -3%; border: 1px dashed rgb(22 19 15 / .5); transition: opacity .2s; }
-  .pbox i, .box i { position: absolute; left: -1px; bottom: 100%; padding: 3px 5px; font: 500 10px/1 var(--mono); font-style: normal; white-space: nowrap; }
-  .pbox i { background: var(--ink); color: var(--paper); }
-  .box { left: 0; top: 0; width: 100%; height: 100%; border: 1.5px solid var(--orange); box-shadow: 0 0 0 1px rgb(255 255 255 / .6) inset;
-    transition: left .5s var(--ease), top .5s var(--ease), width .5s var(--ease), height .5s var(--ease), opacity .15s; }
-  .box i { background: var(--orange); color: var(--ink); }
-  .box::before, .box::after { content: ""; position: absolute; width: 7px; height: 7px; border: 2px solid var(--orange); }
-  .box::before { right: -4px; top: -4px; border-left: 0; border-bottom: 0; } .box::after { left: -4px; bottom: -4px; border-right: 0; border-top: 0; }
-  .node:hover .pbox, .node.on .pbox { opacity: 1; }
-  .node:hover .box, .node.on .box { opacity: 1; left: var(--x); top: var(--y); width: var(--w); height: var(--h); transition-delay: .45s; }
+  /* rest, and on hover their power: the same figure at work, with its one orange mark */
+  .power { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity .5s ease; filter: drop-shadow(0 2px 1px rgb(22 19 15 / .18)); }
+  .art { transition: opacity .5s ease; }
+  .node:hover .power, .node.on .power, .node:focus-within .power { opacity: 1; }
+  .node:hover .art, .node.on .art, .node:focus-within .art { opacity: 0; }
   figcaption { display: grid; gap: 3px; }
   .role { font: 400 clamp(14px, 1.2vw, 17px)/1.2 var(--serif); }
 
@@ -353,7 +340,8 @@ const habits = [
 
     // the detector counts up to its score
     const count = (n: HTMLElement) => {
-      const label = n.querySelector<HTMLElement>('[data-label]')!;
+      const label = n.querySelector<HTMLElement>('[data-label]');
+      if (!label) return;
       const thing = n.dataset.thing!, score = Number(n.dataset.score);
       if (calm) { label.textContent = `${thing} ${score.toFixed(2)}`; return; }
       const t0 = performance.now() + 450;
