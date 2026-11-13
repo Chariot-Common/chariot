@@ -6,4 +6,6 @@ kind: product
 disciplines: [Product design, UI/UX]
 color: "#1F6E75"
 poster: https://framerusercontent.com/images/zcvpYvnV3KXLhvVDVs2o1LLZCbY.png
+screens:
+  - { src: "/media/home/vr.jpg", alt: "My Portfolio: the dashboard", shape: square }
 ---

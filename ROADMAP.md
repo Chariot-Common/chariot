@@ -52,14 +52,15 @@ same object carries into the case page.
 | # | Task | Status |
 |---|---|---|
 | 2.1 | Skyway case page | ✅ |
-| 2.2 | The Ken case opens on its system | ⬜ |
-| 2.3 | Stoa case page (brand) | ⬜ |
-| 2.4 | One case template for the rest | ⬜ |
+| 2.2 | The Ken case opens on its system | ✅ |
+| 2.3 | Stoa case page (brand) | 🔨 object in, write-up waiting on the team |
+| 2.4 | One case template for every project | ✅ |
+| 2.5 | Write-ups for the other eight | ⏸ waiting on the team |
 
-**2.1 Skyway.** Opens on the 3D site, which comes apart as you scroll; brief, "Made for the thumb", "Three clicks to checkout", the pages.
-**2.2 The Ken.** It has a full case page already (an edition of The Ken). Start it on the design-system object so the hover carries straight in.
-**2.3 Stoa.** Today it uses the shared sheet. Give it a brand case: the mark on its grid, the rays, the website, the product. *Need from team:* the identity sheets (the one on the old site comes back blank).
-**2.4 Template.** One case layout every project can use until it gets its own: object, brief, thinking (question, three directions, the call), screens, result, credits.
+**2.4 Template (13 Nov).** `src/pages/work/[slug].astro` now builds every case page, after dmcg's Groth page: a huge wordmark and the project's own line, the homepage object opening calmly in a big panel (poster if there is no object), then a readable 18px column alternating with big rounded panels of real clips and screens (wide, in pairs, rows of phones), impact, numbers, the client's quote, team, links, next project. The custom Skyway and The Ken pages are retired; everything comes from the content files.
+**2.1 / 2.2 / Alai.** Their content files now carry the real case-study copy and media from withchariot.com (Alai, Skyway, The Ken): overview, what we did, every section, stats, quote, team, links. Alai's invented "thinking" draft was removed. Skyway's "Checkout" piece was really the ingredients list and is relabelled.
+**2.3 Stoa.** Hero is the mark object, then the website screen and the rays poster. The "Identity" piece from the old site is a fully transparent image and was removed. *Need from team:* the identity sheets and the case copy.
+**2.5 The other eight** (HealthFlex, Paper Planes, Neon Fund, Value Research, Doxel, Tortoise, Draconic, Stoa) show summary, disciplines, live link where known, their screens, and a quiet "Write-up to come". *Need from team:* the case copy for each (or the old write-ups), and live URLs for Neon Fund, Doxel, Tortoise, Value Research, Paper Planes.
 
 ## 3. Studio (about us)
 
