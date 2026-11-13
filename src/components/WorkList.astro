@@ -44,15 +44,15 @@ const projects: Project[] = [
   { name: 'Draconic', slug: 'draconic', size: 'small', tags: ['Website', 'Visual design'], soon: true },
 ];
 
+// Neon Fund, the brightest fund, throws light on the paper where the others throw shade
+const lit = new Set(['neon-fund']);
+
 // the objects built from each project's own screen and its pieces (PiecesObject)
-const pieces: Record<string, { size: number; mz: number; label: string; base: { src: string; ratio: number; kind: 'sheet' | 'phone' }; rays?: boolean; wipe?: { left: number; top: number; w: number; h: number };
+const pieces: Record<string, { size: number; mz: number; label: string; base: { src: string; ratio: number; kind: 'sheet' | 'phone'; page?: string; bar?: string }; rays?: boolean; glow?: boolean; wipe?: { left: number; top: number; w: number; h: number };
   parts: { src: string; left: number; top: number; w: number; hx: number; hy: number; z: number; scan?: boolean }[] }> = {
-  'neon-fund': { size: 300, mz: .9, rays: true, label: "Neon Fund's site on a phone: Be Curious. Be Neon., with the sunburst opening behind it",
-    base: { src: m('neon.jpg'), ratio: 2.02, kind: 'phone' },
-    parts: [
-      { src: 'neon-headline', left: -96, top: 22, w: 86, hx: 6, hy: 42, z: 200 },
-      { src: 'neon-apply', left: 58, top: -10, w: 46, hx: 48, hy: 3, z: 160 },
-    ] },
+  'neon-fund': { size: 300, mz: .9, rays: true, glow: true, label: "Neon Fund's site on a phone, switched on and scrolling: We are the first to invest in ambitious Enterprise AI Startups, with the sunburst turning behind it and its light on the paper",
+    base: { src: m('neon.jpg'), ratio: 2.02, kind: 'phone', page: m('neon-page.webp'), bar: '/media/pieces/neon-bar.webp' },
+    parts: [] },
   // the portfolio at work: the performance line draws itself, and the numbers that matter come forward
   'value-research': { size: 720, mz: .44, label: 'Value Research: My Portfolio. The performance line draws itself, and the value, returns, transactions and tax come forward',
     base: { src: m('vr.jpg'), ratio: .976, kind: 'sheet' },
@@ -121,7 +121,7 @@ function placed_isLeft(i: number): boolean {
     <a class:list={['proj', p.size, p.side, p.extra && `x-${p.extra}`, { soon: p.soon, duo: p.desktop && p.phone }]}
        href={p.slug ? `/work/${p.slug}` : undefined} data-proj>
       <div class="stage">
-        {!p.soon && <span class="lamp" aria-hidden="true"><i class="pool"></i><i class="throw"></i></span>}
+        {!p.soon && <span class:list={['lamp', { lit: p.slug && lit.has(p.slug) }]} aria-hidden="true"><i class="pool"></i><i class="throw"></i></span>}
         <div class:list={['obj', holder]}>
 
           {p.extra === 'stoa' && <StoaBrand size={440} />}
@@ -129,7 +129,7 @@ function placed_isLeft(i: number): boolean {
           {p.extra === 'alai' && <AlaiProduct size={960} />}
           {p.extra === 'planes' && <PaperPlanes size={900} />}
           {p.extra === 'hf' && <HealthFlexSite size={760} />}
-          {p.extra === 'pieces' && p.slug && pieces[p.slug] && (() => { const o = pieces[p.slug!]; return <PiecesObject size={o.size} label={o.label} base={o.base} parts={o.parts} rays={o.rays} wipe={o.wipe} style={`--mz:${o.mz}`} />; })()}
+          {p.extra === 'pieces' && p.slug && pieces[p.slug] && (() => { const o = pieces[p.slug!]; return <PiecesObject size={o.size} label={o.label} base={o.base} parts={o.parts} rays={o.rays} glow={o.glow} wipe={o.wipe} style={`--mz:${o.mz}`} />; })()}
 
           {p.soon && (
             <div class="device desktop placeholder"><div class="bar"><b></b><b></b><b></b></div><div class="screen"><span>{p.name}<br />screens coming</span></div></div>
@@ -205,6 +205,9 @@ function placed_isLeft(i: number): boolean {
   /* the shape is cut first and blurred after, so its edges go soft like a real penumbra */
   .throw::before { content: ''; position: absolute; inset: 0; clip-path: polygon(22% 0, 78% 0, 100% 100%, 0 100%);
     background: linear-gradient(rgb(30 23 16 / .2), rgb(30 23 16 / .09) 28%, rgb(30 23 16 / .03) 70%, transparent); }
+  /* Neon Fund is a light: it lights the paper round it and down the page, where the others throw shade */
+  .lamp.lit .pool { width: 150%; background: radial-gradient(closest-side, rgb(214 250 90 / .6), rgb(226 251 123 / .26) 55%, transparent); }
+  .lamp.lit .throw::before { background: linear-gradient(rgb(205 245 70 / .6), rgb(214 250 90 / .26) 30%, rgb(226 251 123 / .08) 70%, transparent); }
   .proj[href]:is(:hover, :focus-visible, .peek) .pool { opacity: 1; scale: 1; }
   .proj[href]:is(:hover, :focus-visible, .peek) .throw { opacity: 1; scale: 1 1; transition: scale 1.6s cubic-bezier(.3, .1, .2, 1) .15s, opacity .5s .1s; }
   .obj.is-desk { width: 100%; max-width: 1100px; }
@@ -234,7 +237,7 @@ function placed_isLeft(i: number): boolean {
 
   /* caption: the name always, the keywords set in when the project wakes */
   /* the caption says what the work is for, in the project's own one line, not how it was made */
-  .cap { margin: 0; display: grid; gap: 10px; justify-items: center; align-content: start; text-align: center; }
+  .cap { position: relative; z-index: 1; margin: 0; display: grid; gap: 10px; justify-items: center; align-content: start; text-align: center; }
   .name { font: 400 clamp(30px, 3.2vw, 54px)/1.05 var(--serif); letter-spacing: -.01em; }
   .sum { max-width: 36ch; font: 400 clamp(16px, 1.4vw, 22px)/1.4 var(--sans); color: var(--soft); text-wrap: balance;
  }

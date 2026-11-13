@@ -57,6 +57,8 @@ function reach(target: HTMLElement) {
     if (!seen) return;
     // a screen clips its long page: only the frame counts
     if (n.parentElement?.closest('.screen')) return;
+    // light and atmosphere behind an object is not part of its size
+    if (n.closest('[data-nofit]')) return;
     const q = n.getBoundingClientRect();
     if (q.width < 1 || q.height < 1) return;
     l = Math.min(l, q.left); t = Math.min(t, q.top); r = Math.max(r, q.right); b = Math.max(b, q.bottom);

@@ -23,6 +23,8 @@ const slab = Array.from({ length: 7 }, (_, i) => i);
 // Skyway's clouds, upright like the ones on their site: white puffs with a pale blue underside.
 // Two big ones sit behind the stack, a bank gathers round the base in front, so the site rises
 // up through the sky. x/y/w are % of the object's width/height; back = behind the stack.
+// one cartoon puff: a flat foot and four bumps
+const puff = 'M40 106a26 26 0 0 1-4-52a36 36 0 0 1 62-22a40 40 0 0 1 72 6a36 36 0 0 1 34 68z';
 const clouds = [
   { x: -98, y: 36, w: 125, back: true, flip: false, i: 0 },
   { x: 96, y: 8, w: 100, back: true, flip: true, i: 1 },
@@ -41,12 +43,12 @@ const clouds = [
     ))}
   </div>
   {clouds.map((c) => (
-    <svg class:list={['cloud', { back: c.back, flip: c.flip }]} viewBox="0 0 240 110" aria-hidden="true" style={`--cx:${c.x}%;--cy:${c.y}%;--cw:${c.w}%;--i:${c.i}`}>
-      <defs><linearGradient id={`skyc${c.i}`} x1="0" y1="0" x2="0" y2="1"><stop offset=".55" stop-color="#fff" /><stop offset="1" stop-color="#D6E6F8" /></linearGradient></defs>
-      <g fill={`url(#skyc${c.i})`}>
-        <circle cx="62" cy="66" r="34" /><circle cx="104" cy="46" r="42" /><circle cx="150" cy="54" r="36" /><circle cx="188" cy="72" r="26" />
-        <circle cx="34" cy="82" r="22" /><rect x="30" y="72" width="180" height="32" rx="16" />
-      </g>
+    <svg class:list={['cloud', { back: c.back, flip: c.flip }]} viewBox="0 0 240 118" aria-hidden="true" style={`--cx:${c.x}%;--cy:${c.y}%;--cw:${c.w}%;--i:${c.i}`}>
+      <defs><clipPath id={`skyk${c.i}`}><path d={puff} /></clipPath></defs>
+      {/* one outline: blue all over, then the same puff in white set up and to the left inside it, so the blue is left as its underside */}
+      <path d={puff} fill="#BFD8F6" />
+      <g clip-path={`url(#skyk${c.i})`}><path d={puff} fill="#fff" transform="translate(-5 -13)" /></g>
+      <path d={puff} fill="none" stroke="#8FB6E8" stroke-opacity=".6" stroke-width="1.6" stroke-linejoin="round" />
     </svg>
   ))}
 </div>
@@ -82,15 +84,19 @@ const clouds = [
   .callouts li::before { content: ""; position: absolute; right: 100%; top: 50%; width: calc(var(--w) * .16); height: 1px; background: rgb(30 23 16 / .28); }
   .callouts li::after { content: ""; position: absolute; right: calc(100% + var(--w) * .16 - 2px); top: calc(50% - 2px); width: 5px; height: 5px; border-radius: 50%; background: #1E1710; }
 
-  /* the clouds: upright, behind the stack or gathered in front of its base; they rise in slowly as it opens */
-  .cloud { position: absolute; left: var(--cx); top: var(--cy); width: var(--cw); height: auto; z-index: 2; pointer-events: none;
-    filter: drop-shadow(0 calc(var(--w) * .05) calc(var(--w) * .06) rgb(60 100 170 / .22));
+  /* the clouds: upright, behind the stack or gathered in front of its base; they rise in slowly as it opens,
+     then drift across, the near ones further than the far ones, each at its own pace */
+  .cloud { position: absolute; left: var(--cx); top: var(--cy); width: var(--cw); height: auto; z-index: 2; pointer-events: none; overflow: visible;
+    --far: .16; filter: drop-shadow(0 calc(var(--w) * .06) calc(var(--w) * .07) rgb(40 90 180 / .3));
     opacity: clamp(0, calc(var(--x) * 2.2 - .5 - var(--i) * .12), 1);
     translate: 0 calc((1 - var(--x)) * var(--w) * .18); }
-  .cloud.back { z-index: -1; filter: drop-shadow(0 calc(var(--w) * .04) calc(var(--w) * .05) rgb(60 100 170 / .16)); }
+  .cloud.back { z-index: -1; --far: .08; filter: drop-shadow(0 calc(var(--w) * .04) calc(var(--w) * .05) rgb(40 90 180 / .2)); }
   .cloud.flip { scale: -1 1; }
-  /* a faint patch of sky opens behind the stack */
-  .site3d::before { content: ""; position: absolute; inset: -12% -70% -6%; z-index: -2; border-radius: 50%; pointer-events: none;
-    background: radial-gradient(closest-side, rgb(191 218 248 / .55), rgb(221 235 251 / .35) 55%, transparent);
+  :global(.proj:is(:hover, :focus-visible, .peek)) .cloud { animation: sky-drift calc(9s + var(--i) * 2.2s) ease-in-out calc(var(--i) * -1.7s) infinite alternate; }
+  @keyframes sky-drift { from { transform: translateX(calc(var(--w) * var(--far) * -1)); } to { transform: translateX(calc(var(--w) * var(--far))); } }
+  @media (prefers-reduced-motion: reduce) { .cloud { animation: none !important; } }
+  /* a patch of Skyway's sky opens behind the stack, so the white clouds have something to sit in */
+  .site3d::before { content: ""; position: absolute; inset: -16% -95% -10%; z-index: -2; border-radius: 50%; pointer-events: none;
+    background: radial-gradient(closest-side, rgb(150 196 246 / .8), rgb(186 216 250 / .55) 45%, rgb(221 235 251 / .25) 75%, transparent);
     opacity: var(--x); }
 </style>
