@@ -48,3 +48,61 @@ export function keepFitted(run: () => void, signal?: AbortSignal) {
   let raf = 0;
   addEventListener('resize', () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(run); }, { signal });
 }
+
+// Measure everything visible inside `target` (the box that holds what you see of the object).
+function reach(target: HTMLElement) {
+  let l = Infinity, t = Infinity, r = -Infinity, b = -Infinity;
+  target.querySelectorAll<HTMLElement>('*').forEach((n) => {
+    const seen = (n as any).checkVisibility ? (n as any).checkVisibility({ opacityProperty: true, visibilityProperty: true }) : true;
+    if (!seen) return;
+    // a screen clips its long page: only the frame counts
+    if (n.parentElement?.closest('.screen')) return;
+    const q = n.getBoundingClientRect();
+    if (q.width < 1 || q.height < 1) return;
+    l = Math.min(l, q.left); t = Math.min(t, q.top); r = Math.max(r, q.right); b = Math.max(b, q.bottom);
+  });
+  return isFinite(l) ? { l, t, r, b } : null;
+}
+
+// A project on the homepage: object and name always fit in one screen.
+// --stage-h: the stage's height (the screen, less the top bar and the caption).
+// --rest:    the object's scale at rest, so it fits its stage and its column.
+// --open:    an extra scale while opened, so the opened object fits the screen's height and
+//            its own bounds (its half of the page when it is paired, the screen when it is alone).
+// --shift:   a sideways nudge while opened, to keep it inside those bounds.
+export function fitProject(proj: HTMLElement, obj: HTMLElement, setOpen: (on: boolean) => void, paired: boolean) {
+  const root = document.documentElement;
+  const cap = proj.querySelector<HTMLElement>('.cap');
+  const capH = cap ? cap.getBoundingClientRect().height : 0;
+  const stageH = Math.max(320, innerHeight - TOP - capH - 22 - 28);
+  proj.style.setProperty('--stage-h', `${Math.round(stageH)}px`);
+  ['--rest', '--open'].forEach((k) => obj.style.setProperty(k, '1'));
+  obj.style.setProperty('--shift', '0px');
+
+  root.classList.add('fit-measuring');
+  setOpen(false); void obj.offsetHeight;
+  const rest = reach(obj);
+  setOpen(true); void obj.offsetHeight;
+  const open = reach(obj);
+  setOpen(false); void obj.offsetHeight;
+  root.classList.remove('fit-measuring');
+  if (!rest || !open) return;
+
+  const box = proj.getBoundingClientRect();
+  const colW = box.width;
+  const restS = Math.min(1, (stageH * 0.94) / (rest.b - rest.t), (colW * 0.96) / (rest.r - rest.l));
+  // bounds for the opened object: its own half (with a little of the gap) or the screen
+  const bl = paired ? Math.max(EDGE, box.left - 12) : EDGE;
+  const br = paired ? Math.min(innerWidth - EDGE, box.right + 12) : innerWidth - EDGE;
+  const oh = (open.b - open.t) * restS, ow = (open.r - open.l) * restS;
+  const openS = Math.min(1, (innerHeight - TOP - 24) / oh, (br - bl) / ow);
+  const s = restS * openS;
+  const o = obj.getBoundingClientRect();
+  const cx = o.left + o.width / 2;
+  const nl = cx + (open.l - cx) * s, nr = cx + (open.r - cx) * s;
+  let dx = 0;
+  if (nl < bl) dx = bl - nl; else if (nr > br) dx = br - nr;
+  obj.style.setProperty('--rest', restS.toFixed(3));
+  obj.style.setProperty('--open', openS.toFixed(3));
+  obj.style.setProperty('--shift', `${Math.round(dx)}px`);
+}

@@ -1,26 +1,26 @@
 ---
-// The Ken, as what we made: a product strategy, a visual language and a design system that
-// runs from web to apps to email. At rest it is the homepage, standing on the paper as a sheet.
-// Raise --x from 0 to 1 and the system comes out of the page toward you and sets itself out like
-// a specimen sheet: the masthead, the colours, the type, the components, a story card and the app.
-// Each part leaves from the place it lives on the page. Labelled in The Ken's own print voice:
-// small red kickers, serif heads, hairline rules, registration marks.
-// The homepage animates --x on hover; the case page can drive it from scroll.
+// The Ken, as what we made: India's premium business publication, redefined from the ground up,
+// everywhere a reader meets it. At rest it is the homepage, standing on the paper as a sheet.
+// Raise --x from 0 to 1 and the sheet turns to face you while the rest of The Ken comes out of it
+// and settles round it: a story on the iPad, the writers, the pricing page,
+// and the app on two phones (welcome, and "never miss a story"). Real screens from the case
+// study (public/media/ken), no labels. Each piece leaves from the place it would live on the page.
+// The homepage animates --x on hover; the case page drives it when the hero opens.
 interface Props { size?: number; style?: string }
 const { size = 420, style } = Astro.props;
 // final spot (left/top, % of the page width) and the spot on the page it comes from (hx/hy);
 // z is how far toward you it floats
 const parts = [
-  { cls: 'logo', left: -8, top: -21, w: 40, hx: 2, hy: 2, z: 70, kick: 'Masthead', head: 'The mark, set large' },
-  { cls: 'story', left: 88, top: 24, w: 27, hx: 70, hy: 20, z: 150, kick: 'Component', head: 'The story card' },
-  { cls: 'app', left: -16, top: 50, w: 15, hx: 6, hy: 36, z: 210, kick: 'Apps', head: 'iOS, Android, iPad' },
-];
-const swatches = [
-  { c: '#E8432B', n: 'Ken red' }, { c: '#1B1613', n: 'Ink' }, { c: '#F4EDE3', n: 'Paper' }, { c: '#8C8379', n: 'Byline' },
+  { cls: 'ipad', src: 'ipad-story', left: -48, top: 4, w: 46, hx: 10, hy: 20, z: 40 },
+  { cls: 'pricing', src: 'pricing', left: 100, top: -4, w: 44, hx: 70, hy: 20, z: 30 },
+  { cls: 'paper', src: 'writers', left: -30, top: 46, w: 22, hx: 6, hy: 40, z: 150 },
+  { cls: 'paper', src: 'story-metro', left: 104, top: 40, w: 22, hx: 72, hy: 36, z: 130 },
+  { cls: 'phone', src: 'app-welcome', left: 62, top: 34, w: 15, hx: 50, hy: 30, z: 220 },
+  { cls: 'phone', src: 'app-notify', left: 80, top: 42, w: 15, hx: 60, hy: 34, z: 190 },
 ];
 const sheet = Array.from({ length: 6 }, (_, i) => i);
 ---
-<div class="ken3d" style={`--w:${size}px;${style ?? ''}`} role="img" aria-label="The Ken homepage, with its masthead, a story and the app coming off it">
+<div class="ken3d" style={`--w:${size}px;${style ?? ''}`} role="img" aria-label="The Ken: its homepage, with the iPad story, the writers, the pricing page and the app around it">
   <div class="rig">
     <div class="sheet" aria-hidden="true">
       {sheet.map((i) => <i style={`--i:${i}`}></i>)}
@@ -30,18 +30,9 @@ const sheet = Array.from({ length: 6 }, (_, i) => i);
     {parts.map((p, i) => (
       <div class:list={['part', p.cls]} aria-hidden="true"
            style={`--l:${p.left};--t:${p.top};--pw:${p.w};--dx:${p.hx - p.left};--dy:${p.hy - p.top};--z:${p.z};--i:${i}`}>
-        {p.cls === 'logo' && <div class="card"><img src="/media/objects/ken-logo.png" alt="" loading="eager" /></div>}
-        {p.cls === 'colour' && (
-          <div class="card chips">{swatches.map((s) => <span><i style={`background:${s.c}`}></i>{s.n}</span>)}</div>
-        )}
-        {p.cls === 'type' && (
-          <div class="card spec"><span class="aa">Aa</span><span class="hd">Real-money games made MPL a unicorn.</span><span class="kk">Business · 6 min read</span></div>
-        )}
-        {p.cls === 'story' && <div class="card pic"><img src="/media/objects/ken-story.jpg" alt="" loading="eager" /></div>}
-        {p.cls === 'ui' && (
-          <div class="card bits"><span class="btn">Subscribe</span><span class="ghost">Read later</span><span class="pill">Newsletter</span><span class="pill">Story · Long read</span></div>
-        )}
-        {p.cls === 'app' && <div class="card phone"><img src="/media/home/ken-mobile.jpg" alt="" loading="eager" /></div>}
+        {p.cls === 'logo'
+          ? <div class="card"><img src="/media/objects/ken-logo.png" alt="" loading="eager" /></div>
+          : <div class="card"><img src={`/media/ken/${p.src}.webp`} alt="" loading="eager" decoding="async" /></div>}
       </div>
     ))}
   </div>
@@ -63,12 +54,6 @@ const sheet = Array.from({ length: 6 }, (_, i) => i);
   .face { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; border-radius: 4px; transform: translateZ(1px);
     box-shadow: 0 0 0 1px rgb(30 23 16 / .08); filter: saturate(calc(1 - var(--x) * .5)) brightness(calc(1 + var(--x) * .04)); }
   /* registration marks: the print tell */
-  .reg { position: absolute; width: calc(var(--w) * .05); aspect-ratio: 1; border-radius: 50%; border: 1px solid var(--red); opacity: var(--x); transform: translateZ(2px); }
-  .reg::before, .reg::after { content: ""; position: absolute; background: var(--red); }
-  .reg::before { left: 50%; top: -40%; bottom: -40%; width: 1px; }
-  .reg::after { top: 50%; left: -40%; right: -40%; height: 1px; }
-  .r1 { left: -9%; bottom: -10%; }
-  .r2 { right: -8%; bottom: -10%; }
 
   /* the parts: each leaves its home on the page and floats out to its place on the specimen */
   .part { position: absolute; left: calc(var(--l) * 1%); top: calc(var(--t) * var(--w) / 100); width: calc(var(--pw) * 1%); transform-style: preserve-3d;
@@ -79,20 +64,11 @@ const sheet = Array.from({ length: 6 }, (_, i) => i);
 
   .logo .card { padding: 10px 12px; background: var(--paper); }
   .logo img { display: block; width: 100%; height: auto; }
-  .chips { display: grid; gap: 6px; padding: 9px; background: #fff; }
-  .chips span { display: flex; align-items: center; gap: 7px; font: 400 10px/1 var(--sans); color: var(--ink); }
-  .chips i { width: 22px; height: 22px; border-radius: 3px; box-shadow: inset 0 0 0 1px rgb(30 23 16 / .1); flex: none; }
-  .spec { display: grid; gap: 4px; padding: 10px 12px; background: var(--paper); color: var(--ink); }
-  .spec .aa { font: 600 calc(var(--w) * .1)/.9 var(--serif); letter-spacing: -.02em; }
-  .spec .hd { font: 600 11px/1.15 var(--serif); }
-  .spec .kk { font: 600 8px/1 var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--red); }
-  .pic img, .phone img { display: block; width: 100%; height: auto; }
-  .pic { aspect-ratio: 720 / 560; }
-  .pic img { height: 100%; object-fit: cover; object-position: top; }
-  .phone { border-radius: 10px; border: 3px solid var(--ink); aspect-ratio: 9 / 19; }
-  .phone img { height: 100%; object-fit: cover; object-position: top; }
-  .bits { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px; background: #fff; font: 500 10px/1 var(--sans); }
-  .bits .btn { padding: 7px 12px; border-radius: 3px; background: var(--red); color: #fff; letter-spacing: .04em; }
-  .bits .ghost { padding: 7px 12px; border-radius: 3px; box-shadow: inset 0 0 0 1px var(--ink); color: var(--ink); }
-  .bits .pill { padding: 5px 9px; border-radius: 999px; background: var(--paper); color: #6E6157; }
+  .card img { display: block; width: 100%; height: auto; }
+  /* the iPad and the phones get a dark bezel; paper pieces stay as sheets */
+  .ipad .card { padding: 2.4%; border-radius: 12px; background: #1E1A17; }
+  .ipad .card img { border-radius: 6px; }
+  .phone .card { padding: 5%; border-radius: 16px; background: #1E1A17; }
+  .phone .card img { border-radius: 10px; }
+  .pricing .card, .paper .card { background: var(--paper); }
 </style>

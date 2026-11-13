@@ -142,21 +142,20 @@ function placed_isLeft(i: number): boolean {
   .proj[href] { cursor: pointer; }
   .proj.big { grid-column: 1 / -1; }
   /* organic: smalls step down in turn, like the sketch */
-  .proj.small.r { margin-top: 22vh; }
+  .proj.small.r { margin-top: 14vh; }
   .proj.solo { grid-column: 1 / -1; }
   .proj.lean-l { translate: -22% 0; }
   .proj.lean-r { translate: 22% 0; }
 
   .stage { position: relative; display: grid; place-items: center; width: 100%; }
-  .big .stage { min-height: 720px; }
-  .small .stage { min-height: 760px; }
-  /* Paper Planes stands lower than its box; lift it clear of its name */
-  .x-planes .stage { min-height: 820px; padding-bottom: 110px; }
+  /* each project, object and name, fits in one screen: fit.ts sets --stage-h */
+  .stage { height: var(--stage-h, 640px); }
 
   /* the object the hover is built around: exactly the size of its device */
   .obj { position: relative; z-index: 1; display: grid; place-items: center;
     /* set by fit.ts so the opened object always fits on screen, below the top bar */
-    transform: translateX(var(--shift, 0px)) scale(var(--fit, 1)); transform-origin: 50% 50%; }
+    transform: scale(var(--rest, 1)); transform-origin: 50% 50%; transition: transform 1s var(--ease); }
+  .proj:is(:hover, :focus-visible, .peek) .obj { transform: translateX(var(--shift, 0px)) scale(calc(var(--rest, 1) * var(--open, 1))); }
 
   /* the light (after teenage engineering's EP-35 page): pointed at, the object is lit from above
      and throws an unrealistically long shadow down the paper, like the wheel at the top of the page */
@@ -299,8 +298,8 @@ function placed_isLeft(i: number): boolean {
     .obj.is-pp > :global(*), .obj.is-alai > :global(*), .obj.is-ken > :global(*), .obj.is-hf > :global(*) { flex: none; }
     .proj.small.r { margin-top: 0; }
     .proj.solo { translate: none; }
-    .big .stage, .small .stage { min-height: 0; }
-    .x-planes .stage { min-height: 0; padding-bottom: 0; }
+    .stage { height: auto; }
+    .obj, .proj:is(:hover, :focus-visible, .peek) .obj { transform: translateX(var(--shift, 0px)) scale(var(--fit, 1)); }
     .duo .phone { width: 110px; right: -2%; }
     .obj.is-stoa { scale: .5; }
     .obj.is-ken, .obj.is-alai { width: 100%; height: 300px; }
@@ -328,7 +327,7 @@ function placed_isLeft(i: number): boolean {
 </style>
 
 <script>
-  import { fitOpen, keepFitted } from '../scripts/fit';
+  import { fitOpen, fitProject, keepFitted } from '../scripts/fit';
   let fitStop: AbortController | null = null;
   // In view (the middle of the screen) a project wakes: .on, its screens cycle every few
   // seconds, a long page scrolls through, a video plays. On touch, in view is also the hover (.peek).
@@ -413,7 +412,10 @@ function placed_isLeft(i: number): boolean {
       const obj = proj.querySelector<HTMLElement>('.obj');
       if (!obj || proj.classList.contains('soon')) return;
       const had = proj.classList.contains('peek');
-      fitOpen(obj, (on) => proj.classList.toggle('peek', on || had));
+      const set = (on: boolean) => proj.classList.toggle('peek', on || had);
+      // on a phone the old fit is enough; on a wider screen each project gets one screen
+      if (innerWidth <= 760) fitOpen(obj, set);
+      else fitProject(proj, obj, set, proj.classList.contains('l') || proj.classList.contains('r'));
     }), fitStop.signal);
     // the project page's close button comes back here
     if (projs.length) try { sessionStorage.setItem('chariot:back', location.pathname); } catch {}
