@@ -316,7 +316,7 @@ function placed_isLeft(i: number): boolean {
   .proj:is(:hover, :focus-visible, .peek) .is-alai :global(.alai3d) { --x: 1; transition: --x 1.3s var(--snap); }
   .is-alai .solo-chip { right: -4%; bottom: 4%; }
   /* Paper Planes: the page's grid draws, type and pictures set; clicked, it folds and flies (PaperPlanes.astro) */
-  .obj.is-pp { width: 700px; height: 740px; }
+  .obj.is-pp { width: 900px; height: 904px; } /* the size of the page it holds, so the page sits in the middle */
   .is-pp :global(.pp3d) { transition: --x .5s var(--ease); }
   .proj:is(:hover, :focus-visible, .peek) .is-pp :global(.pp3d) { --x: 1; transition: --x 3.2s cubic-bezier(.35, .1, .25, 1); }
   .proj.fly .is-pp :global(.pp3d) { --x: 1; transition: none; }
