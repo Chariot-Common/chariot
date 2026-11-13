@@ -152,7 +152,9 @@ function placed_isLeft(i: number): boolean {
   .small .stage { min-height: 760px; }
 
   /* the object the hover is built around: exactly the size of its device */
-  .obj { position: relative; z-index: 1; display: grid; place-items: center; }
+  .obj { position: relative; z-index: 1; display: grid; place-items: center;
+    /* set by fit.ts so the opened object always fits on screen, below the top bar */
+    transform: translateX(var(--shift, 0px)) scale(var(--fit, 1)); transform-origin: 50% 50%; }
 
   /* the light (after teenage engineering's EP-35 page): pointed at, the object is lit from above
      and throws an unrealistically long shadow down the paper, like the wheel at the top of the page */
@@ -324,6 +326,8 @@ function placed_isLeft(i: number): boolean {
 </style>
 
 <script>
+  import { fitOpen, keepFitted } from '../scripts/fit';
+  let fitStop: AbortController | null = null;
   // In view (the middle of the screen) a project wakes: .on, its screens cycle every few
   // seconds, a long page scrolls through, a video plays. On touch, in view is also the hover (.peek).
   // Clicking a project hands its screen to the project page, which morphs it into the cover.
@@ -401,6 +405,14 @@ function placed_isLeft(i: number): boolean {
   document.addEventListener('astro:page-load', () => {
     const projs = document.querySelectorAll<HTMLElement>('[data-proj]');
     projs.forEach(wire);
+    // every object, opened, stays inside the screen: as big as it can be, never cut
+    fitStop?.abort(); fitStop = new AbortController();
+    keepFitted(() => projs.forEach((proj) => {
+      const obj = proj.querySelector<HTMLElement>('.obj');
+      if (!obj || proj.classList.contains('soon')) return;
+      const had = proj.classList.contains('peek');
+      fitOpen(obj, (on) => proj.classList.toggle('peek', on || had));
+    }), fitStop.signal);
     // the project page's close button comes back here
     if (projs.length) try { sessionStorage.setItem('chariot:back', location.pathname); } catch {}
   });

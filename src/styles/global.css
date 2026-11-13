@@ -138,3 +138,6 @@ html.theme-paper {
 @media (max-width: 600px) {
   .frame-top nav[aria-label="Main"] a:not(:first-child), .frame-right > a, .frame-right .sound > span { display: none; }
 }
+
+/* fit.ts opens objects for an instant to measure them: no transitions or animations while it does */
+.fit-measuring *, .fit-measuring *::before, .fit-measuring *::after { transition: none !important; animation: none !important; }

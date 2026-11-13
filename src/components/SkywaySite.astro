@@ -20,9 +20,16 @@ const layers = [
   { src: m('sky-hero.jpg'), tag: 'Hero', sub: 'The brand story', z: 285, s: -90, n: 1, cy: 2 },
 ];
 const slab = Array.from({ length: 7 }, (_, i) => i);
-const cloud = 'M18 56C6 56 0 48 2 40c2-8 10-12 18-10 0-12 12-20 24-16C50 4 66 0 76 8c8-6 24-2 26 12 10 0 18 10 14 20-2 10-10 16-20 16Z';
-// clouds float at their own heights on the left; the labels own the right
-const puffs = [{ x: -74, y: 46, z: 50, w: .6 }, { x: -58, y: 14, z: 150, w: .45 }, { x: -70, y: -6, z: 250, w: .55 }];
+// Skyway's clouds, upright like the ones on their site: white puffs with a pale blue underside.
+// Two big ones sit behind the stack, a bank gathers round the base in front, so the site rises
+// up through the sky. x/y/w are % of the object's width/height; back = behind the stack.
+const clouds = [
+  { x: -98, y: 36, w: 125, back: true, flip: false, i: 0 },
+  { x: 96, y: 8, w: 100, back: true, flip: true, i: 1 },
+  { x: 118, y: 52, w: 62, back: true, flip: false, i: 2 },
+  { x: -84, y: 92, w: 110, back: false, flip: true, i: 3 },
+  { x: 92, y: 98, w: 80, back: false, flip: false, i: 4 },
+];
 ---
 <div class:list={['site3d', cls]} data-vt="sky-site" style={`--w:${size}px;--k:${size / 170};${style ?? ''}`} role="img" aria-label="The Skyway mobile website, coming apart into its designed layers: hero, nutrition, ingredients and the product page with a three-click checkout">
   <div class="rig">
@@ -32,17 +39,23 @@ const puffs = [{ x: -74, y: 46, z: 50, w: .6 }, { x: -58, y: 14, z: 150, w: .45 
         <img src={l.src} alt="" loading="eager" decoding="async" />
       </div>
     ))}
-    {puffs.map((c, i) => (
-      <svg class="puff" viewBox="0 0 120 60" aria-hidden="true" style={`--px:${c.x}%;--py:${c.y}%;--z:${c.z};--pw:${c.w};--i:${i}`}><path fill="#fff" d={cloud} /></svg>
-    ))}
   </div>
+  {clouds.map((c) => (
+    <svg class:list={['cloud', { back: c.back, flip: c.flip }]} viewBox="0 0 240 110" aria-hidden="true" style={`--cx:${c.x}%;--cy:${c.y}%;--cw:${c.w}%;--i:${c.i}`}>
+      <defs><linearGradient id={`skyc${c.i}`} x1="0" y1="0" x2="0" y2="1"><stop offset=".55" stop-color="#fff" /><stop offset="1" stop-color="#D6E6F8" /></linearGradient></defs>
+      <g fill={`url(#skyc${c.i})`}>
+        <circle cx="62" cy="66" r="34" /><circle cx="104" cy="46" r="42" /><circle cx="150" cy="54" r="36" /><circle cx="188" cy="72" r="26" />
+        <circle cx="34" cy="82" r="22" /><rect x="30" y="72" width="180" height="32" rx="16" />
+      </g>
+    </svg>
+  ))}
 </div>
 
 <style>
   /* --x: 0 together, 1 apart. Registered so it can be transitioned. */
   @property --x { syntax: '<number>'; inherits: true; initial-value: 0; }
 
-  .site3d { --x: 0; --h: calc(var(--w) * 2.16); position: relative; width: var(--w); height: var(--h); perspective: calc(var(--w) * 9); }
+  .site3d { --x: 0; --h: calc(var(--w) * 2.16); position: relative; isolation: isolate; width: var(--w); height: var(--h); perspective: calc(var(--w) * 9); }
   .rig { position: absolute; inset: 0; transform-style: preserve-3d;
     transform: translateY(calc(var(--x) * var(--w) * .62)) rotateX(56deg) rotateZ(calc(-34deg - var(--x) * 6deg)); }
 
@@ -69,8 +82,15 @@ const puffs = [{ x: -74, y: 46, z: 50, w: .6 }, { x: -58, y: 14, z: 150, w: .45 
   .callouts li::before { content: ""; position: absolute; right: 100%; top: 50%; width: calc(var(--w) * .16); height: 1px; background: rgb(30 23 16 / .28); }
   .callouts li::after { content: ""; position: absolute; right: calc(100% + var(--w) * .16 - 2px); top: calc(50% - 2px); width: 5px; height: 5px; border-radius: 50%; background: #1E1710; }
 
-  /* Skyway's own clouds, floating between the layers */
-  .puff { position: absolute; left: var(--px); top: var(--py); width: calc(var(--w) * var(--pw)); height: auto;
-    transform: translateZ(calc(var(--x) * var(--z) * var(--k) * 1px)) rotateZ(34deg) rotateX(-56deg);
-    filter: drop-shadow(0 6px 8px rgb(60 100 170 / .25)); opacity: clamp(0, calc(var(--x) * 2 - .6), 1); }
+  /* the clouds: upright, behind the stack or gathered in front of its base; they rise in slowly as it opens */
+  .cloud { position: absolute; left: var(--cx); top: var(--cy); width: var(--cw); height: auto; z-index: 2; pointer-events: none;
+    filter: drop-shadow(0 calc(var(--w) * .05) calc(var(--w) * .06) rgb(60 100 170 / .22));
+    opacity: clamp(0, calc(var(--x) * 2.2 - .5 - var(--i) * .12), 1);
+    translate: 0 calc((1 - var(--x)) * var(--w) * .18); }
+  .cloud.back { z-index: -1; filter: drop-shadow(0 calc(var(--w) * .04) calc(var(--w) * .05) rgb(60 100 170 / .16)); }
+  .cloud.flip { scale: -1 1; }
+  /* a faint patch of sky opens behind the stack */
+  .site3d::before { content: ""; position: absolute; inset: -12% -70% -6%; z-index: -2; border-radius: 50%; pointer-events: none;
+    background: radial-gradient(closest-side, rgb(191 218 248 / .55), rgb(221 235 251 / .35) 55%, transparent);
+    opacity: var(--x); }
 </style>

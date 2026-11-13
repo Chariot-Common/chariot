@@ -4,10 +4,10 @@
 // Staatliche Museen zu Berlin (type collage with figures set into the words, an orange wall),
 // the old masters with a MacBook (AI detection boxes over a painting), dmcg.co (everything comes
 // into focus out of a soft blur), and teenage engineering (still figures, nothing hops).
-//   1. Night: CHARI( )OT. The Charioteers take turns in the brackets; the rest stand in a row below
-//   2. Paper: what we believe, as a type collage with two Charioteers standing in the words
+//   1. Night: CHARI( )OT. Products, brands and websites take turns in the brackets; the four aims below
+//   2. Paper: what we believe, as a type collage
 //   3. Paper: the Charioteers as a tree; point at one and the machine finds their thing (their power)
-//   4. Orange: how we work, four habits
+//   4. Orange: how we work, four exhibits on plinths (only one is the chariot)
 //   5. Paper: join, and say hello
 // Every line of copy is Chariot's own, from withchariot.com. Nothing here is made up.
 //
@@ -17,8 +17,6 @@
 import Base from '../layouts/Base.astro';
 import Nav from '../components/Nav.astro';
 
-const night = (img: string) => `/media/people/night/${img}`;
-const fig = (img: string) => `/media/people/fig/${img}`;
 // the v3 paintings (13 Nov): each Charioteer at rest, and with their power (one orange mark)
 const v3 = (slug: string, k: 'rest' | 'power') => `/media/people/v3/${({ backpack: 'tanujaa', glasses: 'shreesh', handstand: 'siddharth' } as Record<string, string>)[slug] ?? slug}-${k}.webp`;
 
@@ -35,42 +33,42 @@ const crew = [
 ];
 const everyone = [head, ...crew];
 
+// the opener: what we make takes turns in the brackets, and what we aim for runs along the foot
+const makes = ['products', 'brands', 'websites'];
+const aims = ['Distinguished', 'Effective', 'Delightful', 'Tailored'];
+
+// how we work: four exhibits on plinths, in Chariot's own words. Only the last is the chariot;
+// the others are drawn here in ink (the question mark, rays in every direction, frames zooming in).
 const habits = [
-  { no: 'No. 1', name: 'The question', body: 'We ask the "why" to every "what".' },
-  { no: 'No. 2', name: 'Every direction', body: 'We explore every direction, and dig beyond "that\'s how they\'re doing it".' },
-  { no: 'No. 3', name: 'The psychology, not just the features', body: 'We zoom out before we zoom in. We distill.' },
-  { no: 'No. 4', name: 'Shipped', body: 'We test and iterate. Distinguished, effective, delightful, tailored.' },
+  { no: 'No. 1', name: 'The question', body: 'We ask the "why" to every "what".', obj: 'why' },
+  { no: 'No. 2', name: 'Every direction', body: 'We explore every direction. We dig beyond the "that\'s how they\'re doing it".', obj: 'rays' },
+  { no: 'No. 3', name: 'Zoom out, then in', body: 'We consider the psychology, not just the "features". We zoom out before we zoom in. We distill.', obj: 'zoom' },
+  { no: 'No. 4', name: 'Test and iterate', body: 'We test and iterate. Distinguished, effective, delightful, tailored.', obj: 'chariot' },
 ];
+const rays = Array.from({ length: 12 }, (_, i) => { const a = (i / 12) * Math.PI * 2 - Math.PI / 2, r = i % 2 ? 70 : 92; return { x: 100 + Math.cos(a) * r, y: 100 + Math.sin(a) * r, i }; });
 ---
 <Base title="Studio · Chariot" description="Chariot crafts products, brands and websites with nuance and good taste. Who we are and how we work." bare>
   <div class="museum">
     <Nav />
 
-    <!-- 1. night -->
+    <!-- 1. night: no figures here; the Charioteers are further down -->
     <header class="opener" data-night>
-      <span class="corner tl rise" style="--d:.5s">Products</span><span class="corner tr rise" style="--d:.55s">Brands</span>
-      <span class="corner bl rise" style="--d:.6s">Websites</span><span class="corner br rise" style="--d:.65s">&amp; the Charioteers</span>
       <div class="stage">
         <h1 class="title" aria-label="Chariot crafts products, brands and websites with nuance and good taste.">
           <span class="rise" style="--d:.05s" aria-hidden="true">Chari(</span>
-          <span class="gap" aria-hidden="true" data-gap>
-            {everyone.map((p, i) => <img src={night(p.img)} alt="" width={p.w} height={p.h} class:list={{ on: i === 0 }} decoding="async" />)}
+          <span class="gap rise" style="--d:.25s" aria-hidden="true" data-gap>
+            {makes.map((w, i) => <span class:list={{ on: i === 0 }}>{w}</span>)}
           </span>
           <span class="rise" style="--d:.15s" aria-hidden="true">)ot</span>
         </h1>
         <p class="line rise" style="--d:.35s">Chariot crafts products, brands and websites<br />with nuance and good taste.</p>
       </div>
-      <ol class="parade" aria-label="The Charioteers">
-        {everyone.map((p, i) => (
-          <li class="rise" style={`--d:${0.45 + i * 0.07}s`}>
-            <button type="button" data-pick={i} class:list={{ on: i === 0 }} aria-label={p.name || 'A Charioteer'}>
-              <span class="walk"><img src={night(p.img)} alt="" width={p.w} height={p.h} loading="eager" /></span>
-              <span class="fig">Fig. {i + 1}</span>
-              <span class="cap">{p.name || 'A Charioteer'}</span>
-            </button>
-          </li>
-        ))}
-      </ol>
+      <div class="aims">
+        <p class="aims-k rise" style="--d:.5s">That's what we aim for</p>
+        <ol>
+          {aims.map((a, i) => <li class="rise" style={`--d:${0.55 + i * 0.08}s`}><span class="n">{String(i + 1).padStart(2, '0')}</span>{a}</li>)}
+        </ol>
+      </div>
     </header>
 
     <!-- 2. paper: what we believe -->
@@ -84,9 +82,9 @@ const habits = [
         <span class="row" data-reveal aria-hidden="true"><span class="s">We ask the</span> <b class="caps">why</b> <span class="s">to every</span> <span class="o caps">what.</span></span>
         <span class="row" data-reveal aria-hidden="true"><span class="s">We explore</span> <b class="caps">every</b> <span class="o s">direction.</span></span>
         <span class="row" data-reveal aria-hidden="true"><span class="s">We consider the</span> <span class="o caps">psychology,</span></span>
-        <span class="row" data-reveal aria-hidden="true"><span class="s">not just the features.</span> <img class="pic guy" src={fig('glasses.webp')} alt="" /></span>
+        <span class="row" data-reveal aria-hidden="true"><span class="s">not just the features.</span></span>
         <span class="row" data-reveal aria-hidden="true"><span class="s">We zoom</span> <b class="caps">out</b> <span class="s">before we zoom</span> <b class="caps">in.</b></span>
-        <span class="row" data-reveal aria-hidden="true"><span class="o caps">We distill.</span> <span class="s">We test and iterate.</span> <img class="pic guy run" src={fig('backpack.webp')} alt="" /></span>
+        <span class="row" data-reveal aria-hidden="true"><span class="o caps">We distill.</span> <span class="s">We test and iterate.</span></span>
       </p>
     </section>
 
@@ -112,25 +110,51 @@ const habits = [
       </div>
     </section>
 
-    <!-- 4. orange: how we work -->
-    <section class="wall" aria-labelledby="h-work">
+    <!-- 4. orange: how we work, four exhibits on plinths -->
+    <section class="wall" aria-labelledby="h-work" data-exhibits tabindex="-1">
       <div class="wall-head" data-reveal>
         <h2 id="h-work" class="label-h">How we work</h2>
-        <p class="small">Thoroughly conceptualised, thoughtfully crafted. Four habits.</p>
+        <p class="small">Thoroughly conceptualised, thoughtfully crafted.</p>
       </div>
-      <ol class="habits">
+      <div class="hall" data-hall data-reveal>
         {habits.map((h, i) => (
-          <li data-reveal style={`--i:${i}`}><span class="plate">{h.no}</span><b>{h.name}</b><span>{h.body}</span></li>
+          <figure class="exhibit" data-i={i} style={`--o:${i}`} aria-hidden={i === 0 ? 'false' : 'true'}>
+            <div class:list={['obj', h.obj]} aria-hidden="true">
+              {h.obj === 'why' && <span class="q">?</span>}
+              {h.obj === 'rays' && (
+                <svg viewBox="0 0 200 218">
+                  {rays.map((r) => <line class="base" x1="100" y1="100" x2={r.x.toFixed(1)} y2={r.y.toFixed(1)} />)}
+                  {rays.map((r) => <line x1="100" y1="100" x2={r.x.toFixed(1)} y2={r.y.toFixed(1)} pathLength="1" style={`--k:${r.i}`} />)}
+                  {rays.map((r) => <circle cx={r.x.toFixed(1)} cy={r.y.toFixed(1)} r="3.2" style={`--k:${r.i}`} />)}
+                  <circle class="hub" cx="100" cy="100" r="6" />
+                </svg>
+              )}
+              {h.obj === 'zoom' && (
+                <svg viewBox="0 0 200 226">
+                  {[0, 1, 2, 3, 4].map((k) => <rect x="36" y="30" width="128" height="128" rx="4" style={`--k:${k}`} />)}
+                  <circle class="dot" cx="100" cy="94" r="4" />
+                </svg>
+              )}
+              {h.obj === 'chariot' && <img src="/media/wheel/ink/chariot.webp" alt="" loading="lazy" draggable="false" />}
+            </div>
+            <div class="plinth" aria-hidden="true"><span class="lid"></span><span class="body"><span class="plate">{h.no}</span></span></div>
+            <figcaption><b>{h.name}</b><span>{h.body}</span></figcaption>
+          </figure>
         ))}
-      </ol>
+      </div>
+      <div class="keys" data-reveal>
+        <button type="button" class="key" data-prev aria-label="Previous habit">←</button>
+        <span class="count" data-count>1 / {habits.length}</span>
+        <button type="button" class="key" data-next aria-label="Next habit">→</button>
+      </div>
     </section>
 
     <!-- 5. paper: join, and hello -->
     <section class="paper join" aria-labelledby="h-join">
       <h2 id="h-join" class="tree-h" data-reveal><span class="dots" aria-hidden="true">· · · ·</span>Join the Charioteers</h2>
       <ul class="rows" data-reveal>
-        <li><a href="mailto:hello@withchariot.com?subject=Joining%20Chariot"><span class="who"><img src={fig('backpack.webp')} alt="" /></span><span class="mono">Designers who sweat the details</span><span class="arrow" aria-hidden="true">↗</span></a></li>
-        <li><a href="mailto:hello@withchariot.com"><span class="who"><img src={fig('handstand.webp')} alt="" /></span><span class="mono">Every project starts with a question. Ask us yours</span><span class="arrow" aria-hidden="true">↗</span></a></li>
+        <li><a href="mailto:hello@withchariot.com?subject=Joining%20Chariot"><span class="mono">Designers who sweat the details</span><span class="arrow" aria-hidden="true">↗</span></a></li>
+        <li><a href="mailto:hello@withchariot.com"><span class="mono">Every project starts with a question. Ask us yours</span><span class="arrow" aria-hidden="true">↗</span></a></li>
       </ul>
     </section>
   </div>
@@ -159,28 +183,19 @@ const habits = [
     min-height: calc(100svh - 20px); display: grid; grid-template-rows: 1fr auto; padding: 90px clamp(16px, 2.4vw, 32px) 22px; }
   .opener::before { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .5;
     background: radial-gradient(60% 50% at 50% 42%, rgb(243 234 219 / .08), transparent 70%); }
-  .corner { position: absolute; font: 400 12px/1 var(--mono); color: rgb(243 234 219 / .45); }
-  .tl { left: clamp(16px, 2.4vw, 32px); top: 90px; } .tr { right: clamp(16px, 2.4vw, 32px); top: 90px; }
-  .bl { left: clamp(16px, 2.4vw, 32px); top: 46%; } .br { right: clamp(16px, 2.4vw, 32px); top: 46%; }
   .stage { align-self: center; display: grid; justify-items: center; gap: clamp(18px, 3vh, 34px); }
   .title { margin: 0; display: flex; align-items: flex-end; font: 400 clamp(64px, 14vw, 250px)/.85 var(--serif); letter-spacing: -.03em; white-space: nowrap; }
-  /* the brackets hold one Charioteer at a time; they stand taller than the letters, as on mew */
-  .gap { position: relative; display: block; width: 1.12em; height: .78em; margin: 0 .02em; }
-  .gap img { position: absolute; left: 50%; bottom: .01em; height: 1.32em; width: auto; max-width: none; translate: -50% 4%; opacity: 0;
-    filter: drop-shadow(0 .05em .06em rgb(0 0 0 / .45)); transition: translate 1.1s var(--ease), opacity 1.1s var(--ease); pointer-events: none; }
-  /* one at a time, a slow cross-fade: the next steps up as the last one fades */
-  .gap img.on { translate: -50% 0; opacity: 1; }
-  .gap img.off { translate: -50% 0; opacity: 0; }
+  /* the brackets hold one word at a time, in a slow cross-fade out of a blur */
+  .gap { display: inline-grid; align-self: center; justify-items: center; margin: 0 .06em; font: italic 400 .3em/1 var(--serif); letter-spacing: 0; color: var(--orange); }
+  .gap span { grid-area: 1 / 1; opacity: 0; filter: blur(8px); translate: 0 .25em; transition: opacity 1.2s var(--ease), filter 1.2s var(--ease), translate 1.2s var(--ease); }
+  .gap span.on { opacity: 1; filter: none; translate: 0 0; }
+  .gap span.off { opacity: 0; filter: blur(8px); translate: 0 -.25em; }
   .line { margin: 0; font: 400 12px/1.5 var(--mono); text-align: center; color: rgb(243 234 219 / .7); }
-  .parade { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: clamp(8px, 2vw, 28px); align-items: end; }
-  .parade button { all: unset; cursor: pointer; display: grid; justify-items: center; gap: 6px; width: 100%; }
-  .parade button:focus-visible { outline: 1px dashed var(--cream); outline-offset: 6px; }
-  .walk { display: block; height: clamp(90px, 17vh, 170px); }
-  .walk img { height: 100%; width: auto; filter: drop-shadow(0 6px 8px rgb(0 0 0 / .45)) saturate(.85) brightness(.85); transition: filter .5s, translate .6s var(--ease); }
-  .parade button:hover .walk img, .parade button.on .walk img { filter: drop-shadow(0 10px 12px rgb(0 0 0 / .5)) saturate(1); translate: 0 -4px; }
-  .fig, .cap { font: 400 10px/1 var(--mono); color: rgb(243 234 219 / .45); transition: color .3s; }
-  .parade button.on .cap, .parade button:hover .cap { color: var(--cream); }
-  .parade button.on .fig { color: var(--orange); }
+  .aims { display: grid; gap: 14px; border-top: 1px solid rgb(243 234 219 / .18); padding-top: 16px; }
+  .aims-k { margin: 0; font: 400 11px/1 var(--mono); color: rgb(243 234 219 / .45); }
+  .aims ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(8px, 2vw, 28px); }
+  .aims li { display: grid; gap: 8px; font: 400 clamp(22px, 2.6vw, 40px)/1 var(--serif); }
+  .aims .n { font: 400 10px/1 var(--mono); color: var(--orange); }
 
   /* ---- paper ---- */
   .paper { border-radius: 22px; background: var(--paper); padding: clamp(40px, 9vh, 110px) clamp(16px, 4vw, 64px); }
@@ -195,11 +210,6 @@ const habits = [
   .caps { font: 800 1em/1 var(--sans); letter-spacing: -.04em; text-transform: uppercase; }
   .o { color: var(--orange); }
   /* two Charioteers stand in the words */
-  .pic { height: .9em; width: auto; transition: opacity .9s var(--ease) .2s; }
-  :global(html.js) .pic { opacity: 0; }
-  :global(html.js) .row.in .pic { opacity: 1; }
-  .pic.guy { height: 1.5em; margin: -.35em 0 -.2em; filter: drop-shadow(0 .06em .05em rgb(22 19 15 / .2)); }
-  .pic.run { height: 1.35em; }
 
   /* ---- 3. the tree ---- */
   .tree { display: grid; justify-items: center; gap: 14px; }
@@ -232,43 +242,76 @@ const habits = [
   .wall { border-radius: 22px; background: var(--orange); color: var(--ink); padding: clamp(36px, 7vh, 80px) clamp(16px, 4vw, 64px); display: grid; gap: 4vh; overflow: hidden; outline: none; }
   .wall .small { color: rgb(22 19 15 / .7); }
   .wall-head { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 32px; }
-  .habits { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(14px, 2vw, 28px); }
-  .habits li { display: grid; align-content: start; gap: 12px; padding-top: 18px; border-top: 2px solid var(--ink); }
-  .habits .plate { justify-self: start; padding: 4px 9px; background: var(--ink); color: var(--orange); font: 500 11px/1 var(--mono); letter-spacing: .08em; }
-  .habits b { font: 400 clamp(24px, 2.4vw, 38px)/1.05 var(--serif); }
-  .habits li > span:last-child { font: 400 clamp(14px, 1.1vw, 17px)/1.45 var(--mono); }
+  .hall { position: relative; height: clamp(440px, 60vh, 600px); touch-action: pan-y; user-select: none; cursor: grab; }
+  .hall:active { cursor: grabbing; }
+  .exhibit { position: absolute; left: 50%; bottom: 0; margin: 0; width: clamp(240px, 30vw, 380px); display: grid; justify-items: center;
+    translate: calc(-50% + var(--o, 0) * clamp(250px, 34vw, 480px)) 0; scale: calc(1 - min(1, abs(var(--o, 0))) * .5); transform-origin: 50% 100%;
+    opacity: calc(1 - min(1, max(0, abs(var(--o, 0)) - 1))); transition: translate 1s var(--ease), scale 1s var(--ease), opacity .5s; }
+  .obj { width: 100%; height: clamp(200px, 32vh, 320px); display: grid; place-items: end center; padding-bottom: 14px; }
+  .obj svg { max-width: 100%; }
+  .obj.zoom { padding-bottom: 30px; }
+  .obj svg { height: 100%; width: auto; overflow: visible; }
+  .obj > img { max-width: 100%; max-height: 100%; width: auto; height: auto; }
+  /* 1. the question mark turns slowly on its plinth, like a sculpture */
+  .q { font: 400 clamp(200px, 30vh, 320px)/.8 var(--serif); color: var(--ink); animation: turnY 9s ease-in-out infinite; text-shadow: .015em .02em 0 rgb(22 19 15 / .25); }
+  @keyframes turnY { 0%, 100% { transform: perspective(700px) rotateY(-28deg); } 50% { transform: perspective(700px) rotateY(28deg); } }
+  /* 2. every direction: rays draw out one after another, then fade together, and again */
+  .rays line { stroke: var(--ink); stroke-width: 2; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; animation: ray 6s var(--ease) infinite; animation-delay: calc(var(--k) * .12s - .6s); }
+  .rays circle { fill: var(--ink); opacity: 0; animation: tip 6s var(--ease) infinite; animation-delay: calc(var(--k) * .12s - .6s); }
+  .rays .hub { opacity: 1; animation: none; }
+  .rays .base { stroke: rgb(22 19 15 / .2); stroke-width: 1.5; stroke-dasharray: none; stroke-dashoffset: 0; animation: none; }
+  @keyframes ray { 0% { stroke-dashoffset: 1; opacity: 1; } 22%, 70% { stroke-dashoffset: 0; opacity: 1; } 90%, 100% { stroke-dashoffset: 0; opacity: 0; } }
+  @keyframes tip { 0%, 14% { opacity: 0; } 24%, 70% { opacity: 1; } 90%, 100% { opacity: 0; } }
+  /* 3. zoom out, then in: frames come out of the centre and grow past the edge */
+  .zoom rect { fill: none; stroke: var(--ink); stroke-width: 2; transform-origin: 100px 94px; transform-box: view-box; animation: frame 8s linear infinite; animation-delay: calc(var(--k) * -1.6s); }
+  .zoom .dot { fill: var(--ink); }
+  @keyframes frame { 0% { transform: scale(.04); opacity: 0; } 15% { opacity: 1; } 60% { opacity: 1; } 100% { transform: scale(1); opacity: 0; } }
+  /* 4. the chariot rolls a little way and back */
+  .chariot img { animation: roll 7s ease-in-out infinite; }
+  @keyframes roll { 0%, 100% { translate: -6% 0; } 50% { translate: 6% 0; } }
+  /* only the exhibit in front moves */
+  .exhibit[aria-hidden="true"] * { animation-play-state: paused !important; }
+  .plinth { width: 62%; display: grid; }
+  .lid { height: 18px; background: #2A2520; clip-path: polygon(6% 0, 94% 0, 100% 100%, 0 100%); }
+  .body { height: 64px; background: var(--ink); display: grid; place-items: center; }
+  .plate { padding: 5px 10px; background: #C9A45C; color: var(--ink); font: 500 10px/1 var(--mono); letter-spacing: .08em; box-shadow: inset 0 1px 0 rgb(255 255 255 / .35), inset 0 -1px 0 rgb(0 0 0 / .25); }
+  .exhibit figcaption { margin-top: 22px; display: grid; gap: 10px; justify-items: center; text-align: center; max-width: 34ch; transition: opacity .5s, filter .5s; }
+  .exhibit[aria-hidden="true"] figcaption { opacity: 0; filter: blur(6px); }
+  .exhibit b { font: 400 clamp(24px, 2.4vw, 36px)/1.05 var(--serif); }
+  .exhibit figcaption span { font: 400 13px/1.5 var(--mono); }
+  /* real, pressable keys (after teenage engineering) */
+  .keys { justify-self: center; display: flex; align-items: center; gap: 16px; margin-top: 2vh; }
+  .count { font: 400 12px/1 var(--mono); min-width: 5ch; text-align: center; }
+  .key { width: 52px; height: 40px; border: 0; border-radius: 8px; cursor: pointer; font: 500 16px/1 var(--mono); color: var(--ink);
+    background: linear-gradient(#F4F1EC, #DEDAD3); box-shadow: 0 4px 0 #A8A39A, 0 6px 10px rgb(22 19 15 / .25), inset 0 1px 0 #fff;
+    transition: translate .08s, box-shadow .08s; }
+  .key:hover { background: linear-gradient(#FAF8F4, #E6E2DB); }
+  .key:active { translate: 0 3px; box-shadow: 0 1px 0 #A8A39A, 0 2px 4px rgb(22 19 15 / .25), inset 0 1px 0 #fff; }
+  .key:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
 
   /* ---- 5. join ---- */
   .join { display: grid; gap: 4vh; }
   .rows { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
   .rows li { border-bottom: 1px solid var(--line); }
-  .rows a { display: grid; grid-template-columns: 90px minmax(0, 1fr) auto; align-items: center; gap: 4vw; padding: 10px 0; }
-  .who { height: 72px; display: grid; place-items: end center; }
-  .who img { height: 72px; width: auto; max-width: none; transition: translate .5s var(--ease); }
-  .rows a:hover .who img { translate: 0 -4px; }
+  .rows a { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 4vw; padding: 22px 0; }
   .rows .mono { font-size: clamp(16px, 1.6vw, 22px); }
   .arrow { font-size: 24px; transition: translate .3s; }
   .rows a:hover .arrow { translate: 4px -4px; }
 
   @media (max-width: 860px) {
-    .corner { display: none; }
-    .title { font-size: 17vw; }
-    .walk { height: 13vh; }
-    .parade { gap: 4px; }
-    .parade .cap { display: none; }
+    .title { font-size: 15vw; }
+    .gap { font-size: .34em; }
+    .aims ol { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 18px; }
     .intro, .wall-head { grid-template-columns: minmax(0, 1fr); gap: 12px; }
-    .habits { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 5vh; }
+    .exhibit { width: min(78vw, 320px); translate: calc(-50% + var(--o, 0) * 86vw) 0; }
+    .hall { height: 520px; }
     .family { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 8vh; }
     .node.top { width: 62%; }
     .lines { display: none; }
-    .rows a { grid-template-columns: 64px minmax(0, 1fr) auto; }
-    .who { height: 56px; }
-    .who img { height: 56px; }
   }
   @media (prefers-reduced-motion: reduce) {
     .museum *, .museum *::before, .museum *::after { animation: none !important; transition-duration: .01ms !important; }
     :global(html.js) [data-reveal], .rise { opacity: 1; filter: none; translate: none; }
-    :global(html.js) .pic { opacity: 1; }
   }
 </style>
 
@@ -291,26 +334,16 @@ const habits = [
     const night = page.querySelector<HTMLElement>('[data-night]')!;
     const onNight = () => page.classList.toggle('over-night', night.getBoundingClientRect().bottom > 40);
 
-    // 1. the brackets
-    const gapImgs = [...page.querySelectorAll<HTMLImageElement>('[data-gap] img')];
-    const picks = [...page.querySelectorAll<HTMLButtonElement>('[data-pick]')];
-    let at = 0, held = false;
+    // 1. the brackets: products, brands, websites, slowly
+    const words = [...page.querySelectorAll<HTMLElement>('[data-gap] span')];
+    let at = 0;
     const put = (n: number) => {
-      if (n === at) return;
-      gapImgs[at].classList.remove('on'); gapImgs[at].classList.add('off');
-      const prev = gapImgs[at];
-      setTimeout(() => prev.classList.remove('off'), 400);
-      at = n; gapImgs[at].classList.remove('off'); gapImgs[at].classList.add('on');
-      picks.forEach((p, i) => p.classList.toggle('on', i === at));
+      const prev = words[at];
+      prev.classList.remove('on'); prev.classList.add('off');
+      setTimeout(() => prev.classList.remove('off'), 1300);
+      at = n; words[at].classList.add('on');
     };
-    picks.forEach((p, i) => {
-      p.addEventListener('pointerenter', () => { held = true; put(i); }, { signal });
-      p.addEventListener('pointerleave', () => { held = false; }, { signal });
-      p.addEventListener('focus', () => { held = true; put(i); }, { signal });
-      p.addEventListener('blur', () => { held = false; }, { signal });
-      p.addEventListener('click', () => put(i), { signal });
-    });
-    if (!calm) timers.push(window.setInterval(() => { if (!held && !document.hidden) put((at + 1) % gapImgs.length); }, 3600));
+    if (!calm) timers.push(window.setInterval(() => { if (!document.hidden) put((at + 1) % words.length); }, 3000));
 
     // reveals
     const io = new IntersectionObserver((es) => es.forEach((en) => { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } }), { rootMargin: '0px 0px -12% 0px' });
@@ -361,6 +394,30 @@ const habits = [
       nodes.forEach((n) => tio.observe(n));
       signal.addEventListener('abort', () => tio.disconnect());
     }
+
+    // 4. the wall: the arrows, keys or a swipe; it moves on by itself while you look at it
+    const wall = page.querySelector<HTMLElement>('[data-exhibits]')!;
+    const hall = wall.querySelector<HTMLElement>('[data-hall]')!;
+    const items = [...wall.querySelectorAll<HTMLElement>('.exhibit')];
+    const counter = wall.querySelector<HTMLElement>('[data-count]')!;
+    let ex = 0, lastTouch = 0;
+    const show = () => {
+      items.forEach((el, i) => { el.style.setProperty('--o', String(i - ex)); el.setAttribute('aria-hidden', String(i !== ex)); });
+      counter.textContent = `${ex + 1} / ${items.length}`;
+    };
+    const go = (d: number, auto = false) => { if (!auto) lastTouch = Date.now(); ex = (ex + d + items.length) % items.length; show(); };
+    wall.querySelector('[data-prev]')!.addEventListener('click', () => go(-1), { signal });
+    wall.querySelector('[data-next]')!.addEventListener('click', () => go(1), { signal });
+    wall.addEventListener('keydown', (e) => { if (e.key === 'ArrowLeft') go(-1); if (e.key === 'ArrowRight') go(1); }, { signal });
+    let x0: number | null = null;
+    hall.addEventListener('pointerdown', (e) => { x0 = e.clientX; }, { signal });
+    addEventListener('pointerup', (e) => { if (x0 === null) return; const dx = e.clientX - x0; x0 = null; if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1); }, { signal });
+    let wallSeen = false;
+    const wio = new IntersectionObserver((es) => es.forEach((en) => { wallSeen = en.isIntersecting; }), { threshold: .5 });
+    wio.observe(wall);
+    signal.addEventListener('abort', () => wio.disconnect());
+    if (!calm) timers.push(window.setInterval(() => { if (wallSeen && !document.hidden && Date.now() - lastTouch > 10000) go(1, true); }, 6000));
+    show();
 
     const onScroll = () => { onNight(); };
     onScroll();

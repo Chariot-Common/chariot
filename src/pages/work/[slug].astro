@@ -71,12 +71,16 @@ const vtName = slug === 'skyway' ? 'sky-site' : 'sheet-poster';
     </header>
 
     <figure class:list={['panel', 'hero', { object: hasObject }]} style={`view-transition-name: ${vtName}`} data-open>
-      {slug === 'skyway' && <SkywaySite size={230} />}
-      {slug === 'the-ken' && <KenSystem size={560} />}
-      {slug === 'stoa' && <StoaBrand size={270} />}
-      {slug === 'alai' && <AlaiProduct size={600} />}
-      {slug === 'paper-planes' && <PaperPlanes size={520} />}
-      {slug === 'healthflex' && <HealthFlexSite size={480} />}
+      {hasObject && (
+        <div class="fitbox" data-fit>
+        {slug === 'skyway' && <SkywaySite size={230} />}
+        {slug === 'the-ken' && <KenSystem size={560} />}
+        {slug === 'stoa' && <StoaBrand size={270} />}
+        {slug === 'alai' && <AlaiProduct size={600} />}
+        {slug === 'paper-planes' && <PaperPlanes size={520} />}
+        {slug === 'healthflex' && <HealthFlexSite size={480} />}
+        </div>
+      )}
       {!hasObject && <img src={sized(d.poster, 2400)} alt={`${d.title}: ${d.summary}`} decoding="async" />}
     </figure>
 
@@ -255,6 +259,8 @@ const vtName = slug === 'skyway' ? 'sky-site' : 'sheet-poster';
   .pager a:last-child { text-align: right; }
   .pager .t { font: 600 clamp(28px, 3.4vw, 52px)/1 var(--serif); letter-spacing: -.02em; }
 
+  /* fit.ts keeps the opened object inside the screen */
+  .fitbox { transform: translateX(var(--shift, 0px)) scale(var(--fit, 1)); transform-origin: 50% 50%; }
   /* the object opens once, slowly, when the page arrives: no spring, no bounce */
   .hero :global(:is(.site3d, .ken3d, .stoa-brand, .alai3d, .pp3d, .hf3d)) { --x: 0; transition: --x 2.2s cubic-bezier(.33, .1, .25, 1) .3s; }
   .hero.open :global(:is(.site3d, .ken3d, .stoa-brand, .alai3d, .pp3d, .hf3d)) { --x: 1; }
@@ -277,11 +283,20 @@ const vtName = slug === 'skyway' ? 'sky-site' : 'sheet-poster';
 
 <script>
   // Clips play only while on screen. The hero object opens once on arrival, and Alai's build plays.
+  import { fitOpen, keepFitted } from '../../scripts/fit';
   let io: IntersectionObserver | null = null;
+  let fitStop: AbortController | null = null;
   function init() {
     io?.disconnect();
+    fitStop?.abort();
     const hero = document.querySelector<HTMLElement>('.case [data-open]');
     if (!hero) return;
+    // the opened object stays inside the screen (below the top bar), as big as it can be
+    const box = hero.querySelector<HTMLElement>('[data-fit]');
+    if (box) {
+      fitStop = new AbortController();
+      keepFitted(() => { const was = hero.classList.contains('open'); fitOpen(box, (on) => hero.classList.toggle('open', on || was), { top: 84, bottom: 24 }); }, fitStop.signal);
+    }
     requestAnimationFrame(() => hero.classList.add('open'));
     hero.querySelectorAll<HTMLVideoElement>('video[data-hover-play]').forEach((v) => { v.loop = true; v.play().catch(() => {}); });
     io = new IntersectionObserver((es) => es.forEach((e) => {
