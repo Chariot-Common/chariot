@@ -34,7 +34,6 @@ const sheet = Array.from({ length: 6 }, (_, i) => i);
     {parts.map((p, i) => (
       <div class:list={['part', p.cls]} aria-hidden="true"
            style={`--l:${p.left};--t:${p.top};--pw:${p.w};--dx:${p.hx - p.left};--dy:${p.hy - p.top};--z:${p.z};--i:${i}`}>
-        <span class="kick"><b>{p.kick}</b> {p.head}</span>
         {p.cls === 'logo' && <div class="card"><img src="/media/objects/ken-logo.png" alt="" loading="eager" /></div>}
         {p.cls === 'colour' && (
           <div class="card chips">{swatches.map((s) => <span><i style={`background:${s.c}`}></i>{s.n}</span>)}</div>
@@ -81,10 +80,6 @@ const sheet = Array.from({ length: 6 }, (_, i) => i);
                scale(calc(.35 + var(--x) * .65));
     opacity: clamp(0, calc(var(--x) * 2.6 - var(--i) * .22), 1); }
   .card { background: #fff; border-radius: 4px; box-shadow: 0 0 0 1px rgb(30 23 16 / .08), 0 calc(var(--w) * .04) calc(var(--w) * .06) calc(var(--w) * -.03) rgb(30 23 16 / .35); overflow: hidden; }
-  .kick { position: absolute; left: 0; bottom: calc(100% + 6px); white-space: nowrap; padding: 4px 7px; border-radius: 4px; background: #fff;
-    box-shadow: 0 0 0 1px rgb(30 23 16 / .08), 0 4px 10px -6px rgb(30 23 16 / .3);
-    font: 400 10px/1.2 var(--serif); color: #6E6157; opacity: clamp(0, calc(var(--x) * 3 - 2), 1); }
-  .kick b { font: 600 9px/1 var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--red); margin-right: 4px; }
 
   .logo .card { padding: 10px 12px; background: var(--paper); }
   .logo img { display: block; width: 100%; height: auto; }

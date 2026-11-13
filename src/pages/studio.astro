@@ -1,44 +1,45 @@
 ---
-// Studio, as a small museum of Chariot: old craft, new tools.
+// Studio, as a small museum of Chariot: old craft, new tools. Calm, not cute.
 // After the references: Gem Quest (the "WE( )ARE" opener, the team as a tree of lines), the
-// Staatliche Museen zu Berlin (type collage with pictures set into the words, a collection on
-// pedestals against an orange wall), the old masters with a MacBook (AI detection boxes over a
-// painting), mew.xyz (cut-out characters that act in front of the type), dmcg.co (everything
-// comes into focus out of a soft blur).
-//   1. Night: CHARI( )OT. A Charioteer jumps into the brackets; the rest stand in a row below
-//   2. Paper: what we believe, as a type collage with the engravings printed into the words
-//   3. Paper: the Charioteers as a tree; point at one and the machine finds their thing
-//   4. Orange: how we work, four engravings on plinths
+// Staatliche Museen zu Berlin (type collage with figures set into the words, an orange wall),
+// the old masters with a MacBook (AI detection boxes over a painting), dmcg.co (everything comes
+// into focus out of a soft blur), and teenage engineering (still figures, nothing hops).
+//   1. Night: CHARI( )OT. The Charioteers take turns in the brackets; the rest stand in a row below
+//   2. Paper: what we believe, as a type collage with two Charioteers standing in the words
+//   3. Paper: the Charioteers as a tree; point at one and the machine finds their thing (their power)
+//   4. Orange: how we work, four habits
 //   5. Paper: join, and say hello
 // Every line of copy is Chariot's own, from withchariot.com. Nothing here is made up.
 //
-// Images: the paintings are cut out of their parchment (public/media/people/cut, with a paper
-// edge left round each figure) and the engravings are ink only, on transparency
-// (public/media/wheel/ink), so they print onto any colour.
+// Images: the six paintings cut close round each figure, no paper edge: for the night
+// (public/media/people/night, cut with scripts/cut-night.py) and for paper (public/media/people/fig,
+// scripts/cut-tight.py). Prompts for redrawn, cleaner figures: docs/character-prompts.md.
 import Base from '../layouts/Base.astro';
 import Nav from '../components/Nav.astro';
 
-const cut = (img: string) => `/media/people/cut/${img}`;
-const ink = (img: string) => `/media/wheel/ink/${img}`;
+const night = (img: string) => `/media/people/night/${img}`;
+const fig = (img: string) => `/media/people/fig/${img}`;
+// the v3 paintings (13 Nov): each Charioteer at rest, and with their power (one orange mark)
+const v3 = (slug: string, k: 'rest' | 'power') => `/media/people/v3/${({ backpack: 'tanujaa', glasses: 'shreesh', handstand: 'siddharth' } as Record<string, string>)[slug] ?? slug}-${k}.webp`;
 
 // The crew. Fill in the blanks (name, role) and drop a real photo at
 // public/media/people/photos/<slug>.jpg, then set photo: true. box is where their one thing sits
-// in the cut-out (x, y, w, h in %), for the detection box. idle is how they move at rest.
-const head = { slug: 'aakash', img: 'aakash-armour.webp', w: 665, h: 1000, name: 'Aakash Rodrigues', role: 'Creative Director & Lead Designer', thing: 'laptop', score: '0.97', box: [1, 10, 29, 15], idle: 'sway', photo: false };
+// in the figure (x, y, w, h in %), for the detection box.
+const head = { slug: 'aakash', img: 'aakash-armour.webp', w: 901, h: 1361, name: 'Aakash Rodrigues', role: 'Creative Director & Lead Designer', thing: 'laptop', score: '0.97', box: [1, 10, 29, 15], photo: false };
 const crew = [
-  { slug: 'joshua', img: 'joshua-speaker.webp', w: 691, h: 1000, name: 'Joshua Rodrigues', role: '', thing: 'speaker', score: '0.98', box: [0, 23, 18, 20], idle: 'bob', photo: false },
-  { slug: 'samridhi', img: 'samridhi-visor.webp', w: 720, h: 951, name: 'Samridhi Aggarwal', role: '', thing: 'visor', score: '0.96', box: [7, 0, 25, 13], idle: 'lean', photo: false },
-  { slug: 'backpack', img: 'backpack.webp', w: 705, h: 1000, name: '', role: '', thing: 'backpack', score: '0.95', box: [60, 1, 34, 44], idle: 'hop', photo: false },
-  { slug: 'glasses', img: 'glasses.webp', w: 676, h: 1000, name: '', role: '', thing: 'glasses', score: '0.94', box: [32, 8, 21, 7], idle: 'hop', photo: false },
-  { slug: 'handstand', img: 'handstand.webp', w: 720, h: 968, name: '', role: '', thing: 'sneakers', score: '0.93', box: [0, 1, 15, 16], idle: 'wobble', photo: false },
+  { slug: 'joshua', img: 'joshua-speaker.webp', w: 936, h: 1364, name: 'Joshua Rodrigues', role: '', thing: 'speaker', score: '0.98', box: [0, 23, 18, 20], photo: false },
+  { slug: 'samridhi', img: 'samridhi-visor.webp', w: 981, h: 1299, name: 'Samridhi Aggarwal', role: '', thing: 'visor', score: '0.96', box: [7, 0, 25, 13], photo: false },
+  { slug: 'backpack', img: 'backpack.webp', w: 975, h: 1387, name: 'Tanujaa Hemakumar', role: '', thing: 'backpack', score: '0.95', box: [60, 1, 34, 44], photo: false },
+  { slug: 'glasses', img: 'glasses.webp', w: 929, h: 1382, name: 'Shreesh Kuliyal', role: 'UI/UX & Product Designer', thing: 'glasses', score: '0.94', box: [32, 8, 21, 7], photo: false },
+  { slug: 'handstand', img: 'handstand.webp', w: 1003, h: 1354, name: 'Siddharth Thorat', role: 'Jr. UI/UX & Product Designer', thing: 'sneakers', score: '0.93', box: [0, 1, 15, 16], photo: false },
 ];
 const everyone = [head, ...crew];
 
-const exhibits = [
-  { src: ink('wheel-hub.webp'), no: 'No. 1', name: 'The hub', line: 'The question', body: 'We ask the "why" to every "what".', move: 'spin' },
-  { src: ink('wheel-34.webp'), no: 'No. 2', name: 'The spokes', line: 'Every direction', body: 'We explore every direction, and dig beyond "that\'s how they\'re doing it".', move: 'rock' },
-  { src: ink('wheel-edge.webp'), no: 'No. 3', name: 'The rim', line: 'The psychology, not just the features', body: 'We zoom out before we zoom in. We distill.', move: 'turn' },
-  { src: ink('chariot.webp'), no: 'No. 4', name: 'The chariot', line: 'Shipped', body: 'We test and iterate. Distinguished, effective, delightful, tailored.', move: 'roll' },
+const habits = [
+  { no: 'No. 1', name: 'The question', body: 'We ask the "why" to every "what".' },
+  { no: 'No. 2', name: 'Every direction', body: 'We explore every direction, and dig beyond "that\'s how they\'re doing it".' },
+  { no: 'No. 3', name: 'The psychology, not just the features', body: 'We zoom out before we zoom in. We distill.' },
+  { no: 'No. 4', name: 'Shipped', body: 'We test and iterate. Distinguished, effective, delightful, tailored.' },
 ];
 ---
 <Base title="Studio · Chariot" description="Chariot crafts products, brands and websites with nuance and good taste. Who we are and how we work." bare>
@@ -53,7 +54,7 @@ const exhibits = [
         <h1 class="title" aria-label="Chariot crafts products, brands and websites with nuance and good taste.">
           <span class="rise" style="--d:.05s" aria-hidden="true">Chari(</span>
           <span class="gap" aria-hidden="true" data-gap>
-            {everyone.map((p, i) => <img src={cut(p.img)} alt="" width={p.w} height={p.h} class:list={{ on: i === 0 }} decoding="async" />)}
+            {everyone.map((p, i) => <img src={night(p.img)} alt="" width={p.w} height={p.h} class:list={{ on: i === 0 }} decoding="async" />)}
           </span>
           <span class="rise" style="--d:.15s" aria-hidden="true">)ot</span>
         </h1>
@@ -63,7 +64,7 @@ const exhibits = [
         {everyone.map((p, i) => (
           <li class="rise" style={`--d:${0.45 + i * 0.07}s`}>
             <button type="button" data-pick={i} class:list={{ on: i === 0 }} aria-label={p.name || 'A Charioteer'}>
-              <span class:list={['walk', p.idle]} style={`--k:${i}`}><img src={cut(p.img)} alt="" width={p.w} height={p.h} loading="eager" /></span>
+              <span class="walk"><img src={night(p.img)} alt="" width={p.w} height={p.h} loading="eager" /></span>
               <span class="fig">Fig. {i + 1}</span>
               <span class="cap">{p.name || 'A Charioteer'}</span>
             </button>
@@ -80,30 +81,28 @@ const exhibits = [
         <p class="creed">We believe great design stems from deep insights, radical vision, clarity of the jobs to be done, a will to delight and a ton of attention to detail.</p>
       </div>
       <p class="collage" aria-label="That's why we ask the why to every what. We explore every direction. We consider the psychology, not just the features. We zoom out before we zoom in. We distill. We test and iterate.">
-        <span class="row" data-reveal aria-hidden="true"><span class="s">We ask the</span> <b class="caps">why</b> <img class="pic spin" src={ink('wheel-hub.webp')} alt="" /> <span class="s">to every</span> <span class="o caps">what.</span></span>
-        <span class="row" data-reveal aria-hidden="true"><span class="s">We explore</span> <b class="caps">every</b> <img class="pic roll-in" src={ink('wheel-front.webp')} alt="" /> <span class="o s">direction.</span></span>
+        <span class="row" data-reveal aria-hidden="true"><span class="s">We ask the</span> <b class="caps">why</b> <span class="s">to every</span> <span class="o caps">what.</span></span>
+        <span class="row" data-reveal aria-hidden="true"><span class="s">We explore</span> <b class="caps">every</b> <span class="o s">direction.</span></span>
         <span class="row" data-reveal aria-hidden="true"><span class="s">We consider the</span> <span class="o caps">psychology,</span></span>
-        <span class="row" data-reveal aria-hidden="true"><span class="s">not just the features.</span> <img class="pic guy hop" src={cut('glasses.webp')} alt="" /></span>
-        <span class="row zoom" data-reveal data-zoom aria-hidden="true"><span class="s">We zoom</span> <b class="caps">out</b> <span class="track"><img class="pic cart" src={ink('chariot.webp')} alt="" /></span> <span class="s">before we zoom</span> <b class="caps">in.</b></span>
-        <span class="row" data-reveal aria-hidden="true"><span class="o caps">We distill.</span> <span class="s">We test and iterate.</span> <img class="pic guy run" src={cut('backpack.webp')} alt="" /></span>
+        <span class="row" data-reveal aria-hidden="true"><span class="s">not just the features.</span> <img class="pic guy" src={fig('glasses.webp')} alt="" /></span>
+        <span class="row" data-reveal aria-hidden="true"><span class="s">We zoom</span> <b class="caps">out</b> <span class="s">before we zoom</span> <b class="caps">in.</b></span>
+        <span class="row" data-reveal aria-hidden="true"><span class="o caps">We distill.</span> <span class="s">We test and iterate.</span> <img class="pic guy run" src={fig('backpack.webp')} alt="" /></span>
       </p>
     </section>
 
     <!-- 3. paper: the Charioteers, as a tree -->
     <section class="paper tree" aria-labelledby="h-team" data-tree>
       <h2 id="h-team" class="tree-h" data-reveal><span class="dots" aria-hidden="true">· · · ·</span>The Charioteers</h2>
-      <p class="hint" data-reveal>Point at a Charioteer. The machine will tell you what they carry.</p>
+      <p class="hint" data-reveal>Point at a Charioteer to see them at work.</p>
       <div class="family">
         <svg class="lines" aria-hidden="true" data-lines></svg>
         {everyone.map((c, i) => (
           <figure class:list={['node', { top: i === 0 }]} data-node data-reveal style={`--i:${i}`} data-thing={c.thing} data-score={c.score}>
             <div class="pose-wrap">
-              <div class:list={['pose', c.idle]} style={`--k:${i}`}>
-                <img class="art" src={cut(c.img)} width={c.w} height={c.h} alt={c.name ? `${c.name}, painted with their ${c.thing}` : `A Charioteer, painted with their ${c.thing}`} loading="lazy" />
+              <div class="pose">
+                <img class="art" src={v3(c.slug, 'rest')} width="640" height="960" alt={`${c.name}, painted with their ${c.thing}`} loading="eager" decoding="async" />
+                <img class="power" src={v3(c.slug, 'power')} width="640" height="960" alt="" aria-hidden="true" loading="eager" decoding="async" />
                 {c.photo && <img class="real" src={`/media/people/photos/${c.slug}.jpg`} alt="" loading="lazy" />}
-                <span class="scan" style={`--m:url(${cut(c.img)})`} aria-hidden="true"></span>
-                <span class="pbox" aria-hidden="true"><i>person 0.99</i></span>
-                <span class="box" style={`--x:${c.box[0]}%;--y:${c.box[1]}%;--w:${c.box[2]}%;--h:${c.box[3]}%`} aria-hidden="true"><i data-label>{c.thing} {c.score}</i></span>
               </div>
               <span class="floor" aria-hidden="true"></span>
             </div>
@@ -113,34 +112,25 @@ const exhibits = [
       </div>
     </section>
 
-    <!-- 4. orange: how we work, on plinths -->
-    <section class="wall" aria-labelledby="h-work" data-exhibits tabindex="-1">
+    <!-- 4. orange: how we work -->
+    <section class="wall" aria-labelledby="h-work">
       <div class="wall-head" data-reveal>
         <h2 id="h-work" class="label-h">How we work</h2>
-        <p class="small">Thoroughly conceptualised, thoughtfully crafted. Four parts of the wheel, four habits.</p>
+        <p class="small">Thoroughly conceptualised, thoughtfully crafted. Four habits.</p>
       </div>
-      <div class="hall" data-hall>
-        {exhibits.map((e, i) => (
-          <figure class="exhibit" data-i={i} style={`--o:${i}`} aria-hidden={i === 0 ? 'false' : 'true'}>
-            <div class="obj"><img class={e.move} src={e.src} alt={e.name} loading="lazy" draggable="false" /></div>
-            <div class="plinth" aria-hidden="true"><span class="lid"></span><span class="body"><span class="plate">{e.no}</span></span></div>
-            <figcaption><b>{e.name}: {e.line}</b><span>{e.body}</span></figcaption>
-          </figure>
+      <ol class="habits">
+        {habits.map((h, i) => (
+          <li data-reveal style={`--i:${i}`}><span class="plate">{h.no}</span><b>{h.name}</b><span>{h.body}</span></li>
         ))}
-      </div>
-      <div class="nav-ex">
-        <button type="button" data-prev aria-label="Previous exhibit">←</button>
-        <span data-count>1 / {exhibits.length}</span>
-        <button type="button" data-next aria-label="Next exhibit">→</button>
-      </div>
+      </ol>
     </section>
 
     <!-- 5. paper: join, and hello -->
     <section class="paper join" aria-labelledby="h-join">
       <h2 id="h-join" class="tree-h" data-reveal><span class="dots" aria-hidden="true">· · · ·</span>Join the Charioteers</h2>
       <ul class="rows" data-reveal>
-        <li><a href="mailto:hello@withchariot.com?subject=Joining%20Chariot"><span class="who"><img src={cut('backpack.webp')} alt="" /></span><span class="mono">Designers who sweat the details</span><span class="arrow" aria-hidden="true">↗</span></a></li>
-        <li><a href="mailto:hello@withchariot.com"><span class="who"><img src={cut('handstand.webp')} alt="" /></span><span class="mono">Every project starts with a question. Ask us yours</span><span class="arrow" aria-hidden="true">↗</span></a></li>
+        <li><a href="mailto:hello@withchariot.com?subject=Joining%20Chariot"><span class="who"><img src={fig('backpack.webp')} alt="" /></span><span class="mono">Designers who sweat the details</span><span class="arrow" aria-hidden="true">↗</span></a></li>
+        <li><a href="mailto:hello@withchariot.com"><span class="who"><img src={fig('handstand.webp')} alt="" /></span><span class="mono">Every project starts with a question. Ask us yours</span><span class="arrow" aria-hidden="true">↗</span></a></li>
       </ul>
     </section>
   </div>
@@ -163,16 +153,6 @@ const exhibits = [
   :global(html.js) [data-reveal] { opacity: 0; filter: blur(12px); translate: 0 28px; transition: opacity .9s var(--ease), filter .9s var(--ease), translate .9s var(--ease); transition-delay: calc(var(--i, 0) * 90ms); }
   :global(html.js) [data-reveal].in { opacity: 1; filter: none; translate: 0 0; }
 
-  /* idle motion: each Charioteer moves in their own way */
-  .sway { animation: sway 4.2s ease-in-out calc(var(--k, 0) * -.7s) infinite; transform-origin: 50% 100%; }
-  .lean { animation: sway 6s ease-in-out calc(var(--k, 0) * -.7s) infinite; transform-origin: 60% 100%; }
-  .bob { animation: bob 2.6s ease-in-out calc(var(--k, 0) * -.4s) infinite; }
-  .hop { animation: hop 2.2s var(--ease) calc(var(--k, 0) * -.5s) infinite; transform-origin: 50% 100%; }
-  .wobble { animation: wobble 3s ease-in-out calc(var(--k, 0) * -.3s) infinite; transform-origin: 50% 0; }
-  @keyframes sway { 0%, 100% { rotate: -2deg; } 50% { rotate: 2deg; } }
-  @keyframes bob { 0%, 100% { translate: 0 0; } 50% { translate: 0 -3%; } }
-  @keyframes hop { 0%, 55%, 100% { translate: 0 0; scale: 1 1; } 10% { scale: 1.04 .95; } 28% { translate: 0 -9%; scale: .97 1.04; } 45% { translate: 0 0; scale: 1.03 .97; } }
-  @keyframes wobble { 0%, 100% { rotate: -3deg; } 50% { rotate: 3deg; } }
 
   /* ---- 1. the opener ---- */
   .opener { position: relative; border-radius: 22px; overflow: hidden; background: var(--night); color: var(--cream);
@@ -186,17 +166,18 @@ const exhibits = [
   .title { margin: 0; display: flex; align-items: flex-end; font: 400 clamp(64px, 14vw, 250px)/.85 var(--serif); letter-spacing: -.03em; white-space: nowrap; }
   /* the brackets hold one Charioteer at a time; they stand taller than the letters, as on mew */
   .gap { position: relative; display: block; width: 1.12em; height: .78em; margin: 0 .02em; }
-  .gap img { position: absolute; left: 50%; bottom: .01em; height: 1.32em; width: auto; max-width: none; translate: -50% -60%; rotate: -14deg; scale: .7; opacity: 0;
-    filter: drop-shadow(0 .05em .06em rgb(0 0 0 / .45)); transition: translate .55s var(--spring), rotate .55s var(--spring), scale .55s var(--spring), opacity .2s; pointer-events: none; }
-  .gap img.on { translate: -50% 0; rotate: 0deg; scale: 1; opacity: 1; }
-  .gap img.off { translate: -50% 40%; rotate: 10deg; scale: .85; opacity: 0; transition-duration: .35s; transition-timing-function: ease-in; }
+  .gap img { position: absolute; left: 50%; bottom: .01em; height: 1.32em; width: auto; max-width: none; translate: -50% 4%; opacity: 0;
+    filter: drop-shadow(0 .05em .06em rgb(0 0 0 / .45)); transition: translate 1.1s var(--ease), opacity 1.1s var(--ease); pointer-events: none; }
+  /* one at a time, a slow cross-fade: the next steps up as the last one fades */
+  .gap img.on { translate: -50% 0; opacity: 1; }
+  .gap img.off { translate: -50% 0; opacity: 0; }
   .line { margin: 0; font: 400 12px/1.5 var(--mono); text-align: center; color: rgb(243 234 219 / .7); }
   .parade { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: clamp(8px, 2vw, 28px); align-items: end; }
   .parade button { all: unset; cursor: pointer; display: grid; justify-items: center; gap: 6px; width: 100%; }
   .parade button:focus-visible { outline: 1px dashed var(--cream); outline-offset: 6px; }
   .walk { display: block; height: clamp(90px, 17vh, 170px); }
-  .walk img { height: 100%; width: auto; filter: drop-shadow(0 6px 8px rgb(0 0 0 / .45)) saturate(.9); transition: filter .3s, translate .4s var(--spring); }
-  .parade button:hover .walk img, .parade button.on .walk img { filter: drop-shadow(0 10px 12px rgb(0 0 0 / .5)) saturate(1.1); translate: 0 -8px; }
+  .walk img { height: 100%; width: auto; filter: drop-shadow(0 6px 8px rgb(0 0 0 / .45)) saturate(.85) brightness(.85); transition: filter .5s, translate .6s var(--ease); }
+  .parade button:hover .walk img, .parade button.on .walk img { filter: drop-shadow(0 10px 12px rgb(0 0 0 / .5)) saturate(1); translate: 0 -4px; }
   .fig, .cap { font: 400 10px/1 var(--mono); color: rgb(243 234 219 / .45); transition: color .3s; }
   .parade button.on .cap, .parade button:hover .cap { color: var(--cream); }
   .parade button.on .fig { color: var(--orange); }
@@ -213,18 +194,12 @@ const exhibits = [
   .s { font-family: var(--serif); font-weight: 400; letter-spacing: -.03em; }
   .caps { font: 800 1em/1 var(--sans); letter-spacing: -.04em; text-transform: uppercase; }
   .o { color: var(--orange); }
-  /* engravings print into the words; figures step out of the line */
-  .pic { height: .9em; width: auto; transition: scale .8s var(--spring) .25s, opacity .3s .25s; }
-  :global(html.js) .pic { scale: .4; opacity: 0; }
-  :global(html.js) .row.in .pic { scale: 1; opacity: 1; }
-  .pic.spin { animation: turn 18s linear infinite; }
-  :global(html.js) .pic.roll-in { translate: -1.5em 0; rotate: -200deg; transition: scale .8s var(--spring) .25s, opacity .3s .25s, translate 1.4s var(--ease) .2s, rotate 1.4s var(--ease) .2s; }
-  :global(html.js) .row.in .pic.roll-in { translate: 0 0; rotate: 0deg; }
-  .pic.guy { height: 1.5em; margin: -.35em 0 -.2em; filter: drop-shadow(0 .06em .05em rgb(22 19 15 / .25)); }
+  /* two Charioteers stand in the words */
+  .pic { height: .9em; width: auto; transition: opacity .9s var(--ease) .2s; }
+  :global(html.js) .pic { opacity: 0; }
+  :global(html.js) .row.in .pic { opacity: 1; }
+  .pic.guy { height: 1.5em; margin: -.35em 0 -.2em; filter: drop-shadow(0 .06em .05em rgb(22 19 15 / .2)); }
   .pic.run { height: 1.35em; }
-  .track { display: inline-block; width: 1.6em; height: .8em; position: relative; }
-  .pic.cart { position: absolute; left: 0; top: 50%; height: .75em; translate: calc(var(--p, 0) * (1.6em - 100%)) -50%; }
-  @keyframes turn { to { rotate: 360deg; } }
 
   /* ---- 3. the tree ---- */
   .tree { display: grid; justify-items: center; gap: 14px; }
@@ -245,25 +220,11 @@ const exhibits = [
   .real { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .4s; }
   .node:hover .real { opacity: 1; }
   .floor { position: absolute; left: 18%; right: 18%; bottom: -6px; height: 12px; border-radius: 50%; background: radial-gradient(closest-side, rgb(22 19 15 / .22), transparent); z-index: -1; }
-  /* the machine reads the painting: a scan line sweeps the figure only */
-  .scan { position: absolute; inset: 0; pointer-events: none; opacity: 0;
-    -webkit-mask: var(--m) center / 100% 100% no-repeat; mask: var(--m) center / 100% 100% no-repeat;
-    background: linear-gradient(180deg, transparent 0 40%, rgb(240 88 46 / .55) 49%, rgb(255 255 255 / .8) 50%, transparent 60%) 0 0 / 100% 250% no-repeat; }
-  .node:hover .scan, .node.on .scan { animation: scan 1.1s var(--ease) both; }
-  @keyframes scan { 0% { opacity: 1; background-position: 0 100%; } 85% { opacity: 1; } 100% { opacity: 0; background-position: 0 0; } }
-  /* first it finds a person, then it locks onto their thing */
-  .pbox, .box { position: absolute; pointer-events: none; opacity: 0; }
-  .pbox { inset: -2% -3%; border: 1px dashed rgb(22 19 15 / .5); transition: opacity .2s; }
-  .pbox i, .box i { position: absolute; left: -1px; bottom: 100%; padding: 3px 5px; font: 500 10px/1 var(--mono); font-style: normal; white-space: nowrap; }
-  .pbox i { background: var(--ink); color: var(--paper); }
-  .box { left: 0; top: 0; width: 100%; height: 100%; border: 1.5px solid var(--orange); box-shadow: 0 0 0 1px rgb(255 255 255 / .6) inset;
-    transition: left .5s var(--ease), top .5s var(--ease), width .5s var(--ease), height .5s var(--ease), opacity .15s; }
-  .box i { background: var(--orange); color: var(--ink); }
-  .box::before, .box::after { content: ""; position: absolute; width: 7px; height: 7px; border: 2px solid var(--orange); }
-  .box::before { right: -4px; top: -4px; border-left: 0; border-bottom: 0; } .box::after { left: -4px; bottom: -4px; border-right: 0; border-top: 0; }
-  .node:hover .pbox, .node.on .pbox { opacity: 1; }
-  .node:hover .box, .node.on .box { opacity: 1; left: var(--x); top: var(--y); width: var(--w); height: var(--h); transition-delay: .45s; }
-  .node:hover .pose, .node.on .pose { animation-play-state: paused; }
+  /* rest, and on hover their power: the same figure at work, with its one orange mark */
+  .power { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity .5s ease; filter: drop-shadow(0 2px 1px rgb(22 19 15 / .18)); }
+  .art { transition: opacity .5s ease; }
+  .node:hover .power, .node.on .power, .node:focus-within .power { opacity: 1; }
+  .node:hover .art, .node.on .art, .node:focus-within .art { opacity: 0; }
   figcaption { display: grid; gap: 3px; }
   .role { font: 400 clamp(14px, 1.2vw, 17px)/1.2 var(--serif); }
 
@@ -271,32 +232,11 @@ const exhibits = [
   .wall { border-radius: 22px; background: var(--orange); color: var(--ink); padding: clamp(36px, 7vh, 80px) clamp(16px, 4vw, 64px); display: grid; gap: 4vh; overflow: hidden; outline: none; }
   .wall .small { color: rgb(22 19 15 / .7); }
   .wall-head { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 32px; }
-  .hall { position: relative; height: clamp(420px, 62vh, 620px); touch-action: pan-y; user-select: none; cursor: grab; }
-  .hall:active { cursor: grabbing; }
-  .exhibit { position: absolute; left: 50%; bottom: 0; margin: 0; width: clamp(240px, 30vw, 380px); display: grid; justify-items: center;
-    translate: calc(-50% + var(--o, 0) * clamp(250px, 34vw, 480px)) 0; scale: calc(1 - min(1, abs(var(--o, 0))) * .55); transform-origin: 50% 100%;
-    opacity: calc(1 - min(1, max(0, abs(var(--o, 0)) - 1))); transition: translate .8s var(--ease), scale .8s var(--ease), opacity .4s; }
-  .obj { width: 100%; height: clamp(220px, 36vh, 360px); display: flex; align-items: flex-end; justify-content: center; padding-bottom: 8px; }
-  .obj img { max-width: 100%; max-height: 100%; width: auto; height: auto; min-height: 0; }
-  .obj .spin { height: 92%; max-height: 92%; animation: turn 30s linear infinite; }
-  .spin { -webkit-mask: radial-gradient(circle closest-side, #000 90%, transparent 100%); mask: radial-gradient(circle closest-side, #000 90%, transparent 100%); }
-  .obj .rock { animation: rock 5s ease-in-out infinite; transform-origin: 50% 100%; }
-  .obj .turn { animation: spinY 6s ease-in-out infinite; }
-  .obj .roll { animation: roll 6s ease-in-out infinite; }
-  @keyframes rock { 0%, 100% { rotate: -4deg; } 50% { rotate: 4deg; } }
-  @keyframes spinY { 0%, 100% { transform: perspective(600px) rotateY(-35deg); } 50% { transform: perspective(600px) rotateY(35deg); } }
-  @keyframes roll { 0%, 100% { translate: -8% 0; } 50% { translate: 8% 0; } }
-  .plinth { width: 62%; display: grid; }
-  .lid { height: 18px; background: #2A2520; clip-path: polygon(6% 0, 94% 0, 100% 100%, 0 100%); }
-  .body { height: 60px; background: var(--ink); display: grid; place-items: center; }
-  .plate { padding: 4px 9px; background: #C9A45C; color: var(--ink); font: 500 10px/1 var(--mono); letter-spacing: .08em; }
-  .exhibit figcaption { margin-top: 20px; display: grid; gap: 8px; justify-items: center; text-align: center; max-width: 32ch; transition: opacity .4s, filter .4s; }
-  .exhibit[aria-hidden="true"] figcaption { opacity: 0; filter: blur(6px); }
-  .exhibit b { font: 600 17px/1.2 var(--sans); text-transform: uppercase; letter-spacing: .02em; }
-  .exhibit figcaption span:last-child { font: 400 13px/1.4 var(--mono); }
-  .nav-ex { justify-self: center; display: flex; align-items: center; gap: 14px; margin-top: 6vh; font: 400 12px/1 var(--mono); }
-  .nav-ex button { width: 38px; height: 26px; border-radius: 4px; border: 1px solid var(--ink); background: none; color: var(--ink); cursor: pointer; font: 14px/1 var(--mono); }
-  .nav-ex button:hover { background: var(--ink); color: var(--orange); }
+  .habits { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(14px, 2vw, 28px); }
+  .habits li { display: grid; align-content: start; gap: 12px; padding-top: 18px; border-top: 2px solid var(--ink); }
+  .habits .plate { justify-self: start; padding: 4px 9px; background: var(--ink); color: var(--orange); font: 500 11px/1 var(--mono); letter-spacing: .08em; }
+  .habits b { font: 400 clamp(24px, 2.4vw, 38px)/1.05 var(--serif); }
+  .habits li > span:last-child { font: 400 clamp(14px, 1.1vw, 17px)/1.45 var(--mono); }
 
   /* ---- 5. join ---- */
   .join { display: grid; gap: 4vh; }
@@ -304,8 +244,8 @@ const exhibits = [
   .rows li { border-bottom: 1px solid var(--line); }
   .rows a { display: grid; grid-template-columns: 90px minmax(0, 1fr) auto; align-items: center; gap: 4vw; padding: 10px 0; }
   .who { height: 72px; display: grid; place-items: end center; }
-  .who img { height: 100%; width: auto; transition: translate .4s var(--spring), rotate .4s var(--spring); }
-  .rows a:hover .who img { translate: 0 -10px; rotate: -6deg; }
+  .who img { height: 72px; width: auto; max-width: none; transition: translate .5s var(--ease); }
+  .rows a:hover .who img { translate: 0 -4px; }
   .rows .mono { font-size: clamp(16px, 1.6vw, 22px); }
   .arrow { font-size: 24px; transition: translate .3s; }
   .rows a:hover .arrow { translate: 4px -4px; }
@@ -317,24 +257,25 @@ const exhibits = [
     .parade { gap: 4px; }
     .parade .cap { display: none; }
     .intro, .wall-head { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+    .habits { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 5vh; }
     .family { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 8vh; }
     .node.top { width: 62%; }
     .lines { display: none; }
     .rows a { grid-template-columns: 64px minmax(0, 1fr) auto; }
     .who { height: 56px; }
+    .who img { height: 56px; }
   }
   @media (prefers-reduced-motion: reduce) {
     .museum *, .museum *::before, .museum *::after { animation: none !important; transition-duration: .01ms !important; }
     :global(html.js) [data-reveal], .rise { opacity: 1; filter: none; translate: none; }
-    :global(html.js) .pic { scale: 1; opacity: 1; translate: none; rotate: none; }
+    :global(html.js) .pic { opacity: 1; }
   }
 </style>
 
 <script>
-  // The bar is cream over the night. A Charioteer jumps into the brackets every couple of
-  // seconds (or the one you point at). Sections come into focus as they scroll in. The chariot
-  // rolls along its line with the scroll. The tree draws its lines to each Charioteer, and the
-  // detector names their thing. The exhibits move along the wall with the arrows, keys or a swipe.
+  // The bar is cream over the night. The Charioteers take turns in the brackets, slowly (or the one
+  // you point at). Sections come into focus as they scroll in. The tree draws its lines to each
+  // Charioteer, and the detector names their thing.
   let stop: AbortController | null = null;
   function init() {
     stop?.abort();
@@ -369,20 +310,12 @@ const exhibits = [
       p.addEventListener('blur', () => { held = false; }, { signal });
       p.addEventListener('click', () => put(i), { signal });
     });
-    if (!calm) timers.push(window.setInterval(() => { if (!held && !document.hidden) put((at + 1) % gapImgs.length); }, 1900));
+    if (!calm) timers.push(window.setInterval(() => { if (!held && !document.hidden) put((at + 1) % gapImgs.length); }, 3600));
 
     // reveals
     const io = new IntersectionObserver((es) => es.forEach((en) => { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } }), { rootMargin: '0px 0px -12% 0px' });
     page.querySelectorAll('[data-reveal]').forEach((n) => io.observe(n));
     signal.addEventListener('abort', () => io.disconnect());
-
-    // 2. the chariot rolls along its line
-    const zoom = page.querySelector<HTMLElement>('[data-zoom]')!;
-    const onZoom = () => {
-      const r = zoom.getBoundingClientRect();
-      const p = Math.min(1, Math.max(0, 1 - (r.top + r.height / 2) / innerHeight));
-      zoom.style.setProperty('--p', (p * 1.6 - .3).toFixed(3));
-    };
 
     // 3. the tree: lines from the head to each Charioteer
     const tree = page.querySelector<HTMLElement>('[data-tree]')!;
@@ -407,7 +340,8 @@ const exhibits = [
 
     // the detector counts up to its score
     const count = (n: HTMLElement) => {
-      const label = n.querySelector<HTMLElement>('[data-label]')!;
+      const label = n.querySelector<HTMLElement>('[data-label]');
+      if (!label) return;
       const thing = n.dataset.thing!, score = Number(n.dataset.score);
       if (calm) { label.textContent = `${thing} ${score.toFixed(2)}`; return; }
       const t0 = performance.now() + 450;
@@ -428,31 +362,7 @@ const exhibits = [
       signal.addEventListener('abort', () => tio.disconnect());
     }
 
-    // 4. the wall
-    const wall = page.querySelector<HTMLElement>('[data-exhibits]')!;
-    const hall = wall.querySelector<HTMLElement>('[data-hall]')!;
-    const items = [...wall.querySelectorAll<HTMLElement>('.exhibit')];
-    const counter = wall.querySelector<HTMLElement>('[data-count]')!;
-    let ex = 0, lastTouch = 0;
-    const show = () => {
-      items.forEach((el, i) => { el.style.setProperty('--o', String(i - ex)); el.setAttribute('aria-hidden', String(i !== ex)); });
-      counter.textContent = `${ex + 1} / ${items.length}`;
-    };
-    const go = (d: number, auto = false) => { if (!auto) lastTouch = Date.now(); ex = (ex + d + items.length) % items.length; show(); };
-    wall.querySelector('[data-prev]')!.addEventListener('click', () => go(-1), { signal });
-    wall.querySelector('[data-next]')!.addEventListener('click', () => go(1), { signal });
-    wall.addEventListener('keydown', (e) => { if (e.key === 'ArrowLeft') go(-1); if (e.key === 'ArrowRight') go(1); }, { signal });
-    let x0: number | null = null;
-    hall.addEventListener('pointerdown', (e) => { x0 = e.clientX; }, { signal });
-    addEventListener('pointerup', (e) => { if (x0 === null) return; const dx = e.clientX - x0; x0 = null; if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1); }, { signal });
-    let wallSeen = false;
-    const wio = new IntersectionObserver((es) => es.forEach((en) => { wallSeen = en.isIntersecting; }), { threshold: .5 });
-    wio.observe(wall);
-    signal.addEventListener('abort', () => wio.disconnect());
-    if (!calm) timers.push(window.setInterval(() => { if (wallSeen && !document.hidden && Date.now() - lastTouch > 9000) go(1, true); }, 4800));
-    show();
-
-    const onScroll = () => { onNight(); onZoom(); };
+    const onScroll = () => { onNight(); };
     onScroll();
     addEventListener('scroll', onScroll, { passive: true, signal });
   }

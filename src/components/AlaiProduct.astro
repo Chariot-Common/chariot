@@ -1,9 +1,8 @@
 ---
 // Alai, as what we made: the product (an AI presentation builder), its AI interaction design and
-// its design system. At rest a blank slide lies on the paper with Alai's prompt bar under it.
-// Raise --x from 0 to 1: the prompt types itself, the slide stands up and builds itself (the real
-// build, from the product), its components lift off toward you, and the theme switcher slides out.
-// Labelled: 01 Prompt, 02 The build, 03 Components, 04 Themes.
+// its design system. At rest a blank slide stands turned away, with Alai's prompt bar under it.
+// Raise --x from 0 to 1: the prompt types itself, the slide turns to face you and builds itself (the
+// real build, from the product), its components lift off toward you, and the theme switcher slides out.
 // The homepage animates --x on hover and plays the build (video[data-hover-play]).
 interface Props { size?: number; style?: string }
 const { size = 440, style } = Astro.props;
@@ -19,21 +18,17 @@ const themes = [
     <div class="slide" data-vt="sheet-poster">
       <video src="/media/alai/work.mp4" poster="/media/alai/build-start.jpg" muted loop playsinline preload="auto" data-hover-play aria-hidden="true"></video>
     </div>
-    <span class="kick k-build" aria-hidden="true"><b>02 The build</b> Product design</span>
 
     <div class="part prompt" style="--l:30;--t:70;--pw:64;--hx:30;--hy:62;--z:70;--i:0" aria-hidden="true">
-      <span class="kick"><b>01 Prompt</b> AI interaction design</span>
       <div class="bar"><span class="spark">✦</span><span class="typed">Make a deck on the counterfeit economy</span><i class="caret"></i><span class="go">↑</span></div>
     </div>
     <div class="part card" style="--l:-24;--t:24;--pw:38;--hx:6;--hy:28;--z:130;--i:1" aria-hidden="true">
-      <span class="kick"><b>03 Components</b> Content card, chart</span>
       <img src="/media/alai/part-card.jpg" alt="" loading="eager" />
     </div>
     <div class="part chart" style="--l:86;--t:2;--pw:27;--hx:57;--hy:20;--z:160;--i:2" aria-hidden="true">
       <img src="/media/alai/part-chart.jpg" alt="" loading="eager" />
     </div>
     <div class="part themes" style="--l:-26;--t:44;--pw:40;--hx:30;--hy:50;--z:100;--i:3" aria-hidden="true">
-      <span class="kick"><b>04 Themes</b> Design system</span>
       <div class="chips">{themes.map((t) => <span class:list={{ on: t.on }} style={`--bg:${t.bg};--fg:${t.fg}`}><i>Aa</i>{t.n}</span>)}</div>
     </div>
   </div>
@@ -43,9 +38,9 @@ const themes = [
   @property --x { syntax: '<number>'; inherits: true; initial-value: 0; }
 
   .alai3d { --x: 0; --violet: #5B4BC4; position: relative; width: var(--w); height: calc(var(--w) * .611); perspective: calc(var(--w) * 3.4); }
-  /* lying on the paper at rest; standing up, a little turned, when it comes alive */
+  /* a screen standing on its edge, turned away at rest; it turns to face you as it comes alive */
   .rig { position: absolute; inset: 0; transform-style: preserve-3d;
-    transform: translateY(calc(var(--x) * var(--w) * -.06)) rotateX(calc(56deg - var(--x) * 46deg)) rotateZ(calc(-22deg + var(--x) * 20deg)) scale(calc(1 - var(--x) * .12)); }
+    transform: rotateY(calc(-34deg + var(--x) * 30deg)) rotateX(calc(4deg - var(--x) * 4deg)) scale(calc(.9 + var(--x) * .02)); }
 
   .slab, .slab i { position: absolute; inset: 0; }
   .slab i { border-radius: 8px; background: #E4E4EA; transform: translateZ(calc(var(--i) * -1.6px)); }
@@ -55,7 +50,6 @@ const themes = [
   .slide { position: absolute; inset: 0; border-radius: 8px; overflow: hidden; background: #F1F1F3; transform: translateZ(1px);
     box-shadow: 0 0 0 1px rgb(30 23 16 / .08); }
   .slide video { position: absolute; width: 120%; height: auto; left: -10.15%; top: -8.72%; max-width: none; }
-  .k-build { left: 0; bottom: 100%; transform: translateZ(2px); }
 
   /* the parts: each leaves its home on the slide and floats toward you */
   .part { position: absolute; left: calc(var(--l) * 1%); top: calc(var(--t) * var(--w) / 100); width: calc(var(--pw) * 1%); transform-style: preserve-3d;
@@ -80,8 +74,4 @@ const themes = [
   .chips .on i { outline: 2px solid var(--violet); outline-offset: 1px; }
   .chips .on { color: var(--violet); font-weight: 500; }
 
-  .kick { position: absolute; left: 0; bottom: calc(100% + 6px); white-space: nowrap; padding: 4px 7px; border-radius: 4px; background: #fff;
-    box-shadow: 0 0 0 1px rgb(30 23 16 / .08), 0 4px 10px -6px rgb(30 23 16 / .3);
-    font: 400 10px/1.2 var(--sans); color: #6B6B80; opacity: clamp(0, calc(var(--x) * 3 - 2), 1); }
-  .kick b { font-weight: 600; font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--violet); margin-right: 4px; }
 </style>

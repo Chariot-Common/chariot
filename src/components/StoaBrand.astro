@@ -3,7 +3,7 @@
 // At rest the lion mark is a thick medallion lying on the paper, printed in ink.
 // Raise --x from 0 to 1: it stands up to face you, its construction grid draws itself round it,
 // it takes Stoa's red, and the identity fans out behind it: the rays pattern, the website and
-// a business card. Each piece is labelled.
+// a business card.
 // The homepage animates --x on hover.
 interface Props { size?: number; style?: string }
 const { size = 200, style } = Astro.props;
@@ -19,7 +19,6 @@ const apps = [
   <div class="rig">
     {apps.map((a, i) => (
       <div class:list={['app', a.cls]} aria-hidden="true" style={`--l:${a.left};--t:${a.top};--aw:${a.w};--z:${a.z};--ry:${a.ry}deg;--i:${i}`}>
-        <span class="kick"><b>{a.kick}</b> {a.head}</span>
         {a.cls === 'rays' && <img src="https://framerusercontent.com/images/Bx4hhN3wsHQSCvE43J69bZng7Y.jpg?scale-down-to=512" alt="" loading="eager" />}
         {a.cls === 'site' && <img src="/media/home/stoa-site.jpg" alt="" loading="eager" />}
         {a.cls === 'card' && (
@@ -29,7 +28,6 @@ const apps = [
     ))}
 
     <div class="mark" data-vt="sheet-poster">
-      <span class="kick main"><b>01 The mark</b> on its grid</span>
       <div class="coin" aria-hidden="true">{coin.map((i) => <i style={`--z:${i}`}></i>)}</div>
       <svg class="grid" viewBox="0 0 100 100" aria-hidden="true">
         <circle cx="50" cy="50" r="48" pathLength="1" />
@@ -47,9 +45,9 @@ const apps = [
   .stoa-brand { --x: 0; --red: #C8102E; position: relative; width: var(--w); aspect-ratio: 1; perspective: calc(var(--w) * 5); }
   .rig { position: absolute; inset: 0; transform-style: preserve-3d; }
 
-  /* the medallion: lying tilted at rest, standing up to face you when it comes alive */
+  /* the medallion: standing on its rim, turned nearly edge-on so its thickness shows; it turns slowly to face you */
   .mark { position: absolute; inset: 0; transform-style: preserve-3d; z-index: 2;
-    transform: rotateX(calc(52deg - var(--x) * 52deg)) rotateZ(calc(-18deg + var(--x) * 18deg)) translateZ(calc(var(--x) * var(--w) * .2)); }
+    transform: rotateY(calc(66deg - var(--x) * 66deg)) translateZ(calc(var(--x) * var(--w) * .12)); }
   .coin, .coin i { position: absolute; inset: 0; transform-style: preserve-3d; }
   .coin i { background: color-mix(in srgb, var(--red) calc(var(--x) * 100%), #1E1710);
     -webkit-mask: url(/media/objects/stoa-lion.png) center / contain no-repeat; mask: url(/media/objects/stoa-lion.png) center / contain no-repeat; mask-mode: luminance;
@@ -71,9 +69,4 @@ const apps = [
   .biz .wm { align-self: end; font: 600 calc(var(--w) * .07)/1 var(--serif); letter-spacing: .18em; color: #5A1A12; }
   .biz .ln { align-self: start; font: 400 calc(var(--w) * .038)/1.25 var(--serif); color: #7A5A48; }
 
-  .kick { position: absolute; left: 0; bottom: calc(100% + 6px); white-space: nowrap; padding: 4px 7px; border-radius: 4px; background: #fff;
-    box-shadow: 0 0 0 1px rgb(30 23 16 / .08), 0 4px 10px -6px rgb(30 23 16 / .3);
-    font: 400 10px/1.2 var(--serif); color: #7A5A48; opacity: clamp(0, calc(var(--x) * 3 - 2), 1); }
-  .kick b { font: 600 9px/1 var(--sans); letter-spacing: .1em; text-transform: uppercase; color: var(--red); margin-right: 4px; }
-  .kick.main { left: 50%; bottom: auto; top: calc(100% + 14px); translate: -50% 0; transform: translateZ(2px); }
 </style>

@@ -6,4 +6,6 @@ kind: product
 disciplines: [Product design, UI/UX]
 color: "#4E7A2E"
 poster: https://framerusercontent.com/images/dzUgQlbeK4mlmLAjoIDTUjxMa0.png
+screens:
+  - { src: "/media/home/tortoise.jpg", alt: "The save-up plan", shape: phone }
 ---
