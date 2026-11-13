@@ -105,6 +105,46 @@ Reference: `public/media/people/handstand.webp`
 
 ---
 
+## The six things, on their own (for object cards, after EP-1320's instrument studies)
+
+Each Charioteer's thing drawn alone, for a row of object cards on the Studio page (like the hurdy-gurdy,
+drum and swords on teenage engineering's EP-1320 page). Unlike the figures, the thing is painted the old
+way here too, so it reads as one of the instrument studies. Attach the person's **rest** painting
+(`public/media/people/v3/<name>-rest.webp`) so the thing keeps its shape. Save as `<name>-thing.png` in
+`public/media/people/new/`; I will cut them out and set them on olive cards.
+
+
+**Aakash · the laptop** (reference: `public/media/people/v3/aakash-rest.webp`)
+
+> A single object on its own, no person, landscape 4:3, painted in egg tempera in the manner of a fourteenth-century illuminated manuscript, like a page of instrument studies: fine wobbly dark-brown ink outline, warm earth pigments with three tones and short hatch strokes, a lightly speckled matte tempera surface, worn and a little scuffed, even light from the upper left. A slim aluminium laptop, open at a wide angle, its keyboard and trackpad painted key by key in muted greys, the screen dark and matte. It is the same laptop the Charioteer holds in the attached reference painting: keep its shape and colours. Shown at a slight three-quarter angle from above, centred, filling about 70% of the width, on a plain pure white background with only a soft warm-grey shadow under it. Avoid: a person or hands, gold leaf, gilding, glow, light rays, sparkles, glossy or chrome reflections, a lit-up screen, orange, parchment or paper texture, frame, border, lettering, logos, 3D render, photograph, cartoon.
+
+
+**Joshua · the speaker** (reference: `public/media/people/v3/joshua-rest.webp`)
+
+> A single object on its own, no person, landscape 4:3, painted in egg tempera in the manner of a fourteenth-century illuminated manuscript, like a page of instrument studies: fine wobbly dark-brown ink outline, warm earth pigments with three tones and short hatch strokes, a lightly speckled matte tempera surface, worn and a little scuffed, even light from the upper left. A small black bookshelf speaker standing upright, its two round drivers and grille painted with care, a short cable trailing from the back. It is the same speaker the Charioteer holds in the attached reference painting: keep its shape and colours. Shown at a slight three-quarter angle from above, centred, filling about 70% of the width, on a plain pure white background with only a soft warm-grey shadow under it. Avoid: a person or hands, gold leaf, gilding, glow, light rays, sparkles, glossy or chrome reflections, a lit-up screen, orange, parchment or paper texture, frame, border, lettering, logos, 3D render, photograph, cartoon.
+
+
+**Samridhi · the visor** (reference: `public/media/people/v3/samridhi-rest.webp`)
+
+> A single object on its own, no person, landscape 4:3, painted in egg tempera in the manner of a fourteenth-century illuminated manuscript, like a page of instrument studies: fine wobbly dark-brown ink outline, warm earth pigments with three tones and short hatch strokes, a lightly speckled matte tempera surface, worn and a little scuffed, even light from the upper left. A white mixed-reality visor (a headset with a curved front glass and a soft headband), lying on its side, its headband loosely curled. It is the same visor the Charioteer holds in the attached reference painting: keep its shape and colours. Shown at a slight three-quarter angle from above, centred, filling about 70% of the width, on a plain pure white background with only a soft warm-grey shadow under it. Avoid: a person or hands, gold leaf, gilding, glow, light rays, sparkles, glossy or chrome reflections, a lit-up screen, orange, parchment or paper texture, frame, border, lettering, logos, 3D render, photograph, cartoon.
+
+
+**Tanujaa · the case** (reference: `public/media/people/v3/tanujaa-rest.webp`)
+
+> A single object on its own, no person, landscape 4:3, painted in egg tempera in the manner of a fourteenth-century illuminated manuscript, like a page of instrument studies: fine wobbly dark-brown ink outline, warm earth pigments with three tones and short hatch strokes, a lightly speckled matte tempera surface, worn and a little scuffed, even light from the upper left. A tall silver hard-shell case standing upright, with moulded ridges, a latch, rounded corners and two brown leather straps hanging loose. It is the same case the Charioteer holds in the attached reference painting: keep its shape and colours. Shown at a slight three-quarter angle from above, centred, filling about 70% of the width, on a plain pure white background with only a soft warm-grey shadow under it. Avoid: a person or hands, gold leaf, gilding, glow, light rays, sparkles, glossy or chrome reflections, a lit-up screen, orange, parchment or paper texture, frame, border, lettering, logos, 3D render, photograph, cartoon.
+
+
+**Shreesh · the glasses** (reference: `public/media/people/v3/shreesh-rest.webp`)
+
+> A single object on its own, no person, landscape 4:3, painted in egg tempera in the manner of a fourteenth-century illuminated manuscript, like a page of instrument studies: fine wobbly dark-brown ink outline, warm earth pigments with three tones and short hatch strokes, a lightly speckled matte tempera surface, worn and a little scuffed, even light from the upper left. A pair of thin-framed modern glasses, folded, resting on their arms, the lenses clear. It is the same glasses the Charioteer holds in the attached reference painting: keep its shape and colours. Shown at a slight three-quarter angle from above, centred, filling about 70% of the width, on a plain pure white background with only a soft warm-grey shadow under it. Avoid: a person or hands, gold leaf, gilding, glow, light rays, sparkles, glossy or chrome reflections, a lit-up screen, orange, parchment or paper texture, frame, border, lettering, logos, 3D render, photograph, cartoon.
+
+
+**Siddharth · the sneakers** (reference: `public/media/people/v3/siddharth-rest.webp`)
+
+> A single object on its own, no person, landscape 4:3, painted in egg tempera in the manner of a fourteenth-century illuminated manuscript, like a page of instrument studies: fine wobbly dark-brown ink outline, warm earth pigments with three tones and short hatch strokes, a lightly speckled matte tempera surface, worn and a little scuffed, even light from the upper left. A pair of modern matte-black sneakers with white soles, one standing, one tipped on its side, laces loose. It is the same sneakers the Charioteer holds in the attached reference painting: keep its shape and colours. Shown at a slight three-quarter angle from above, centred, filling about 70% of the width, on a plain pure white background with only a soft warm-grey shadow under it. Avoid: a person or hands, gold leaf, gilding, glow, light rays, sparkles, glossy or chrome reflections, a lit-up screen, orange, parchment or paper texture, frame, border, lettering, logos, 3D render, photograph, cartoon.
+
+---
+
 ## Checking a result
 
 - Is the tool the straightest, coolest, most exact thing in the picture? If it looks hand-painted
