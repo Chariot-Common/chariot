@@ -6,7 +6,7 @@
 // into focus out of a soft blur), and teenage engineering (still figures, nothing hops).
 //   1. Night: CHARI( )OT. Products, brands and websites take turns in the brackets; the four aims below
 //   2. Paper: what we believe, as a type collage
-//   3. Paper: the Charioteers as a tree; point at one and the machine finds their thing (their power)
+//   3. Paper: the Charioteers side by side, nobody on top; point at one to see them at work (their power)
 //   4. Orange: how we work, four exhibits on plinths (only one is the chariot)
 //   5. Paper: join, and say hello
 // Every line of copy is Chariot's own, from withchariot.com. Nothing here is made up.
@@ -31,7 +31,8 @@ const crew = [
   { slug: 'glasses', img: 'glasses.webp', w: 929, h: 1382, name: 'Shreesh Kuliyal', role: 'UI/UX & Product Designer', thing: 'glasses', score: '0.94', box: [32, 8, 21, 7], photo: false },
   { slug: 'handstand', img: 'handstand.webp', w: 1003, h: 1354, name: 'Siddharth Thorat', role: 'Jr. UI/UX & Product Designer', thing: 'sneakers', score: '0.93', box: [0, 1, 15, 16], photo: false },
 ];
-const everyone = [head, ...crew];
+// Nobody stands above anyone: everyone in one row, at the same size, in alphabetical order.
+const everyone = [head, ...crew].sort((a, b) => a.name.localeCompare(b.name));
 
 // the opener: what we make takes turns in the brackets, and what we aim for runs along the foot
 const makes = ['products', 'brands', 'websites'];
@@ -88,14 +89,14 @@ const rays = Array.from({ length: 12 }, (_, i) => { const a = (i / 12) * Math.PI
       </p>
     </section>
 
-    <!-- 3. paper: the Charioteers, as a tree -->
+    <!-- 3. paper: the Charioteers, side by side; each their own person, nobody on top -->
     <section class="paper tree" aria-labelledby="h-team" data-tree>
       <h2 id="h-team" class="tree-h" data-reveal><span class="dots" aria-hidden="true">· · · ·</span>The Charioteers</h2>
-      <p class="hint" data-reveal>Point at a Charioteer to see them at work.</p>
+      <p class="creed-team" data-reveal>Everyone here has their own identity. Wherever you go next, you carry the taste with you: you're from Chariot.</p>
+      <p class="hint" data-reveal>In alphabetical order. Point at a Charioteer to see them at work.</p>
       <div class="family">
-        <svg class="lines" aria-hidden="true" data-lines></svg>
         {everyone.map((c, i) => (
-          <figure class:list={['node', { top: i === 0 }]} data-node data-reveal style={`--i:${i}`} data-thing={c.thing} data-score={c.score}>
+          <figure class="node" data-node data-reveal style={`--i:${i}`} data-thing={c.thing}>
             <div class="pose-wrap">
               <div class="pose">
                 <img class="art" src={v3(c.slug, 'rest')} width="640" height="960" alt={`${c.name}, painted with their ${c.thing}`} loading="eager" decoding="async" />
@@ -104,7 +105,7 @@ const rays = Array.from({ length: 12 }, (_, i) => { const a = (i / 12) * Math.PI
               </div>
               <span class="floor" aria-hidden="true"></span>
             </div>
-            <figcaption><span class="mono">{c.name || 'Name to come'}</span><span class="role">{c.role || 'Charioteer'}</span></figcaption>
+            <figcaption><span class="thing">The {c.thing}</span><span class="mono">{c.name || 'Name to come'}</span><span class="role">{c.role || 'Charioteer'}</span></figcaption>
           </figure>
         ))}
       </div>
@@ -215,15 +216,10 @@ const rays = Array.from({ length: 12 }, (_, i) => { const a = (i / 12) * Math.PI
   .tree { display: grid; justify-items: center; gap: 14px; }
   .tree-h { margin: 0; display: grid; justify-items: center; gap: 6px; font: 400 clamp(26px, 2.6vw, 40px)/1 var(--serif); }
   .dots { font: 700 14px/1 var(--mono); letter-spacing: .2em; }
-  .hint { margin: 0 0 4vh; font: 400 12px/1.4 var(--mono); color: var(--soft); }
-  .family { position: relative; width: 100%; max-width: 1180px; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); column-gap: clamp(12px, 2.4vw, 36px); row-gap: 12vh; }
-  .lines { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
-  .lines :global(path) { fill: none; stroke: var(--line); stroke-width: 1; stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1.4s var(--ease); }
-  .lines.in :global(path) { stroke-dashoffset: 0; }
-  .lines.in :global(path:nth-child(2)) { transition-delay: .08s; } .lines.in :global(path:nth-child(3)) { transition-delay: .16s; }
-  .lines.in :global(path:nth-child(4)) { transition-delay: .24s; } .lines.in :global(path:nth-child(5)) { transition-delay: .32s; }
-  .node { margin: 0; display: grid; justify-items: center; align-content: end; gap: 14px; text-align: center; position: relative; z-index: 1; cursor: crosshair; }
-  .node.top { grid-column: 1 / -1; justify-self: center; width: clamp(170px, 20vw, 260px); }
+  .creed-team { margin: 6px 0 0; max-width: 30ch; text-align: center; text-wrap: balance; font: 400 clamp(20px, 2vw, 30px)/1.25 var(--serif); }
+  .hint { text-align: center; margin: 0 0 4vh; font: 400 12px/1.4 var(--mono); color: var(--soft); }
+  .family { position: relative; width: 100%; max-width: 1180px; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); column-gap: clamp(12px, 2vw, 32px); row-gap: 8vh; align-items: end; }
+  .node { margin: 0; display: grid; justify-items: center; align-content: end; gap: 14px; text-align: center; position: relative; z-index: 1; cursor: default; }
   .pose-wrap { position: relative; width: 100%; }
   .pose { position: relative; }
   .art { display: block; width: 100%; height: auto; filter: drop-shadow(0 2px 1px rgb(22 19 15 / .18)); }
@@ -235,7 +231,8 @@ const rays = Array.from({ length: 12 }, (_, i) => { const a = (i / 12) * Math.PI
   .art { transition: opacity .5s ease; }
   .node:hover .power, .node.on .power, .node:focus-within .power { opacity: 1; }
   .node:hover .art, .node.on .art, .node:focus-within .art { opacity: 0; }
-  figcaption { display: grid; gap: 3px; }
+  figcaption { display: grid; gap: 4px; align-content: start; min-height: 92px; }
+  .thing { font: 400 10px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--orange); margin-bottom: 4px; }
   .role { font: 400 clamp(14px, 1.2vw, 17px)/1.2 var(--serif); }
 
   /* ---- 4. the orange wall ---- */
@@ -298,6 +295,9 @@ const rays = Array.from({ length: 12 }, (_, i) => { const a = (i / 12) * Math.PI
   .arrow { font-size: 24px; transition: translate .3s; }
   .rows a:hover .arrow { translate: 4px -4px; }
 
+  @media (max-width: 1100px) and (min-width: 861px) {
+    .family { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
   @media (max-width: 860px) {
     .title { font-size: 15vw; }
     .gap { font-size: .34em; }
@@ -305,10 +305,8 @@ const rays = Array.from({ length: 12 }, (_, i) => { const a = (i / 12) * Math.PI
     .intro, .wall-head { grid-template-columns: minmax(0, 1fr); gap: 12px; }
     .exhibit { width: min(78vw, 320px); translate: calc(-50% + var(--o, 0) * 86vw) 0; }
     .hall { height: 520px; }
-    .family { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 8vh; }
-    .node.top { width: 62%; }
-    .lines { display: none; }
-  }
+    .family { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 6vh; }
+    }
   @media (prefers-reduced-motion: reduce) {
     .museum *, .museum *::before, .museum *::after { animation: none !important; transition-duration: .01ms !important; }
     :global(html.js) [data-reveal], .rise { opacity: 1; filter: none; translate: none; }
@@ -316,9 +314,9 @@ const rays = Array.from({ length: 12 }, (_, i) => { const a = (i / 12) * Math.PI
 </style>
 
 <script>
-  // The bar is cream over the night. The Charioteers take turns in the brackets, slowly (or the one
-  // you point at). Sections come into focus as they scroll in. The tree draws its lines to each
-  // Charioteer, and the detector names their thing.
+  // The bar is cream over the night. Products, brands and websites take turns in the brackets, slowly.
+  // Sections come into focus as they scroll in. The Charioteers stand side by side; each
+  // with their own thing, which they hold up when you point at them.
   let stop: AbortController | null = null;
   function init() {
     stop?.abort();
@@ -350,26 +348,9 @@ const rays = Array.from({ length: 12 }, (_, i) => { const a = (i / 12) * Math.PI
     page.querySelectorAll('[data-reveal]').forEach((n) => io.observe(n));
     signal.addEventListener('abort', () => io.disconnect());
 
-    // 3. the tree: lines from the head to each Charioteer
+    // 3. the Charioteers
     const tree = page.querySelector<HTMLElement>('[data-tree]')!;
-    const svg = tree.querySelector<SVGSVGElement>('[data-lines]')!;
     const nodes = [...tree.querySelectorAll<HTMLElement>('[data-node]')];
-    const draw = () => {
-      const box = svg.getBoundingClientRect();
-      const [top, ...kids] = nodes.map((n) => n.querySelector<HTMLElement>('.pose-wrap')!.getBoundingClientRect());
-      const hx = top.left + top.width / 2 - box.left, hy = nodes[0].getBoundingClientRect().bottom - box.top + 14;
-      svg.innerHTML = kids.map((k) => {
-        const cx = k.left + k.width / 2 - box.left, cy = k.top - box.top - 14, m = (hy + cy) / 2;
-        return `<path pathLength="1" d="M${hx} ${hy} C${hx} ${m} ${cx} ${m} ${cx} ${cy}" />`;
-      }).join('');
-    };
-    draw();
-    const lio = new IntersectionObserver((es) => es.forEach((en) => { if (en.isIntersecting) { svg.classList.add('in'); lio.disconnect(); } }), { threshold: .3 });
-    lio.observe(svg);
-    signal.addEventListener('abort', () => lio.disconnect());
-    const ro = new ResizeObserver(draw);
-    ro.observe(tree);
-    signal.addEventListener('abort', () => ro.disconnect());
 
     // the detector counts up to its score
     const count = (n: HTMLElement) => {
