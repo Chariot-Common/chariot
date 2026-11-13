@@ -58,7 +58,7 @@ const { size = 420, label, base, parts, rays = false, glow = false, wipe, style 
   .face .scroller img { position: absolute; left: 0; top: 0; width: 100%; height: auto; border-radius: 0; object-fit: fill; }
   .face .scroller .page { padding-top: 13.4%; --run: calc(-100% + var(--w) * (var(--ratio) - .07)); }
   .face .scroller .bar { box-shadow: 0 1px 6px rgb(30 23 16 / .12); }
-  :global(.proj:is(:hover, :focus-visible, .peek)) .scroller .page { animation: pc-page 22s cubic-bezier(.45, 0, .55, 1) 1.6s infinite alternate; }
+  :global(.proj:is(:hover, :focus-visible, .peek)) .scroller .page { animation: pc-page 9s cubic-bezier(.45, 0, .55, 1) 1s infinite alternate; }
   @keyframes pc-page { 0%, 4% { transform: translateY(0); } 96%, 100% { transform: translateY(var(--run)); } }
 
   /* each piece leaves its place on the screen and floats out to where it settles */
