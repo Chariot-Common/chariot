@@ -12,10 +12,7 @@ const { size = 420, style } = Astro.props;
 // z is how far toward you it floats
 const parts = [
   { cls: 'logo', left: -8, top: -21, w: 40, hx: 2, hy: 2, z: 70, kick: 'Masthead', head: 'The mark, set large' },
-  { cls: 'colour', left: -31, top: 4, w: 21, hx: 10, hy: 30, z: 120, kick: 'Colour', head: 'Paper, ink, Ken red' },
-  { cls: 'type', left: 82, top: -17, w: 30, hx: 42, hy: 14, z: 100, kick: 'Type', head: 'Serif heads, sans labels' },
   { cls: 'story', left: 88, top: 24, w: 27, hx: 70, hy: 20, z: 150, kick: 'Component', head: 'The story card' },
-  { cls: 'ui', left: 30, top: 66, w: 40, hx: 40, hy: 40, z: 170, kick: 'Component', head: 'Actions and tags' },
   { cls: 'app', left: -16, top: 50, w: 15, hx: 6, hy: 36, z: 210, kick: 'Apps', head: 'iOS, Android, iPad' },
 ];
 const swatches = [
@@ -23,12 +20,11 @@ const swatches = [
 ];
 const sheet = Array.from({ length: 6 }, (_, i) => i);
 ---
-<div class="ken3d" style={`--w:${size}px;${style ?? ''}`} role="img" aria-label="The Ken homepage, with the design system coming out of it: masthead, colour, type, story card, actions and the apps">
+<div class="ken3d" style={`--w:${size}px;${style ?? ''}`} role="img" aria-label="The Ken homepage, with its masthead, a story and the app coming off it">
   <div class="rig">
     <div class="sheet" aria-hidden="true">
       {sheet.map((i) => <i style={`--i:${i}`}></i>)}
       <img class="face" src="/media/objects/ken-home.jpg" alt="" loading="eager" decoding="async" data-vt="sheet-poster" />
-      <span class="reg r1"></span><span class="reg r2"></span>
     </div>
 
     {parts.map((p, i) => (

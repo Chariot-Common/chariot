@@ -111,7 +111,8 @@ const cols = Array.from({ length: 12 }, (_, i) => i);
     background: radial-gradient(circle at calc(50% + var(--px, 0) * 45%) calc(35% + var(--py, 0) * 45%), rgb(255 255 255 / .22), transparent 55%),
       linear-gradient(calc(160deg + var(--px, 0) * 30deg), transparent 55%, rgb(30 23 16 / .06)); }
 
-  /* the column grid: twelve columns drop from the top, one after another */
+  /* the column grid is not shown (it read as layout craft, not the idea) */
+  .grid { display: none !important; }
   .grid { position: absolute; left: 9.8%; right: 9.7%; top: 0; bottom: 0; display: grid; grid-template-columns: repeat(12, 1fr); column-gap: 1.6%;
     opacity: calc(1 - var(--gone)); }
   .grid i { background: rgb(46 168 230 / .12); border-inline: 1px solid rgb(46 168 230 / .5); transform-origin: 50% 0;

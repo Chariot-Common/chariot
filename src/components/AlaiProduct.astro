@@ -12,7 +12,7 @@ const themes = [
   { n: 'Professional', bg: '#1F4A33', fg: '#E8F5C8', on: true }, { n: 'Casual', bg: '#FFE7A8', fg: '#3B2A00' },
 ];
 ---
-<div class="alai3d" style={`--w:${size}px;${style ?? ''}`} role="img" aria-label="Alai: a prompt types itself and a slide builds itself, with its components and themes coming apart around it">
+<div class="alai3d" style={`--w:${size}px;${style ?? ''}`} role="img" aria-label="Alai: a prompt types itself and a slide builds itself, with its chart lifting off">
   <div class="rig">
     <div class="slab" aria-hidden="true">{slab.map((i) => <i style={`--i:${i}`}></i>)}</div>
     <div class="slide" data-vt="sheet-poster">
@@ -27,9 +27,6 @@ const themes = [
     </div>
     <div class="part chart" style="--l:86;--t:2;--pw:27;--hx:57;--hy:20;--z:160;--i:2" aria-hidden="true">
       <img src="/media/alai/part-chart.jpg" alt="" loading="eager" />
-    </div>
-    <div class="part themes" style="--l:-26;--t:44;--pw:40;--hx:30;--hy:50;--z:100;--i:3" aria-hidden="true">
-      <div class="chips">{themes.map((t) => <span class:list={{ on: t.on }} style={`--bg:${t.bg};--fg:${t.fg}`}><i>Aa</i>{t.n}</span>)}</div>
     </div>
   </div>
 </div>
