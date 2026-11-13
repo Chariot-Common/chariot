@@ -11,12 +11,20 @@ const { size = 420, style } = Astro.props;
 // final spot (left/top, % of the page width) and the spot on the page it comes from (hx/hy);
 // z is how far toward you it floats
 const parts = [
-  { cls: 'ipad', src: 'ipad-story', left: -48, top: 4, w: 46, hx: 10, hy: 20, z: 40 },
-  { cls: 'pricing', src: 'pricing', left: 100, top: -4, w: 44, hx: 70, hy: 20, z: 30 },
-  { cls: 'paper', src: 'writers', left: -30, top: 46, w: 22, hx: 6, hy: 40, z: 150 },
-  { cls: 'paper', src: 'story-metro', left: 104, top: 40, w: 22, hx: 72, hy: 36, z: 130 },
-  { cls: 'phone', src: 'app-welcome', left: 62, top: 34, w: 15, hx: 50, hy: 30, z: 220 },
-  { cls: 'phone', src: 'app-notify', left: 80, top: 42, w: 15, hx: 60, hy: 34, z: 190 },
+  // UI/UX: reading, discovery, engagement (left)
+  { cls: 'ipad', src: 'ipad-story', left: -54, top: 0, w: 46, hx: 10, hy: 20, z: 60 },
+  { cls: 'paper', src: 'writers', left: -54, top: 37, w: 21, hx: 6, hy: 40, z: 110 },
+  { cls: 'paper', src: 'story-metro', left: -30, top: 37, w: 22, hx: 30, hy: 36, z: 90 },
+  // Product: the subscription flow and the apps (right)
+  { cls: 'pricing', src: 'pricing', left: 108, top: 0, w: 46, hx: 70, hy: 20, z: 60 },
+  { cls: 'phone', src: 'app-welcome', left: 110, top: 39, w: 14, hx: 50, hy: 30, z: 120 },
+  { cls: 'phone', src: 'app-notify', left: 127, top: 39, w: 14, hx: 60, hy: 34, z: 100 },
+];
+// what we did, in three words, each over the work it names. The lines are from our case study.
+const what = [
+  { head: 'UI/UX', line: 'Reading, discovery and engagement', left: -54, w: 46 },
+  { head: 'Visual redesign', line: 'Premium, credible, distinguished', left: 0, w: 100 },
+  { head: 'Product', line: 'The subscription flow, and apps on every platform', left: 108, w: 46 },
 ];
 const sheet = Array.from({ length: 6 }, (_, i) => i);
 ---
@@ -26,6 +34,10 @@ const sheet = Array.from({ length: 6 }, (_, i) => i);
       {sheet.map((i) => <i style={`--i:${i}`}></i>)}
       <img class="face" src="/media/objects/ken-home.jpg" alt="" loading="eager" decoding="async" data-vt="sheet-poster" />
     </div>
+
+    {what.map((w, i) => (
+      <p class="what" style={`--l:${w.left};--pw:${w.w};--i:${i}`}><b>{w.head}</b><span>{w.line}</span></p>
+    ))}
 
     {parts.map((p, i) => (
       <div class:list={['part', p.cls]} aria-hidden="true"
@@ -52,7 +64,7 @@ const sheet = Array.from({ length: 6 }, (_, i) => i);
   .sheet i { position: absolute; inset: 0; border-radius: 4px; background: #E6DDD0; transform: translateZ(calc(var(--i) * -1.4px)); }
   .sheet i:last-of-type { box-shadow: 0 calc(var(--w) * .08) calc(var(--w) * .12) calc(var(--w) * -.04) rgb(30 23 16 / .35); }
   .face { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; border-radius: 4px; transform: translateZ(1px);
-    box-shadow: 0 0 0 1px rgb(30 23 16 / .08); filter: saturate(calc(1 - var(--x) * .5)) brightness(calc(1 + var(--x) * .04)); }
+    box-shadow: 0 0 0 1px rgb(30 23 16 / .08); }
   /* registration marks: the print tell */
 
   /* the parts: each leaves its home on the page and floats out to its place on the specimen */
@@ -61,6 +73,14 @@ const sheet = Array.from({ length: 6 }, (_, i) => i);
                scale(calc(.35 + var(--x) * .65));
     opacity: clamp(0, calc(var(--x) * 2.6 - var(--i) * .22), 1); }
   .card { background: #fff; border-radius: 4px; box-shadow: 0 0 0 1px rgb(30 23 16 / .08), 0 calc(var(--w) * .04) calc(var(--w) * .06) calc(var(--w) * -.03) rgb(30 23 16 / .35); overflow: hidden; }
+
+  /* what we did: a word and a line over each group, set once the pieces have settled */
+  .what { position: absolute; left: calc(var(--l) * 1%); width: calc(var(--pw) * 1%); bottom: calc(100% + var(--w) * .035); margin: 0;
+    display: grid; gap: calc(var(--w) * .008); padding-top: calc(var(--w) * .014); border-top: 1px solid rgb(30 23 16 / .22); text-align: left;
+    transform: translateZ(calc(var(--x) * 60px)); opacity: clamp(0, calc(var(--x) * 4 - 2.6 - var(--i) * .2), 1); }
+  .what b { font: 500 calc(var(--w) * .019) / 1.2 var(--sans); letter-spacing: .1em; text-transform: uppercase; color: #E0661B; }
+  .what span { font: 400 calc(var(--w) * .027) / 1.25 var(--serif); color: #1E1710; text-wrap: balance; }
+  @media (max-width: 760px) { .what { display: none; } }
 
   .logo .card { padding: 10px 12px; background: var(--paper); }
   .logo img { display: block; width: 100%; height: auto; }

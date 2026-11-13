@@ -78,6 +78,7 @@ export function fitProject(proj: HTMLElement, obj: HTMLElement, setOpen: (on: bo
   proj.style.setProperty('--stage-h', `${Math.round(stageH)}px`);
   ['--rest', '--open'].forEach((k) => obj.style.setProperty(k, '1'));
   obj.style.setProperty('--shift', '0px');
+  obj.style.setProperty('--lift', '0px');
 
   root.classList.add('fit-measuring');
   setOpen(false); void obj.offsetHeight;
@@ -95,13 +96,24 @@ export function fitProject(proj: HTMLElement, obj: HTMLElement, setOpen: (on: bo
   const bl = paired ? Math.max(EDGE, box.left - 12) : EDGE;
   const br = paired ? Math.min(innerWidth - EDGE, box.right + 12) : innerWidth - EDGE;
   const oh = (open.b - open.t) * restS, ow = (open.r - open.l) * restS;
-  const openS = Math.min(1, (innerHeight - TOP - 24) / oh, (br - bl) / ow);
+  // opened, it stays above its own name: between a little above the stage and the stage's foot
+  const stage = proj.querySelector<HTMLElement>('.stage')?.getBoundingClientRect();
+  const head = Math.min(90, innerHeight * 0.08);
+  const roomH = stage ? stage.height + head : innerHeight - TOP - 24;
+  const openS = Math.min(1, roomH / oh, (br - bl) / ow);
   const s = restS * openS;
   const o = obj.getBoundingClientRect();
   const cx = o.left + o.width / 2;
   const nl = cx + (open.l - cx) * s, nr = cx + (open.r - cx) * s;
   let dx = 0;
   if (nl < bl) dx = bl - nl; else if (nr > br) dx = br - nr;
+  let dy = 0;
+  if (stage) {
+    const cy = o.top + o.height / 2;
+    const nt = cy + (open.t - cy) * s, nb = cy + (open.b - cy) * s;
+    if (nb > stage.bottom) dy = stage.bottom - nb; else if (nt < stage.top - head) dy = stage.top - head - nt;
+  }
+  obj.style.setProperty('--lift', `${Math.round(dy)}px`);
   obj.style.setProperty('--rest', restS.toFixed(3));
   obj.style.setProperty('--open', openS.toFixed(3));
   obj.style.setProperty('--shift', `${Math.round(dx)}px`);

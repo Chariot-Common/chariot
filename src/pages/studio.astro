@@ -6,7 +6,7 @@
 //   1. The wordmark, what we make, and the four aims. No figures here.
 //   2. A card: what we believe, as a type collage
 //   3. The Charioteers: six equal cards, in alphabetical order, nobody on top
-//   4. How we work: four exhibits on plinths (only one is the chariot)
+//   4. How we work: a console, a screen and four keys you can press 
 //   5. Join, and say hello
 // Every line of copy is Chariot's own (withchariot.com) or the team's. Nothing here is made up.
 // The paintings: public/media/people/v3 (rest and power). Prompts, and the six things drawn on their
@@ -30,34 +30,23 @@ const everyone = [...people].sort((a, b) => a.name.localeCompare(b.name));
 
 const aims = ['Distinguished', 'Effective', 'Delightful', 'Tailored'];
 
-// how we work: four exhibits on plinths, in Chariot's own words. Only the last is the chariot;
+// how we work: four exhibits on plinths, in Chariot's own words. 
 // the others are drawn here in ink (the question mark, rays in every direction, frames zooming in).
 const habits = [
   { no: 'No. 1', name: 'The question', body: 'We ask the "why" to every "what".', obj: 'why' },
   { no: 'No. 2', name: 'Every direction', body: 'We explore every direction. We dig beyond the "that\'s how they\'re doing it".', obj: 'rays' },
   { no: 'No. 3', name: 'Zoom out, then in', body: 'We consider the psychology, not just the "features". We zoom out before we zoom in. We distill.', obj: 'zoom' },
-  { no: 'No. 4', name: 'Test and iterate', body: 'We test and iterate. Distinguished, effective, delightful, tailored.', obj: 'chariot' },
+  { no: 'No. 4', name: 'Test and iterate', body: 'We test and iterate. Distinguished, effective, delightful, tailored.', obj: 'loop' },
 ];
 const rays = Array.from({ length: 12 }, (_, i) => { const a = (i / 12) * Math.PI * 2 - Math.PI / 2, r = i % 2 ? 70 : 92; return { x: 100 + Math.cos(a) * r, y: 100 + Math.sin(a) * r, i }; });
 ---
 <Base title="Studio · Chariot" description="Chariot crafts products, brands and websites with nuance and good taste. Who we are and how we work." bare>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grenze+Gotisch:wght@500;700&display=swap" />
-  <!-- the rough edge of every card (the text on top stays crisp) -->
-  <svg class="defs" width="0" height="0" aria-hidden="true" focusable="false">
-    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
-      <feTurbulence type="fractalNoise" baseFrequency=".012" numOctaves="2" seed="7" />
-      <feDisplacementMap in="SourceGraphic" scale="10" />
-    </filter>
-  </svg>
-
   <div class="museum">
     <Nav />
 
     <!-- 1. the wordmark; no figures here, the Charioteers are further down -->
     <header class="opener">
-      <h1 class="mark rise" style="--d:.05s"><span class="initial">C</span>hariot</h1>
+      <h1 class="mark rise" style="--d:.05s">Chariot<i class="sun" aria-hidden="true"></i></h1>
       <p class="line rise" style="--d:.3s">Chariot crafts products, brands and websites <br />with nuance and good taste.</p>
       <div class="aims">
         <p class="cap rise" style="--d:.45s">That's what we aim for</p>
@@ -69,7 +58,7 @@ const rays = Array.from({ length: 12 }, (_, i) => { const a = (i / 12) * Math.PI
       </div>
     </header>
 
-    <div class="band" aria-hidden="true"></div>
+    <div class="band" aria-hidden="true"><div class="run">{[0, 1, 2, 3, 4, 5].map(() => aims.map((a) => <span>{a}<i></i></span>))}</div></div>
 
     <!-- 2. what we believe -->
     <section class="sec" aria-labelledby="h-believe">
@@ -89,7 +78,7 @@ const rays = Array.from({ length: 12 }, (_, i) => { const a = (i / 12) * Math.PI
       </div>
     </section>
 
-    <div class="band" aria-hidden="true"></div>
+    <div class="band" aria-hidden="true"><div class="run">{[0, 1, 2, 3, 4, 5].map(() => aims.map((a) => <span>{a}<i></i></span>))}</div></div>
 
     <!-- 3. the Charioteers: six equal cards, each their own person, nobody on top -->
     <section class="sec team" aria-labelledby="h-team" data-team>
@@ -112,7 +101,7 @@ const rays = Array.from({ length: 12 }, (_, i) => { const a = (i / 12) * Math.PI
       </div>
     </section>
 
-    <div class="band" aria-hidden="true"></div>
+    <div class="band" aria-hidden="true"><div class="run">{[0, 1, 2, 3, 4, 5].map(() => aims.map((a) => <span>{a}<i></i></span>))}</div></div>
 
     <!-- 4. how we work, four exhibits on plinths -->
     <section class="sec" aria-labelledby="h-work">
@@ -121,41 +110,57 @@ const rays = Array.from({ length: 12 }, (_, i) => { const a = (i / 12) * Math.PI
           <h2 id="h-work" class="gothic ink">How we work</h2>
           <p class="cap">Thoroughly conceptualised, thoughtfully crafted.</p>
         </div>
-        <div class="hall" data-hall data-reveal>
-          {habits.map((h, i) => (
-            <figure class="exhibit" data-i={i} style={`--o:${i}`} aria-hidden={i === 0 ? 'false' : 'true'}>
-              <div class:list={['obj', h.obj]} aria-hidden="true">
-                {h.obj === 'why' && <span class="q">?</span>}
-                {h.obj === 'rays' && (
-                  <svg viewBox="0 0 200 218">
-                    {rays.map((r) => <line class="base" x1="100" y1="100" x2={r.x.toFixed(1)} y2={r.y.toFixed(1)} />)}
-                    {rays.map((r) => <line x1="100" y1="100" x2={r.x.toFixed(1)} y2={r.y.toFixed(1)} pathLength="1" style={`--k:${r.i}`} />)}
-                    {rays.map((r) => <circle cx={r.x.toFixed(1)} cy={r.y.toFixed(1)} r="3.2" style={`--k:${r.i}`} />)}
-                    <circle class="hub" cx="100" cy="100" r="6" />
-                  </svg>
-                )}
-                {h.obj === 'zoom' && (
-                  <svg viewBox="0 0 200 226">
-                    {[0, 1, 2, 3, 4].map((k) => <rect x="36" y="30" width="128" height="128" rx="4" style={`--k:${k}`} />)}
-                    <circle class="dot" cx="100" cy="94" r="4" />
-                  </svg>
-                )}
-                {h.obj === 'chariot' && <img src="/media/wheel/ink/chariot.webp" alt="" loading="lazy" draggable="false" />}
-              </div>
-              <div class="plinth" aria-hidden="true"><span class="lid"></span><span class="body"><span class="plate">{h.no}</span></span></div>
-              <figcaption><b>{h.name}</b><span>{h.body}</span></figcaption>
-            </figure>
-          ))}
-        </div>
-        <div class="keys" data-reveal>
-          <button type="button" class="key" data-prev aria-label="Previous habit">←</button>
-          <span class="cap count" data-count>1 / {habits.length}</span>
-          <button type="button" class="key" data-next aria-label="Next habit">→</button>
+        <!-- a console: a screen that shows the habit, and four keys you can press -->
+        <div class="console" data-reveal>
+          <div class="strip"><span><i class="led on"></i>Chariot · Method</span><span data-count>1 / {habits.length}</span></div>
+          <div class="hall" data-hall>
+            {habits.map((h, i) => (
+              <figure class="exhibit" data-i={i} aria-hidden={i === 0 ? 'false' : 'true'}>
+                <div class:list={['obj', h.obj]} aria-hidden="true">
+                  {h.obj === 'why' && <span class="q">?</span>}
+                  {h.obj === 'rays' && (
+                    <svg viewBox="0 0 200 200">
+                      {rays.map((r) => <line class="base" x1="100" y1="100" x2={r.x.toFixed(1)} y2={r.y.toFixed(1)} />)}
+                      {rays.map((r) => <line x1="100" y1="100" x2={r.x.toFixed(1)} y2={r.y.toFixed(1)} pathLength="1" style={`--k:${r.i}`} />)}
+                      {rays.map((r) => <circle cx={r.x.toFixed(1)} cy={r.y.toFixed(1)} r="3.2" style={`--k:${r.i}`} />)}
+                      <circle class="hub" cx="100" cy="100" r="7" />
+                    </svg>
+                  )}
+                  {h.obj === 'zoom' && (
+                    <svg viewBox="0 0 200 200">
+                      {[0, 1, 2, 3, 4].map((k) => <rect x="20" y="20" width="160" height="160" rx="5" style={`--k:${k}`} />)}
+                      <circle class="dot" cx="100" cy="100" r="6" />
+                    </svg>
+                  )}
+                  {h.obj === 'loop' && (
+                    <svg viewBox="0 0 200 200">
+                      <circle class="track" cx="100" cy="100" r="78" />
+                      {[0, 1, 2, 3].map((k) => <circle class="stop" cx="100" cy="22" r="4" style={`--k:${k}`} />)}
+                      <g class="turn">
+                        <path d="M100 22a78 78 0 0 1 78 78" />
+                        <path d="M166 86l12 14 12-14" />
+                        <circle class="dot" cx="100" cy="22" r="7" />
+                      </g>
+                    </svg>
+                  )}
+                </div>
+                <figcaption><span class="cap no">{h.no}</span><b>{h.name}</b><span class="say">{h.body}</span></figcaption>
+              </figure>
+            ))}
+          </div>
+          <div class="pads" role="group" aria-label="The four habits">
+            {habits.map((h, i) => (
+              <button type="button" class="pad" data-pad={i} aria-pressed={i === 0 ? 'true' : 'false'} data-tick>
+                <span class="top"><span class="n">{String(i + 1).padStart(2, '0')}</span><i class="led"></i></span>
+                <span class="nm2">{h.name}</span>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </section>
 
-    <div class="band" aria-hidden="true"></div>
+    <div class="band" aria-hidden="true"><div class="run">{[0, 1, 2, 3, 4, 5].map(() => aims.map((a) => <span>{a}<i></i></span>))}</div></div>
 
     <!-- 5. join, and hello -->
     <section class="sec join" aria-labelledby="h-join">
@@ -170,35 +175,36 @@ const rays = Array.from({ length: 12 }, (_, i) => { const a = (i / 12) * Math.PI
 
 <style>
   .defs { position: absolute; width: 0; height: 0; overflow: hidden; }
-  .museum { --earth: #1D1611; --card: #DDD9CE; --olive: #BCB699; --ink: #1E1611; --soft: #5E554B; --cream: #ECE5D5; --rubric: #C0331F; --gold: #D2A04A;
-    --gothic: "Grenze Gotisch", "UnifrakturMaguntia", Georgia, serif;
+  .museum { --earth: #11110A; --card: #F2F1EC; --olive: #FF8D25; --ink: #11110A; --soft: #5F5D55; --cream: #F2F1EC; --rubric: #E0661B; --gold: #F2F1EC;
+    --gothic: var(--serif);
     --ease: cubic-bezier(.2, .8, .2, 1);
-    /* a dark ground, speckled like old paper */
     background-color: var(--earth); color: var(--cream);
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .93 0 0 0 0 .86 0 0 0 0 .74 0 0 0 1.6 -1.05'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
     display: grid; overflow-x: clip; min-height: 100svh; }
-  :global(html:has(.museum)), :global(body:has(.museum)) { background: #1D1611; color-scheme: dark; }
-  .museum :global(.nav) { --nav-ink: #ECE5D5; }
+  :global(html:has(.museum)), :global(body:has(.museum)) { background: #11110A; color-scheme: dark; }
+  .museum :global(.nav) { --nav-ink: #F2F1EC; }
 
   /* type */
   .cap { margin: 0; font: 500 13px/1.35 var(--sans); letter-spacing: .07em; text-transform: uppercase; }
-  .gothic { margin: 0; font: 700 clamp(44px, 6vw, 96px)/.95 var(--gothic); letter-spacing: .005em; text-align: center; color: var(--cream); }
+  .gothic { margin: 0; font: 600 clamp(44px, 6vw, 96px)/.95 var(--serif); letter-spacing: -.035em; text-align: center; color: var(--cream); }
   .gothic.ink { color: var(--ink); }
 
   /* the cards: cream, with a slightly rough edge drawn underneath so the text stays sharp */
   .card { position: relative; isolation: isolate; color: var(--ink); }
   .card::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--card);
-    border-radius: 44px 40px 46px 42px / 42px 46px 40px 44px; filter: url(#rough); }
+    border-radius: clamp(20px, 2.2vw, 32px); }
   .card.olive::before { background: var(--olive); }
 
   /* the dark pills, after EP-1320's "add to bag" */
-  .pill { display: inline-grid; place-items: center; padding: 6px 16px 9px; border-radius: 12px 14px 12px 15px; background: #15100C; color: var(--cream);
-    font: 700 20px/1 var(--gothic); white-space: nowrap; box-shadow: 0 2px 0 rgb(0 0 0 / .35); }
+  .pill { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px; background: var(--ink); color: var(--cream);
+    font: 500 12px/1 var(--sans); letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; }
+  .pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #FF8D25; }
 
-  /* the red scroll band between sections */
-  .band { height: 34px; margin: clamp(56px, 9vh, 100px) 0; background-color: var(--rubric);
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='34'%3E%3Cpath d='M0 17c6 0 6-7 12-7s6 7 12 7 6 7 12 7 6-7 12-7' fill='none' stroke='%231D1611' stroke-width='2'/%3E%3Ccircle cx='12' cy='22' r='1.6' fill='%231D1611'/%3E%3Ccircle cx='36' cy='12' r='1.6' fill='%231D1611'/%3E%3C/svg%3E");
-    background-repeat: repeat-x; background-position: center; box-shadow: inset 0 3px 0 rgb(0 0 0 / .2), inset 0 -3px 0 rgb(0 0 0 / .2); }
+  /* between sections: the four aims run past on Chariot's orange, slowly */
+  .band { margin: clamp(56px, 9vh, 100px) 0; background: #FF8D25; color: var(--ink); overflow: hidden; padding: 12px 0 14px; }
+  .run { display: flex; width: max-content; animation: run 60s linear infinite; }
+  .run span { display: inline-flex; align-items: center; gap: 28px; padding-right: 28px; font: 600 clamp(22px, 2.2vw, 34px)/1 var(--serif); letter-spacing: -.02em; white-space: nowrap; }
+  .run i { width: 10px; height: 10px; border-radius: 50%; background: var(--ink); }
+  @keyframes run { to { translate: -50% 0; } }
 
   .sec { width: min(1360px, 100% - 2 * clamp(16px, 3vw, 40px)); margin: 0 auto; }
   .sheet { padding: clamp(40px, 8vh, 96px) clamp(20px, 5vw, 80px); }
@@ -211,31 +217,31 @@ const rays = Array.from({ length: 12 }, (_, i) => { const a = (i / 12) * Math.PI
 
   /* ---- 1. the wordmark ---- */
   .opener { min-height: calc(100svh - 34px - 9vh); display: grid; align-content: center; justify-items: center; gap: clamp(20px, 3.4vh, 40px); padding: 110px clamp(16px, 3vw, 40px) 0; text-align: center; }
-  .mark { margin: 0; font: 700 clamp(96px, 19vw, 300px)/.8 var(--gothic); color: var(--cream); letter-spacing: -.005em; }
-  /* the illuminated initial, in red */
-  .initial { color: var(--rubric); text-shadow: 0 .02em 0 rgb(0 0 0 / .35); }
-  .line { margin: 0; font: 500 clamp(14px, 1.3vw, 19px)/1.55 var(--sans); letter-spacing: .07em; text-transform: uppercase; color: rgb(236 229 213 / .85); }
+  .mark { margin: 0; display: inline-flex; align-items: baseline; gap: .06em; font: 600 clamp(88px, 18vw, 290px)/.86 var(--serif); color: var(--cream); letter-spacing: -.05em; }
+  /* the sun from the Chariot mark */
+  .mark .sun { width: .2em; height: .2em; border-radius: 50%; background: #FF8D25; }
+  .line { margin: 0; font: 300 clamp(18px, 1.7vw, 26px)/1.4 var(--sans); color: #B2B0A9; }
   .aims { display: grid; justify-items: center; gap: 16px; margin-top: 2vh; }
   .aims > .cap { color: rgb(236 229 213 / .55); }
   .aims ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(10px, 1.6vw, 22px); }
   .tag { display: grid; gap: 10px; justify-items: center; padding: 18px clamp(14px, 2vw, 30px) 20px; }
   .tag .cap { font-size: 11px; color: var(--rubric); }
-  .aim { font: 700 clamp(26px, 2.8vw, 42px)/1 var(--gothic); }
+  .aim { font: 600 clamp(24px, 2.5vw, 38px)/1 var(--serif); letter-spacing: -.02em; }
 
   /* ---- 2. what we believe ---- */
   .believe { display: grid; gap: 7vh; }
   .intro { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 32px; align-items: start; }
   .intro .cap { color: var(--rubric); padding-top: .4em; }
-  .creed { margin: 0; font: 400 clamp(22px, 2.1vw, 32px)/1.2 var(--serif); max-width: 32ch; }
+  .creed { margin: 0; font: 600 clamp(22px, 2.1vw, 32px)/1.2 var(--serif); letter-spacing: -.02em; max-width: 32ch; }
   .collage { margin: 0; display: grid; justify-items: center; gap: .1em; text-align: center; font-size: clamp(30px, 5vw, 80px); line-height: .95; }
   .row { display: inline-flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: .22em; }
-  .s { font-family: var(--serif); font-weight: 400; letter-spacing: -.03em; }
-  .caps { font: 800 1em/1 var(--sans); letter-spacing: -.04em; text-transform: uppercase; }
+  .s { font-family: var(--serif); font-weight: 600; letter-spacing: -.03em; }
+  .caps { font: 500 .94em/1 var(--sans); letter-spacing: -.04em; text-transform: uppercase; }
   .o { color: var(--rubric); }
 
   /* ---- 3. the Charioteers ---- */
   .team { display: grid; justify-items: center; gap: 16px; }
-  .creed-team { margin: 8px 0 0; max-width: 30ch; text-align: center; text-wrap: balance; font: 400 clamp(20px, 2vw, 30px)/1.3 var(--serif); }
+  .creed-team { margin: 8px 0 0; max-width: 34ch; text-align: center; text-wrap: balance; font: 300 clamp(18px, 1.6vw, 24px)/1.4 var(--sans); color: #B2B0A9; }
   .hint { color: rgb(236 229 213 / .55); font-size: 11px; margin-bottom: 4vh; }
   .cards { width: 100%; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(14px, 2vw, 28px); }
   .person { margin: 0; display: grid; grid-template-rows: auto auto; padding: clamp(24px, 3vw, 44px) clamp(18px, 2.4vw, 34px) clamp(18px, 2.4vw, 30px); outline: none; }
@@ -246,63 +252,83 @@ const rays = Array.from({ length: 12 }, (_, i) => { const a = (i / 12) * Math.PI
   .person:hover .art, .person.on .art, .person:focus-visible .art { opacity: 0; }
   .person figcaption { margin-top: 22px; display: flex; align-items: end; justify-content: space-between; gap: 12px; }
   .who { display: grid; gap: 4px; }
-  .nm { font: 500 14px/1.2 var(--sans); letter-spacing: .07em; text-transform: uppercase; }
-  .rl { font: 400 15px/1.25 var(--serif); color: var(--soft); }
+  .nm { font: 600 clamp(18px, 1.5vw, 23px)/1.15 var(--serif); letter-spacing: -.01em; }
+  .rl { font: 400 14px/1.3 var(--sans); color: var(--soft); }
 
   /* ---- 4. how we work ---- */
   .wall { display: grid; gap: 3vh; outline: none; overflow: hidden; }
   .wall-head { display: grid; justify-items: center; gap: 14px; text-align: center; }
   .wall-head .cap { color: var(--soft); }
-  .hall { position: relative; height: clamp(440px, 58vh, 580px); touch-action: pan-y; user-select: none; cursor: grab; }
-  .hall:active { cursor: grabbing; }
-  .exhibit { position: absolute; left: 50%; bottom: 0; margin: 0; width: clamp(240px, 30vw, 380px); display: grid; justify-items: center;
-    translate: calc(-50% + var(--o, 0) * clamp(250px, 32vw, 460px)) 0; scale: calc(1 - min(1, abs(var(--o, 0))) * .5); transform-origin: 50% 100%;
-    opacity: calc(1 - min(1, max(0, abs(var(--o, 0)) - 1))); transition: translate 1s var(--ease), scale 1s var(--ease), opacity .5s; }
-  .obj { width: 100%; height: clamp(200px, 30vh, 300px); display: grid; place-items: end center; padding-bottom: 14px; }
-  .obj.zoom { padding-bottom: 30px; }
-  .obj svg { height: 100%; width: auto; max-width: 100%; overflow: visible; }
-  .obj > img { max-width: 100%; max-height: 100%; width: auto; height: auto; }
-  /* 1. the question mark turns slowly on its plinth, like a sculpture */
-  .q { font: 700 clamp(200px, 30vh, 300px)/.8 var(--gothic); color: var(--ink); animation: turnY 9s ease-in-out infinite; }
+  /* the console: an ink body with a little depth, a dark screen set into it, and four real keys */
+  .console { width: min(1040px, 100%); justify-self: center; display: grid; gap: clamp(12px, 1.6vw, 20px); padding: clamp(14px, 1.8vw, 24px);
+    border-radius: clamp(22px, 2.4vw, 34px); background: linear-gradient(#24241C, #14140D 30%, #0D0D08);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / .16), inset 0 -3px 0 rgb(0 0 0 / .6), 0 2px 0 #000, 0 30px 50px -18px rgb(17 17 10 / .65), 0 60px 80px -40px rgb(17 17 10 / .5); }
+  .strip { display: flex; justify-content: space-between; align-items: center; padding: 2px 8px 0; color: rgb(242 241 236 / .6); font: 500 11px/1 var(--sans); letter-spacing: .12em; text-transform: uppercase; }
+  .strip span { display: inline-flex; align-items: center; gap: 8px; }
+  .led { width: 7px; height: 7px; border-radius: 50%; background: #3A382F; box-shadow: inset 0 1px 1px rgb(0 0 0 / .6); transition: background .15s, box-shadow .15s; }
+  .led.on, .pad[aria-pressed="true"] .led { background: #FF8D25; box-shadow: 0 0 0 1px rgb(0 0 0 / .4), 0 0 10px 2px rgb(255 141 37 / .7); }
+  /* the screen */
+  .hall { --ink: #F2F1EC; position: relative; height: clamp(300px, 42vh, 400px); border-radius: clamp(12px, 1.4vw, 20px); overflow: hidden; color: var(--cream);
+    background: radial-gradient(120% 90% at 30% 0%, #1B1B13, #090905 70%);
+    box-shadow: inset 0 2px 10px #000, inset 0 0 0 1px rgb(0 0 0 / .8), 0 1px 0 rgb(255 255 255 / .1); touch-action: pan-y; user-select: none; }
+  /* a faint grid of dots, like a display */
+  .hall::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(rgb(242 241 236 / .07) 1px, transparent 1.2px) 0 0 / 9px 9px;
+    -webkit-mask: linear-gradient(90deg, #000, transparent 60%); mask: linear-gradient(90deg, #000, transparent 60%); }
+  .exhibit { position: absolute; inset: 0; margin: 0; display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1fr); align-items: center; gap: clamp(16px, 3vw, 48px);
+    padding: clamp(20px, 3vw, 44px); opacity: 0; translate: 0 10px; transition: opacity .45s, translate .6s var(--ease); }
+  .exhibit[aria-hidden="false"] { opacity: 1; translate: 0 0; }
+  .obj { height: clamp(150px, 26vh, 250px); display: grid; place-items: center; }
+  .obj svg { height: clamp(150px, 26vh, 250px); width: auto; max-width: 100%; overflow: visible; }
+  .obj > img { max-width: 100%; max-height: 100%; width: auto; height: auto; filter: invert(1) brightness(1.6); }
+  /* 1. the question mark turns slowly, like a sculpture */
+  .q { font: 600 clamp(150px, 26vh, 250px)/.8 var(--serif); color: var(--ink); animation: turnY 9s ease-in-out infinite; }
   @keyframes turnY { 0%, 100% { transform: perspective(700px) rotateY(-28deg); } 50% { transform: perspective(700px) rotateY(28deg); } }
   /* 2. every direction: rays draw out one after another, then fade together, and again */
   .rays line { stroke: var(--ink); stroke-width: 2; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; animation: ray 6s var(--ease) infinite; animation-delay: calc(var(--k) * .12s - .6s); }
   .rays circle { fill: var(--ink); opacity: 0; animation: tip 6s var(--ease) infinite; animation-delay: calc(var(--k) * .12s - .6s); }
-  .rays .hub { opacity: 1; animation: none; fill: var(--rubric); }
-  .rays .base { stroke: rgb(30 22 17 / .2); stroke-width: 1.5; stroke-dasharray: none; stroke-dashoffset: 0; animation: none; }
+  .rays .hub { opacity: 1; animation: none; fill: #FF8D25; }
+  .rays .base { stroke: rgb(242 241 236 / .16); stroke-width: 1.5; stroke-dasharray: none; stroke-dashoffset: 0; animation: none; }
   @keyframes ray { 0% { stroke-dashoffset: 1; opacity: 1; } 22%, 70% { stroke-dashoffset: 0; opacity: 1; } 90%, 100% { stroke-dashoffset: 0; opacity: 0; } }
   @keyframes tip { 0%, 14% { opacity: 0; } 24%, 70% { opacity: 1; } 90%, 100% { opacity: 0; } }
   /* 3. zoom out, then in: frames come out of the centre and grow */
-  .zoom rect { fill: none; stroke: var(--ink); stroke-width: 2; transform-origin: 100px 94px; transform-box: view-box; animation: frame 8s linear infinite; animation-delay: calc(var(--k) * -1.6s); }
-  .zoom .dot { fill: var(--rubric); }
+  .zoom rect { fill: none; stroke: var(--ink); stroke-width: 2; transform-origin: 100px 100px; transform-box: view-box; animation: frame 8s linear infinite; animation-delay: calc(var(--k) * -1.6s); }
+  .zoom .dot { fill: #FF8D25; }
   @keyframes frame { 0% { transform: scale(.04); opacity: 0; } 15% { opacity: 1; } 60% { opacity: 1; } 100% { transform: scale(1); opacity: 0; } }
-  /* 4. the chariot rolls a little way and back */
-  .chariot img { animation: roll 7s ease-in-out infinite; }
-  @keyframes roll { 0%, 100% { translate: -6% 0; } 50% { translate: 6% 0; } }
-  /* only the exhibit in front moves */
+  /* 4. test and iterate: round the loop, past each check, and round again */
+  .loop .track { fill: none; stroke: rgb(242 241 236 / .18); stroke-width: 1.5; }
+  .loop .stop { fill: #090905; stroke: var(--ink); stroke-width: 1.5; transform-origin: 100px 100px; transform-box: view-box; transform: rotate(calc(var(--k) * 90deg)); }
+  .loop .turn { transform-origin: 100px 100px; transform-box: view-box; animation: turn 8s cubic-bezier(.6, 0, .4, 1) infinite; }
+  .loop .turn path { fill: none; stroke: var(--ink); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .loop .dot { fill: #FF8D25; }
+  @keyframes turn { 0% { transform: rotate(0); } 25% { transform: rotate(90deg); } 50% { transform: rotate(180deg); } 75% { transform: rotate(270deg); } 100% { transform: rotate(360deg); } }
+  /* only the habit on screen moves */
   .exhibit[aria-hidden="true"] * { animation-play-state: paused !important; }
-  .plinth { width: 62%; display: grid; }
-  .lid { height: 18px; background: #3A2E25; clip-path: polygon(6% 0, 94% 0, 100% 100%, 0 100%); }
-  .body { height: 64px; background: #241A14; display: grid; place-items: center; }
-  .plate { padding: 5px 10px; background: var(--gold); color: var(--ink); font: 500 10px/1 var(--sans); letter-spacing: .1em; text-transform: uppercase; box-shadow: inset 0 1px 0 rgb(255 255 255 / .35), inset 0 -1px 0 rgb(0 0 0 / .25); }
-  .exhibit figcaption { margin-top: 22px; display: grid; gap: 10px; justify-items: center; text-align: center; max-width: 36ch; transition: opacity .5s, filter .5s; }
-  .exhibit[aria-hidden="true"] figcaption { opacity: 0; filter: blur(6px); }
-  .exhibit b { font: 700 clamp(30px, 2.8vw, 44px)/1 var(--gothic); }
-  .exhibit figcaption span { font: 500 13px/1.5 var(--sans); letter-spacing: .06em; text-transform: uppercase; }
-  /* real, pressable keys: dark pills that go down when pressed */
-  .keys { justify-self: center; display: flex; align-items: center; gap: 18px; margin-top: 1vh; }
-  .count { min-width: 5ch; text-align: center; }
-  .key { width: 60px; height: 42px; border: 0; border-radius: 12px 14px 12px 15px; cursor: pointer; font: 500 18px/1 var(--sans); color: var(--cream);
-    background: #15100C; box-shadow: 0 4px 0 #000, 0 6px 12px rgb(0 0 0 / .3); transition: translate .08s, box-shadow .08s; }
-  .key:hover { background: #2A1F18; }
-  .key:active { translate: 0 3px; box-shadow: 0 1px 0 #000, 0 2px 4px rgb(0 0 0 / .3); }
-  .key:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
+  .exhibit figcaption { display: grid; gap: 12px; align-content: center; }
+  .exhibit .no { color: #FF8D25; font-size: 11px; }
+  .exhibit b { font: 600 clamp(30px, 3.6vw, 56px)/1 var(--serif); letter-spacing: -.03em; }
+  .say { max-width: 30ch; font: 300 clamp(16px, 1.3vw, 20px)/1.45 var(--sans); color: #B2B0A9; }
+
+  /* the keys: cream caps with real depth, sitting in a well. They go down when pressed, and the one in play stays down, lit */
+  .pads { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(8px, 1vw, 14px); padding: clamp(10px, 1.2vw, 16px) clamp(10px, 1.2vw, 16px) calc(clamp(10px, 1.2vw, 16px) + 7px);
+    border-radius: clamp(14px, 1.6vw, 22px); background: #060603; box-shadow: inset 0 3px 8px #000, 0 1px 0 rgb(255 255 255 / .08); }
+  .pad { position: relative; display: grid; gap: clamp(18px, 3.4vh, 36px); padding: 12px 14px 14px; border: 0; border-radius: 12px; cursor: pointer; text-align: left; color: #11110A;
+    background: linear-gradient(#FDFCF8, #E9E7DF 55%, #DDDBD2);
+    box-shadow: inset 0 1px 0 #fff, inset 0 -1px 0 rgb(0 0 0 / .12), 0 7px 0 #A9A69A, 0 8px 0 1px #000, 0 16px 16px rgb(0 0 0 / .55);
+    transition: translate .09s, box-shadow .09s, background .2s; -webkit-tap-highlight-color: transparent; }
+  .pad:hover { background: linear-gradient(#fff, #F1EFE8 55%, #E4E2D9); }
+  .pad:active, .pad[aria-pressed="true"] { translate: 0 5px;
+    box-shadow: inset 0 1px 0 #fff, inset 0 -1px 0 rgb(0 0 0 / .12), 0 2px 0 #A9A69A, 0 3px 0 1px #000, 0 6px 8px rgb(0 0 0 / .5); }
+  .pad:active { translate: 0 6px; }
+  .pad:focus-visible { outline: 2px solid #FF8D25; outline-offset: 3px; }
+  .top { display: flex; justify-content: space-between; align-items: center; }
+  .n { font: 500 11px/1 var(--sans); letter-spacing: .12em; color: #5F5D55; }
+  .nm2 { font: 600 clamp(15px, 1.5vw, 22px)/1.05 var(--serif); letter-spacing: -.02em; }
 
   /* ---- 5. join ---- */
   .join { display: grid; gap: 4vh; padding-bottom: clamp(60px, 12vh, 140px); }
   .rows { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
   .row-card a { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 26px clamp(20px, 3vw, 40px); color: var(--ink); text-decoration: none; }
-  .cap.big { font-size: clamp(14px, 1.4vw, 19px); }
+  .cap.big { font: 600 clamp(20px, 2.4vw, 36px)/1.1 var(--serif); letter-spacing: -.02em; text-transform: none; }
   .row-card .pill { transition: translate .2s var(--ease); }
   .row-card a:hover .pill { translate: 0 -2px; }
   .row-card a:focus-visible { outline: 2px dashed var(--cream); outline-offset: 6px; border-radius: 40px; }
@@ -313,8 +339,12 @@ const rays = Array.from({ length: 12 }, (_, i) => { const a = (i / 12) * Math.PI
   @media (max-width: 760px) {
     .aims ol { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .intro { grid-template-columns: minmax(0, 1fr); gap: 12px; }
-    .exhibit { width: min(78vw, 320px); translate: calc(-50% + var(--o, 0) * 86vw) 0; }
-    .hall { height: 470px; }
+    .exhibit { grid-template-columns: minmax(0, 1fr); align-content: center; gap: 14px; }
+    .obj, .q { height: 150px; font-size: 150px; }
+    .obj { place-items: center start; }
+    .hall { height: 400px; }
+    .pads { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 16px; }
+    .pad { gap: 16px; }
     .line br { display: none; }
     .line { max-width: 30ch; }
     .cards { gap: 12px; }
@@ -323,9 +353,7 @@ const rays = Array.from({ length: 12 }, (_, i) => { const a = (i / 12) * Math.PI
     .person figcaption { flex-direction: column; align-items: start; }
     .nm { font-size: 12px; }
     .rl { font-size: 13px; }
-    .pill { font-size: 17px; padding: 5px 12px 7px; }
     .row-card a { flex-direction: column; align-items: start; }
-    .card::before { border-radius: 30px 28px 32px 29px / 29px 32px 28px 30px; }
   }
   @media (prefers-reduced-motion: reduce) {
     .museum *, .museum *::before, .museum *::after { animation: none !important; transition-duration: .01ms !important; }
@@ -366,13 +394,14 @@ const rays = Array.from({ length: 12 }, (_, i) => { const a = (i / 12) * Math.PI
     const items = [...wall.querySelectorAll<HTMLElement>('.exhibit')];
     const counter = wall.querySelector<HTMLElement>('[data-count]')!;
     let ex = 0, lastTouch = 0;
+    const pads = [...wall.querySelectorAll<HTMLElement>('[data-pad]')];
     const show = () => {
-      items.forEach((el, i) => { el.style.setProperty('--o', String(i - ex)); el.setAttribute('aria-hidden', String(i !== ex)); });
+      items.forEach((el, i) => el.setAttribute('aria-hidden', String(i !== ex)));
+      pads.forEach((el, i) => el.setAttribute('aria-pressed', String(i === ex)));
       counter.textContent = `${ex + 1} / ${items.length}`;
     };
     const go = (d: number, auto = false) => { if (!auto) lastTouch = Date.now(); ex = (ex + d + items.length) % items.length; show(); };
-    wall.querySelector('[data-prev]')!.addEventListener('click', () => go(-1), { signal });
-    wall.querySelector('[data-next]')!.addEventListener('click', () => go(1), { signal });
+    pads.forEach((el, i) => el.addEventListener('click', () => { lastTouch = Date.now(); ex = i; show(); }, { signal }));
     wall.addEventListener('keydown', (e) => { if (e.key === 'ArrowLeft') go(-1); if (e.key === 'ArrowRight') go(1); }, { signal });
     let x0: number | null = null;
     hall.addEventListener('pointerdown', (e) => { x0 = e.clientX; }, { signal });

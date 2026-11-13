@@ -17,11 +17,12 @@ import StoaBrand from './StoaBrand.astro';
 import AlaiProduct from './AlaiProduct.astro';
 import PaperPlanes from './PaperPlanes.astro';
 import HealthFlexSite from './HealthFlexSite.astro';
+import PiecesObject from './PiecesObject.astro';
 
 type Screen = { src: string; video?: string; framed?: boolean };
 type Project = {
   name: string; slug?: string; size: 'big' | 'small'; tags: string[];
-  desktop?: Screen[]; phone?: Screen[]; extra?: 'site' | 'hf' | 'stoa' | 'ken' | 'alai' | 'planes'; soon?: boolean;
+  desktop?: Screen[]; phone?: Screen[]; extra?: 'site' | 'hf' | 'stoa' | 'ken' | 'alai' | 'planes' | 'pieces'; soon?: boolean;
 };
 const m = (p: string) => `/media/home/${p}`;
 const projects: Project[] = [
@@ -32,16 +33,52 @@ const projects: Project[] = [
   { name: 'HealthFlex by Loop', slug: 'healthflex', size: 'small', tags: ['Website', 'Visual design'], extra: 'hf' },
   { name: 'Skyway', slug: 'skyway', size: 'small', tags: ['Website', 'D2C eCommerce', 'Content'], extra: 'site' },
   { name: 'Stoa', slug: 'stoa', size: 'small', tags: ['Brand identity', 'Website', 'Product design'], extra: 'stoa' },
-  { name: 'Neon Fund', slug: 'neon-fund', size: 'small', tags: ['Website'], phone: [{ src: m('neon.jpg') }] },
-  { name: 'Value Research', slug: 'value-research', size: 'big', tags: ['Product design', 'UI/UX'], desktop: [{ src: m('vr.jpg') }] },
-  { name: 'Doxel', slug: 'doxel', size: 'small', tags: ['Website'], desktop: [{ src: m('doxel.jpg') }] },
-  { name: 'Tortoise', slug: 'tortoise', size: 'small', tags: ['Product design', 'UI/UX'], phone: [{ src: m('tortoise.jpg') }] },
+  { name: 'Neon Fund', slug: 'neon-fund', size: 'small', tags: ['Website'], extra: 'pieces' },
+  { name: 'Value Research', slug: 'value-research', size: 'big', tags: ['Product design', 'UI/UX'], extra: 'pieces' },
+  { name: 'Doxel', slug: 'doxel', size: 'small', tags: ['Website'], extra: 'pieces' },
+  { name: 'Tortoise', slug: 'tortoise', size: 'small', tags: ['Product design', 'UI/UX'], extra: 'pieces' },
   { name: 'Cruise', size: 'big', tags: ['Product strategy', 'Product design'], soon: true },
   { name: 'Rang De', size: 'big', tags: ['Brand', 'Website'], soon: true },
   { name: 'AtLabs', size: 'small', tags: ['Product design'], soon: true },
   { name: 'Freight Tiger', size: 'small', tags: ['Product design'], soon: true },
   { name: 'Draconic', slug: 'draconic', size: 'small', tags: ['Website', 'Visual design'], soon: true },
 ];
+
+// the objects built from each project's own screen and its pieces (PiecesObject)
+const pieces: Record<string, { size: number; mz: number; label: string; base: { src: string; ratio: number; kind: 'sheet' | 'phone' }; rays?: boolean; wipe?: { left: number; top: number; w: number; h: number };
+  parts: { src: string; left: number; top: number; w: number; hx: number; hy: number; z: number; scan?: boolean }[] }> = {
+  'neon-fund': { size: 300, mz: .9, rays: true, label: "Neon Fund's site on a phone: Be Curious. Be Neon., with the sunburst opening behind it",
+    base: { src: m('neon.jpg'), ratio: 2.02, kind: 'phone' },
+    parts: [
+      { src: 'neon-headline', left: -96, top: 22, w: 86, hx: 6, hy: 42, z: 200 },
+      { src: 'neon-apply', left: 58, top: -10, w: 46, hx: 48, hy: 3, z: 160 },
+    ] },
+  // the portfolio at work: the performance line draws itself, and the numbers that matter come forward
+  'value-research': { size: 720, mz: .44, label: 'Value Research: My Portfolio. The performance line draws itself, and the value, returns, transactions and tax come forward',
+    base: { src: m('vr.jpg'), ratio: .976, kind: 'sheet' },
+    wipe: { left: 19.2, top: 48.4, w: 80.8, h: 16 },
+    parts: [
+      { src: 'vr-figures', left: -44, top: 32, w: 58, hx: 15, hy: 19, z: 180 },
+      { src: 'vr-transactions', left: -18, top: 74, w: 44, hx: 16, hy: 78, z: 140 },
+      { src: 'vr-tax', left: 74, top: 76, w: 40, hx: 61, hy: 78, z: 160 },
+    ] },
+  doxel: { size: 600, mz: .55, label: "Doxel's site, with the 3D model of a building and its progress lifting off",
+    base: { src: m('doxel.jpg'), ratio: .647, kind: 'sheet' },
+    parts: [
+      { src: 'doxel-headline', left: -40, top: 30, w: 34, hx: 7, hy: 16, z: 110 },
+      { src: 'doxel-model', left: 62, top: -14, w: 54, hx: 55, hy: 20, z: 160, scan: true },
+      { src: 'doxel-progress', left: 66, top: 36, w: 52, hx: 55, hy: 50, z: 210 },
+    ] },
+  // the plan, step by step, beside the phone: what you save up for, what you put in and get, the extras
+  tortoise: { size: 280, mz: .9, label: 'Tortoise on a phone: save up for the next iPhone, put in 70,000 and get 77,000, with goodies and cashback',
+    base: { src: m('tortoise.jpg'), ratio: 2.165, kind: 'phone' },
+    parts: [
+      { src: 'tortoise-headline', left: 112, top: 28, w: 82, hx: 6, hy: 77, z: 120 },
+      { src: 'tortoise-save', left: 112, top: 62, w: 82, hx: 6, hy: 106, z: 150 },
+      { src: 'tortoise-goodies', left: 112, top: 94, w: 82, hx: 6, hy: 137, z: 180 },
+      { src: 'tortoise-cashback', left: 166, top: 126, w: 34, hx: 40, hy: 120, z: 220 },
+    ] },
+};
 
 // the fan: up to three real screens per project, from its case study
 const kinds = { product: 'Product', web: 'Website', publication: 'Publication', brand: 'Brand' } as const;
@@ -50,7 +87,7 @@ const entries = new Map((await getCollection('projects')).map((e) => [e.id, e.da
 const small = (src: string) => (src.includes('framerusercontent.com') ? `${src}?scale-down-to=1024` : src);
 const fanFor = (p: Project): string[] => {
   const d = p.slug ? entries.get(p.slug) : undefined;
-  if (!d || p.soon || p.extra === 'hf' || p.extra === 'site' || p.extra === 'stoa' || p.extra === 'ken' || p.extra === 'alai' || p.extra === 'planes') return [];
+  if (!d || p.soon || p.extra === 'hf' || p.extra === 'site' || p.extra === 'stoa' || p.extra === 'ken' || p.extra === 'alai' || p.extra === 'planes' || p.extra === 'pieces') return [];
     return (d.pieces.length ? d.pieces.slice(0, 3).map((x) => x.src) : [d.poster]).map(small);
 };
 // where each card lands: behind top-right, in front bottom-right (carries the chip), behind left
@@ -78,7 +115,7 @@ function placed_isLeft(i: number): boolean {
 ---
 <div class="list">
   {placed.map((p) => {
-    const holder = p.extra === 'stoa' ? 'is-stoa' : p.extra === 'ken' ? 'is-ken' : p.extra === 'alai' ? 'is-alai' : p.extra === 'planes' ? 'is-pp' : p.extra === 'hf' ? 'is-hf' : p.extra === 'site' ? 'is-site' : p.desktop || p.soon ? 'is-desk' : 'is-phone';
+    const holder = p.extra === 'stoa' ? 'is-stoa' : p.extra === 'ken' ? 'is-ken' : p.extra === 'alai' ? 'is-alai' : p.extra === 'planes' ? 'is-pp' : p.extra === 'hf' ? 'is-hf' : p.extra === 'site' ? 'is-site' : p.extra === 'pieces' ? 'is-pieces' : p.desktop || p.soon ? 'is-desk' : 'is-phone';
     const pos = slots(p.fan.length);
     return (
     <a class:list={['proj', p.size, p.side, p.extra && `x-${p.extra}`, { soon: p.soon, duo: p.desktop && p.phone }]}
@@ -92,6 +129,7 @@ function placed_isLeft(i: number): boolean {
           {p.extra === 'alai' && <AlaiProduct size={960} />}
           {p.extra === 'planes' && <PaperPlanes size={900} />}
           {p.extra === 'hf' && <HealthFlexSite size={760} />}
+          {p.extra === 'pieces' && p.slug && pieces[p.slug] && (() => { const o = pieces[p.slug!]; return <PiecesObject size={o.size} label={o.label} base={o.base} parts={o.parts} rays={o.rays} wipe={o.wipe} style={`--mz:${o.mz}`} />; })()}
 
           {p.soon && (
             <div class="device desktop placeholder"><div class="bar"><b></b><b></b><b></b></div><div class="screen"><span>{p.name}<br />screens coming</span></div></div>
@@ -155,7 +193,7 @@ function placed_isLeft(i: number): boolean {
   .obj { position: relative; z-index: 1; display: grid; place-items: center;
     /* set by fit.ts so the opened object always fits on screen, below the top bar */
     transform: scale(var(--rest, 1)); transform-origin: 50% 50%; transition: transform 1s var(--ease); }
-  .proj:is(:hover, :focus-visible, .peek) .obj { transform: translateX(var(--shift, 0px)) scale(calc(var(--rest, 1) * var(--open, 1))); }
+  .proj:is(:hover, :focus-visible, .peek) .obj { transform: translate(var(--shift, 0px), var(--lift, 0px)) scale(calc(var(--rest, 1) * var(--open, 1))); }
 
   /* the light (after teenage engineering's EP-35 page): pointed at, the object is lit from above
      and throws an unrealistically long shadow down the paper, like the wheel at the top of the page */
@@ -269,6 +307,8 @@ function placed_isLeft(i: number): boolean {
   .proj:is(:hover, :focus-visible, .peek) .is-stoa :global(.stoa-brand) { --x: 1; transition: --x 1.2s var(--snap); }
   .is-ken .solo-chip { right: -6%; bottom: 2%; }
   .obj.is-alai { width: 780px; height: 700px; }
+  .is-pieces :global(.pc3d) { transition: --x .45s var(--ease); }
+  .proj:is(:hover, :focus-visible, .peek) .is-pieces :global(.pc3d) { --x: 1; transition: --x 1.4s cubic-bezier(.3, .1, .2, 1); }
   .is-alai :global(.alai3d) { transition: --x .45s var(--ease); }
   .proj:is(:hover, :focus-visible, .peek) .is-alai :global(.alai3d) { --x: 1; transition: --x 1.3s var(--snap); }
   .is-alai .solo-chip { right: -4%; bottom: 4%; }
@@ -317,6 +357,7 @@ function placed_isLeft(i: number): boolean {
     .is-phone .solo-chip { right: -10%; }
     .obj.is-site { width: 200px; height: 400px; }
     .is-site :global(.site3d) { scale: .5; }
+    .is-pieces :global(.pc3d) { zoom: var(--mz, 1); }
   }
   @media (prefers-reduced-motion: reduce) {
     .screen .cur.scrolling { transform: none; }
